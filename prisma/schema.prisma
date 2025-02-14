@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Donation {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime
+  amount    Float
+  location  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+enum Role {
+  ADMIN
+  USER
+}
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+   role     String
+  blood String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
