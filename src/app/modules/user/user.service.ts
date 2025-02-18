@@ -1,10 +1,14 @@
 import { PrismaClient, type User } from "@prisma/client";
 import type { IUser, IUserFilters } from "./user.interface";
 import { paginationHelpers } from "../../helpers/paginationHelper";
-import type { IPaginationOptions } from "../../interfaces/pagination";
 import AppError from "../../error/AppError";
+import bcrypt from "bcrypt";
+import { IPaginationOptions } from "../../interface/pagination";
+import { IGenericResponse } from "../../interface/common";
 
 const prisma = new PrismaClient();
+
+const randomPass = Math.random().toString(36).slice(2, 12);
 
 const getAllUsers = async (
   filters: IUserFilters,
@@ -59,19 +63,51 @@ const getAllUsers = async (
   };
 };
 
-const createUser = async (userData: IUser): Promise<User> => {
+const createUser = async (payload: IUser): Promise<User> => {
+  const password = payload?.password || randomPass;
+
   const userExist = await prisma.user.findUnique({
     where: {
-      email: userData.email,
+      email: payload?.email,
     },
   });
   if (userExist) {
+    if (
+      userExist?.provider && userExist?.provider == "google" ||
+      userExist?.provider == "facebook"
+    ) {
+      return userExist;
+    }
     throw new AppError(401, "User already exist!");
   }
+  // 🔹 Hash the password before storing it
+  const hashedPassword = await bcrypt.hash(password, 10); // 10 = salt rounds
+  payload.password = hashedPassword;
   const result = await prisma.user.create({
-    data: userData,
+    data: payload,
   });
   return result;
+};
+
+const loginUser = async (payload: Partial<IUser>) => {
+  const password = payload?.password;
+
+  const userExist = await prisma.user.findUnique({
+    where: {
+      email: payload.email,
+    },
+  });
+  if (!userExist) {
+    throw new AppError(401, "User does not exist!");
+  }
+  // 🔹 Compare the password
+  const isMatch = await bcrypt.compare(
+    password as string,
+    userExist.password as string
+  );
+
+  if (!isMatch) throw new AppError(401, "Invalid email or password");
+  return userExist;
 };
 
 const updateUser = async (
@@ -101,4 +137,5 @@ export const UserService = {
   createUser,
   updateUser,
   deleteUser,
+  loginUser,
 };

@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\.7eb1600b757bb3982e3a9d5d847d09b4b8a8a835-audit.json",
+    "files": [
+        {
+            "date": 1739791838769,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-17-17.log",
+            "hash": "7aedc89694a1f3e9a12c3c1543969019e0726a9ceff4549ca07aac2db1f2bf61"
+        },
+        {
+            "date": 1739800462871,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-17-19.log",
+            "hash": "3a80b600e653ca117271c7ace82a8ba55cc39a972822513074784485e2790e50"
+        },
+        {
+            "date": 1739800834869,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-17-20.log",
+            "hash": "4952381d87460f0868401f0e615dd1483cfa641735f143cb709824da898551cb"
+        },
+        {
+            "date": 1739805901131,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-17-21.log",
+            "hash": "6317173be40822233682b9c088beec57bf46a644e99d9a2a2251deda41dd0c85"
+        },
+        {
+            "date": 1739813150629,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-17-23.log",
+            "hash": "27729c3a1e9d7a9783851a48c22e7cf750ee052292a38fbe3c820c5eb516b168"
+        },
+        {
+            "date": 1739815860913,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-18-00.log",
+            "hash": "dcbeff53cd8a3b056a3f43cb3ca80d0f59e746ac023b6112169c2f4e127c368d"
+        },
+        {
+            "date": 1739820907509,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-18-01.log",
+            "hash": "9153d1854c424226da1cc7fa7b40293d7f7585f6dcfa2ad490e2d872308131cb"
+        },
+        {
+            "date": 1739822501743,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-18-02.log",
+            "hash": "148c1a0c6051094d3637834ba6389a8e8e994306b44179b865b87b92bd6d836f"
+        },
+        {
+            "date": 1739832213840,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-18-04.log",
+            "hash": "22aa857df9aa8be421563fa5a660091b49b7ab86a082b58fcc5ca411434c2b71"
+        },
+        {
+            "date": 1739860492806,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-18-12.log",
+            "hash": "36c77714f4d943fb264183367fab249fa8d3b6b3c3196b9a51fd08fb8049330a"
+        }
+    ],
+    "hashType": "sha256"
+}

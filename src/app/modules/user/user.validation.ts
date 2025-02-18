@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const createUserZodSchema = z.object({
   body: z.object({
@@ -10,11 +10,9 @@ export const createUserZodSchema = z.object({
         required_error: "Email is required",
       })
       .email(),
-    bloodType: z.string({
-      required_error: "Blood type is required",
-    }),
+    password: z.string().optional(),
   }),
-})
+});
 
 export const updateUserZodSchema = z.object({
   body: z.object({
@@ -22,5 +20,4 @@ export const updateUserZodSchema = z.object({
     email: z.string().email().optional(),
     bloodType: z.string().optional(),
   }),
-})
-
+});

@@ -3,7 +3,7 @@ export type IUser = {
   name: string;
   email: string;
   role: string;
-  blood: string;
+  password?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };

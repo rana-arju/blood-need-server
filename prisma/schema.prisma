@@ -1,33 +1,137 @@
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
-model Donation {
-  id        String   @id @default(uuid())
-  userId    String
-  date      DateTime
-  amount    Float
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+
 enum Role {
   ADMIN
   USER
 }
+
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-   role     String
-  blood String
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String   @unique
+  image         String?
+  password      String?
+  provider      String?
+  providerId    String?
+  role          String   @default("user")
+  donationCount Int      @default(0)
+  rewardBadge   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  donations     Donation[]
+  donorInfo     BloodDonor?
+  bloodDrives   BloodDrive[]
+  requests      BloodRequest[]
+  reviews    Review[]
+  volunteers Volunteer[]
+}
+
+
+model Donation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  date      DateTime
+  location  String
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model BloodRequest {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId
+  patientName         String
+  blood               String
+  hospitalName        String
+  contactNumber       String
+  whatsappNumber      String?
+  bloodAmount         Int
+  division            String
+  district            String
+  upazila             String
+  address             String
+  requiredDate        DateTime
+  requireTime         DateTime
+  hemoglobin          Int?
+  patientProblem      String?
+  reference           String?
+  //status             String   @default("Pending")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
 
+
+model BloodDonor {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @unique @db.ObjectId
+  phone               String   @unique
+  whatsappNumber      String?
+  facebookId          String?
+  blood               String
+  dateOfBirth         DateTime
+  gender              String
+  height              Float
+  weight              Float
+  division            String
+  district            String
+  upazila             String
+  address             String
+  lastDonationDate    DateTime
+  emergencyContact    String
+  medicalCondition    String?  // Optional
+  currentMedications  String?  // Optional
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model BloodDrive {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  userId    String   @unique @db.ObjectId
+  division  String
+  district  String
+  upazila   String
+  address   String
+  organizer String
+  date      DateTime
+  banner    String?
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId
+  comment             String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Volunteer {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId
+  name                String
+  phone               String   @unique
+  email               String   @unique
+  division            String
+  district            String
+  upazila             String
+  address             String
+  availability        String
+  nid                 String
+  skills              String?
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

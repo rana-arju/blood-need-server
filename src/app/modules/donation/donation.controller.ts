@@ -4,11 +4,10 @@ import catchAsync from "../../shared/catchAsync"
 import sendResponse from "../../shared/sendResponse"
 import pick from "../../shared/pick"
 import { donationFilterableFields } from "./donation.constant"
-import { paginationFields } from "../../constants/pagination"
 
 const getAllDonations = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, donationFilterableFields)
-  const paginationOptions = pick(req.query, paginationFields)
+  const paginationOptions = pick(req.query, ["name"])
 
   const result = await DonationService.getAllDonations(filters, paginationOptions)
 

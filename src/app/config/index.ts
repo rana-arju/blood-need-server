@@ -11,4 +11,15 @@ export default {
     secret: process.env.JWT_SECRET,
     expires_in: process.env.JWT_EXPIRES_IN,
   },
+  email: {
+    host: process.env.EMAIL_HOST,
+    port: Number.parseInt(process.env.EMAIL_PORT || "587", 10),
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+    from: process.env.EMAIL_FROM,
+  },
+  vapid: {
+    publicKey: process.env.VAPID_PUBLIC_KEY as string,
+    privateKey: process.env.VAPID_PRIVATE_KEY as string,
+  },
 };

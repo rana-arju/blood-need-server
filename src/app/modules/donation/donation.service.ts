@@ -1,8 +1,9 @@
 import { PrismaClient, type Donation } from "@prisma/client"
 import type { IDonation, IDonationFilters } from "./donation.interface"
 import { paginationHelpers } from "../../helpers/paginationHelper"
-import type { IGenericResponse } from "../../interfaces/common"
-import type { IPaginationOptions } from "../../interfaces/pagination"
+import { IPaginationOptions } from "../../interface/pagination"
+import { IGenericResponse } from "../../interface/common"
+
 
 const prisma = new PrismaClient()
 
