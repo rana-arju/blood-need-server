@@ -12,10 +12,10 @@
       "dest": "dist/server.js"
     }
   ],
-  "build": {
-    "env": {
-      "DATABASE_URL": "@my-database-url"
-    },
-    "commands": ["npx prisma generate"]
+  "hooks": {
+    "build": "npx prisma generate"
+  },
+  "env": {
+    "DATABASE_URL": "@my-database-url"
   }
 }
