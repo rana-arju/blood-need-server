@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "dist/server.js"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "DATABASE_URL": "@my-database-url"
+    },
+    "commands": ["npx prisma generate"]
+  }
 }
