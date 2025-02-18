@@ -32,6 +32,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   })
    
 })
+
 const login = catchAsync(async (req: Request, res: Response) => {
 
 

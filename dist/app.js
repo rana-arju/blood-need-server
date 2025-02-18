@@ -16,7 +16,11 @@ const bloodDonor_route_1 = require("./app/modules/bloodDonor/bloodDonor.route");
 const volunteer_route_1 = require("./app/modules/volunteer/volunteer.route");
 const review_route_1 = require("./app/modules/review/review.route");
 const donationReminder_1 = require("./app/jobs/donationReminder");
+const web_push_1 = __importDefault(require("web-push"));
+const notification_route_1 = __importDefault(require("./app/modules/notification/notification.route"));
 const app = (0, express_1.default)();
+// Web Push setup
+web_push_1.default.setVapidDetails("mailto:ranaarju20@gmail.com", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 // 🔹 Allowed Domains (Add your multiple domains here)
 const allowedDomains = [
     "http://localhost:3000",
@@ -39,17 +43,18 @@ const corsOptions = {
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 // Application routes
 app.use("/api/v1/auth", user_route_1.UserRoutes);
 app.use("/api/v1/donations", donation_route_1.DonationRoutes);
 app.use("/api/v1/blood-requests", bloodRequest_route_1.BloodRequestRoutes);
 app.use("/api/v1/blood-drives", bloodDrive_route_1.BloodDriveRoutes);
-app.use("/api/v1/blood-donors", bloodDonor_route_1.BloodDonorRoutes);
+app.use("/api/v1/blood-donor", bloodDonor_route_1.BloodDonorRoutes);
 app.use("/api/v1/volunteers", volunteer_route_1.VolunteerRoutes);
 app.use("/api/v1/reviews", review_route_1.ReviewRoutes);
-// Health route
+app.use("/api/v1/notifications", notification_route_1.default);
+// route
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });
 });

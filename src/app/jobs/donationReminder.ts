@@ -1,30 +1,31 @@
 import cron from "node-cron";
-import { PrismaClient } from "@prisma/client";
 import { sendEmail } from "../utils/email";
-
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
 export const scheduleDonationReminders = () => {
   cron.schedule("0 10 * * *", async () => {
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
-    const eligibleDonors = await prisma.bloodDonor.findMany({
+    // ✅ Find users who are eligible to donate again
+    const eligibleUsers = await prisma.user.findMany({
       where: {
         lastDonationDate: {
-          lte: threeMonthsAgo,
+          lte: threeMonthsAgo, // Last donation was at least 3 months ago
         },
       },
-      include: {
-        user: true,
+      select: {
+        name: true,
+        email: true,
       },
     });
 
-    for (const donor of eligibleDonors) {
+    // ✅ Send email reminders
+    for (const user of eligibleUsers) {
       await sendEmail(
-        donor.user.email,
+        user.email,
         "Blood Donation Reminder",
-        `Dear ${donor.user.name},\n\nIt's been 3 months since your last blood donation. You are now eligible to donate again. Please consider donating blood to save lives.\n\nThank you for your generosity!`
+        `Dear ${user.name},\n\nIt's been 3 months since your last blood donation. You are now eligible to donate again. Please consider donating blood to save lives.\n\nThank you for your generosity!`
       );
     }
   });

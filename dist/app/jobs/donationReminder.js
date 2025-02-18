@@ -14,25 +14,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scheduleDonationReminders = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
-const client_1 = require("@prisma/client");
 const email_1 = require("../utils/email");
+const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const scheduleDonationReminders = () => {
     node_cron_1.default.schedule("0 10 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-        const eligibleDonors = yield prisma.bloodDonor.findMany({
+        // ✅ Find users who are eligible to donate again
+        const eligibleUsers = yield prisma.user.findMany({
             where: {
                 lastDonationDate: {
-                    lte: threeMonthsAgo,
+                    lte: threeMonthsAgo, // Last donation was at least 3 months ago
                 },
             },
-            include: {
-                user: true,
+            select: {
+                name: true,
+                email: true,
             },
         });
-        for (const donor of eligibleDonors) {
-            yield (0, email_1.sendEmail)(donor.user.email, "Blood Donation Reminder", `Dear ${donor.user.name},\n\nIt's been 3 months since your last blood donation. You are now eligible to donate again. Please consider donating blood to save lives.\n\nThank you for your generosity!`);
+        // ✅ Send email reminders
+        for (const user of eligibleUsers) {
+            yield (0, email_1.sendEmail)(user.email, "Blood Donation Reminder", `Dear ${user.name},\n\nIt's been 3 months since your last blood donation. You are now eligible to donate again. Please consider donating blood to save lives.\n\nThank you for your generosity!`);
         }
     }));
 };

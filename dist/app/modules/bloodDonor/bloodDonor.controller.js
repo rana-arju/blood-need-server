@@ -42,6 +42,7 @@ const getBloodDonorById = (0, catchAsync_1.default)((req, res) => __awaiter(void
     });
 }));
 const createBloodDonor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
     const result = yield bloodDonor_service_1.BloodDonorService.createBloodDonor(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,

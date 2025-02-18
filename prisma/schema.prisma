@@ -14,12 +14,20 @@ enum Role {
 
 model User {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
+  name          String
   email         String   @unique
   image         String?
   password      String?
   provider      String?
   providerId    String?
+  blood         String?
+  dateOfBirth   DateTime?
+  gender        String?
+  division      String?
+  district      String?
+  upazila       String?
+  address       String?
+  lastDonationDate DateTime?
   role          String   @default("user")
   donationCount Int      @default(0)
   rewardBadge   String?
@@ -29,8 +37,10 @@ model User {
   donorInfo     BloodDonor?
   bloodDrives   BloodDrive[]
   requests      BloodRequest[]
-  reviews    Review[]
-  volunteers Volunteer[]
+  reviews       Review[]
+  volunteers    Volunteer[]
+  subscriptions Subscription[]
+  notifications Notification[]
 }
 
 
@@ -75,17 +85,9 @@ model BloodDonor {
   phone               String   @unique
   whatsappNumber      String?
   facebookId          String?
-  blood               String
-  dateOfBirth         DateTime
-  gender              String
-  height              Float
-  weight              Float
-  division            String
-  district            String
-  upazila             String
-  address             String
-  lastDonationDate    DateTime
   emergencyContact    String
+  height              Float?
+  weight              Float?
   medicalCondition    String?  // Optional
   currentMedications  String?  // Optional
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -135,3 +137,27 @@ model Volunteer {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+model Subscription {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  endpoint  String
+  auth      String
+  p256dh    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  url       String?
+  isRead      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+

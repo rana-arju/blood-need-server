@@ -73,7 +73,7 @@ const createUser = async (payload: IUser): Promise<User> => {
   });
   if (userExist) {
     if (
-      userExist?.provider && userExist?.provider == "google" ||
+      (userExist?.provider && userExist?.provider == "google") ||
       userExist?.provider == "facebook"
     ) {
       return userExist;
@@ -114,6 +114,15 @@ const updateUser = async (
   id: string,
   payload: Partial<IUser>
 ): Promise<User> => {
+  const userExist = await prisma.user.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!userExist) {
+    throw new AppError(404, "This user not found!");
+  }
   const result = await prisma.user.update({
     where: {
       id,

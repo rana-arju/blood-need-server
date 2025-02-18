@@ -12,6 +12,6 @@ const router = express_1.default.Router();
 router.get("/users", user_controller_1.UserController.getAllUsers);
 router.post("/register", (0, validationRequest_1.default)(user_validation_1.createUserZodSchema), user_controller_1.UserController.createUser);
 router.post("/login", user_controller_1.UserController.login);
-router.patch("/user/:id", (0, validationRequest_1.default)(user_validation_1.updateUserZodSchema), user_controller_1.UserController.updateUser);
+router.patch("/user/:id", user_controller_1.UserController.updateUser);
 router.delete("/user/:id", user_controller_1.UserController.deleteUser);
 exports.UserRoutes = router;

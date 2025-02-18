@@ -67,7 +67,7 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     if (userExist) {
-        if ((userExist === null || userExist === void 0 ? void 0 : userExist.provider) && (userExist === null || userExist === void 0 ? void 0 : userExist.provider) == "google" ||
+        if (((userExist === null || userExist === void 0 ? void 0 : userExist.provider) && (userExist === null || userExist === void 0 ? void 0 : userExist.provider) == "google") ||
             (userExist === null || userExist === void 0 ? void 0 : userExist.provider) == "facebook") {
             return userExist;
         }
@@ -98,6 +98,14 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return userExist;
 });
 const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const userExist = yield prisma.user.findUnique({
+        where: {
+            id: id,
+        },
+    });
+    if (!userExist) {
+        throw new AppError_1.default(404, "This user not found!");
+    }
     const result = yield prisma.user.update({
         where: {
             id,

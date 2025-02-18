@@ -7,22 +7,20 @@ exports.createBloodDonorZodSchema = zod_1.z.object({
         userId: zod_1.z.string({
             required_error: "User ID is required",
         }),
+        whatsappNumber: zod_1.z.string({
+            required_error: "whatsappNumber is required",
+        }),
+        facebookId: zod_1.z.string({
+            required_error: "facebookId is required",
+        }),
+        emergencyContact: zod_1.z.string({
+            required_error: "Emergency Contact is required",
+        }),
         lastDonationDate: zod_1.z
-            .string({
-            required_error: "Last donation date is required",
-        })
-            .transform((str) => new Date(str)),
-        totalDonations: zod_1.z
-            .number({
-            required_error: "Total donations is required",
-        })
-            .int()
-            .nonnegative(),
-        eligibleToDonateSince: zod_1.z
-            .string({
-            required_error: "Eligible to donate since date is required",
-        })
-            .transform((str) => new Date(str)),
+            .string()
+            .transform((str) => new Date(str))
+            .optional(),
+        totalDonations: zod_1.z.number().int().nonnegative().default(0),
     }),
 });
 exports.updateBloodDonorZodSchema = zod_1.z.object({

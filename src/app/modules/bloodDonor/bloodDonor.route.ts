@@ -9,12 +9,12 @@ import validationRequest from "../../middlewares/validationRequest";
 const router = express.Router();
 
 router.get("/", BloodDonorController.getAllBloodDonors);
-router.get("/:id", BloodDonorController.getBloodDonorById);
 router.post(
   "/",
   validationRequest(createBloodDonorZodSchema),
   BloodDonorController.createBloodDonor
 );
+router.get("/:id", BloodDonorController.getBloodDonorById);
 router.patch(
   "/:id",
   validationRequest(updateBloodDonorZodSchema),

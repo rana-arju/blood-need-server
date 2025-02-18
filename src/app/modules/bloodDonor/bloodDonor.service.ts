@@ -3,6 +3,7 @@ import type { IBloodDonor, IBloodDonorFilters } from "./bloodDonor.interface";
 import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
+import AppError from "../../error/AppError";
 
 const prisma = new PrismaClient();
 
@@ -69,6 +70,12 @@ const getBloodDonorById = async (id: string): Promise<BloodDonor | null> => {
 const createBloodDonor = async (
   bloodDonorData: IBloodDonor
 ): Promise<BloodDonor> => {
+  const donorExist = await prisma.bloodDonor.findUnique({
+    where: { userId: bloodDonorData?.userId },
+  });
+  if (donorExist) {
+    throw new AppError(400, "You already register!");
+  }
   const result = await prisma.bloodDonor.create({
     data: bloodDonorData,
   });

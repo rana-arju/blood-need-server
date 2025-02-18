@@ -11,9 +11,15 @@ import { BloodDonorRoutes } from "./app/modules/bloodDonor/bloodDonor.route";
 import { VolunteerRoutes } from "./app/modules/volunteer/volunteer.route";
 import { ReviewRoutes } from "./app/modules/review/review.route";
 import { scheduleDonationReminders } from "./app/jobs/donationReminder";
-
+import webpush from "web-push";
+import notificationRoutes from "./app/modules/notification/notification.route"
 const app: Application = express();
-
+// Web Push setup
+webpush.setVapidDetails(
+  "mailto:ranaarju20@gmail.com",
+  process.env.VAPID_PUBLIC_KEY!,
+  process.env.VAPID_PRIVATE_KEY!
+);
 // 🔹 Allowed Domains (Add your multiple domains here)
 const allowedDomains = [
   "http://localhost:3000",
@@ -37,7 +43,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Application routes
@@ -45,11 +51,12 @@ app.use("/api/v1/auth", UserRoutes);
 app.use("/api/v1/donations", DonationRoutes);
 app.use("/api/v1/blood-requests", BloodRequestRoutes);
 app.use("/api/v1/blood-drives", BloodDriveRoutes);
-app.use("/api/v1/blood-donors", BloodDonorRoutes);
+app.use("/api/v1/blood-donor", BloodDonorRoutes);
 app.use("/api/v1/volunteers", VolunteerRoutes);
 app.use("/api/v1/reviews", ReviewRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
-// Health route
+// route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });

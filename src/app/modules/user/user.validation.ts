@@ -14,10 +14,3 @@ export const createUserZodSchema = z.object({
   }),
 });
 
-export const updateUserZodSchema = z.object({
-  body: z.object({
-    name: z.string().optional(),
-    email: z.string().email().optional(),
-    bloodType: z.string().optional(),
-  }),
-});
