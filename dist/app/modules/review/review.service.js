@@ -8,11 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReviewService = void 0;
-const client_1 = require("@prisma/client");
 const paginationHelper_1 = require("../../helpers/paginationHelper");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, rating } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -35,7 +37,7 @@ const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, 
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma.review.findMany({
+    const result = yield prisma_1.default.review.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -43,7 +45,7 @@ const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, 
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma.review.count({ where: whereConditions });
+    const total = yield prisma_1.default.review.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -54,26 +56,26 @@ const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, 
     };
 });
 const getReviewById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.review.findUnique({
+    const result = yield prisma_1.default.review.findUnique({
         where: { id },
     });
     return result;
 });
 const createReview = (reviewData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.review.create({
+    const result = yield prisma_1.default.review.create({
         data: reviewData,
     });
     return result;
 });
 const updateReview = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.review.update({
+    const result = yield prisma_1.default.review.update({
         where: { id },
         data: payload,
     });
     return result;
 });
 const deleteReview = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.review.delete({
+    const result = yield prisma_1.default.review.delete({
         where: { id },
     });
     return result;

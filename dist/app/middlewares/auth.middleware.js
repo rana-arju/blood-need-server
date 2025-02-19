@@ -14,9 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.moderatorMiddleware = exports.userMiddleware = exports.adminMiddleware = exports.authMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const client_1 = require("@prisma/client");
-// Initialize Prisma Client
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../shared/prisma"));
 // Middleware to authenticate the user
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -30,7 +28,7 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         // Decode and verify the token
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         // Find the user in the database based on the decoded id
-        const user = yield prisma.user.findUnique({
+        const user = yield prisma_1.default.user.findUnique({
             where: { id: decoded.id },
         });
         // If no user is found, return an authentication error

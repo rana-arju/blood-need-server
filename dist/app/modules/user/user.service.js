@@ -13,11 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
-const client_1 = require("@prisma/client");
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const randomPass = Math.random().toString(36).slice(2, 12);
 const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, bloodType } = filters;
@@ -41,7 +40,7 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma.user.findMany({
+    const result = yield prisma_1.default.user.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -49,7 +48,7 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma.user.count({ where: whereConditions });
+    const total = yield prisma_1.default.user.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -61,7 +60,7 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
 });
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const password = (payload === null || payload === void 0 ? void 0 : payload.password) || randomPass;
-    const userExist = yield prisma.user.findUnique({
+    const userExist = yield prisma_1.default.user.findUnique({
         where: {
             email: payload === null || payload === void 0 ? void 0 : payload.email,
         },
@@ -76,14 +75,14 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // 🔹 Hash the password before storing it
     const hashedPassword = yield bcrypt_1.default.hash(password, 10); // 10 = salt rounds
     payload.password = hashedPassword;
-    const result = yield prisma.user.create({
+    const result = yield prisma_1.default.user.create({
         data: payload,
     });
     return result;
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const password = payload === null || payload === void 0 ? void 0 : payload.password;
-    const userExist = yield prisma.user.findUnique({
+    const userExist = yield prisma_1.default.user.findUnique({
         where: {
             email: payload.email,
         },
@@ -98,7 +97,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return userExist;
 });
 const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const userExist = yield prisma.user.findUnique({
+    const userExist = yield prisma_1.default.user.findUnique({
         where: {
             id: id,
         },
@@ -106,7 +105,7 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!userExist) {
         throw new AppError_1.default(404, "This user not found!");
     }
-    const result = yield prisma.user.update({
+    const result = yield prisma_1.default.user.update({
         where: {
             id,
         },
@@ -115,7 +114,7 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     return result;
 });
 const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.user.delete({
+    const result = yield prisma_1.default.user.delete({
         where: {
             id,
         },

@@ -8,11 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonationService = void 0;
-const client_1 = require("@prisma/client");
 const paginationHelper_1 = require("../../helpers/paginationHelper");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const getAllDonations = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, userId, startDate, endDate } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -39,7 +41,7 @@ const getAllDonations = (filters, paginationOptions) => __awaiter(void 0, void 0
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma.donation.findMany({
+    const result = yield prisma_1.default.donation.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -47,7 +49,7 @@ const getAllDonations = (filters, paginationOptions) => __awaiter(void 0, void 0
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma.donation.count({ where: whereConditions });
+    const total = yield prisma_1.default.donation.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -58,13 +60,13 @@ const getAllDonations = (filters, paginationOptions) => __awaiter(void 0, void 0
     };
 });
 const createDonation = (donationData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.donation.create({
+    const result = yield prisma_1.default.donation.create({
         data: donationData,
     });
     return result;
 });
 const updateDonation = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.donation.update({
+    const result = yield prisma_1.default.donation.update({
         where: {
             id,
         },
@@ -73,7 +75,7 @@ const updateDonation = (id, payload) => __awaiter(void 0, void 0, void 0, functi
     return result;
 });
 const deleteDonation = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.donation.delete({
+    const result = yield prisma_1.default.donation.delete({
         where: {
             id,
         },

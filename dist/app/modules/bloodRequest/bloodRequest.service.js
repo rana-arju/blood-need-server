@@ -41,12 +41,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodRequestService = void 0;
-const client_1 = require("@prisma/client");
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const notificationService = __importStar(require("../notification/notification.service"));
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, bloodType, urgency, status } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -71,7 +73,7 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
         andConditions.push({ status });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma.bloodRequest.findMany({
+    const result = yield prisma_1.default.bloodRequest.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -79,7 +81,7 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma.bloodRequest.count({ where: whereConditions });
+    const total = yield prisma_1.default.bloodRequest.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -90,19 +92,19 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
     };
 });
 const getBloodRequestById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodRequest.findUnique({
+    const result = yield prisma_1.default.bloodRequest.findUnique({
         where: { id },
     });
     return result;
 });
 const deleteBloodRequest = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodRequest.delete({
+    const result = yield prisma_1.default.bloodRequest.delete({
         where: { id },
     });
     return result;
 });
 const updateBloodRequest = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodRequest.update({
+    const result = yield prisma_1.default.bloodRequest.update({
         where: { id },
         data: payload,
     });
@@ -110,11 +112,11 @@ const updateBloodRequest = (id, payload) => __awaiter(void 0, void 0, void 0, fu
 });
 const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 0, function* () {
     // Step 1: Create Blood Request
-    const request = yield prisma.bloodRequest.create({
+    const request = yield prisma_1.default.bloodRequest.create({
         data: bloodRequestData,
     });
     // Step 2: Find Matching Donors (Same Blood Type & District, Exclude Requester)
-    const matchingDonors = yield prisma.user.findMany({
+    const matchingDonors = yield prisma_1.default.user.findMany({
         where: {
             blood: bloodRequestData.blood,
             district: bloodRequestData.district,
@@ -127,7 +129,7 @@ const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 
     });
     // Step 3: Send Notifications to Matching Donors
     for (const donor of matchingDonors) {
-        yield prisma.notification.create({
+        yield prisma_1.default.notification.create({
             data: {
                 userId: donor.id,
                 title: "Urgent Blood Request",

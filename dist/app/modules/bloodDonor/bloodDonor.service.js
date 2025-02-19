@@ -13,10 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodDonorService = void 0;
-const client_1 = require("@prisma/client");
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const AppError_1 = __importDefault(require("../../error/AppError"));
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, eligibleToDonateSince } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -39,7 +38,7 @@ const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma.bloodDonor.findMany({
+    const result = yield prisma_1.default.bloodDonor.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -47,7 +46,7 @@ const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma.bloodDonor.count({ where: whereConditions });
+    const total = yield prisma_1.default.bloodDonor.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -58,32 +57,32 @@ const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void
     };
 });
 const getBloodDonorById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodDonor.findUnique({
+    const result = yield prisma_1.default.bloodDonor.findUnique({
         where: { id },
     });
     return result;
 });
 const createBloodDonor = (bloodDonorData) => __awaiter(void 0, void 0, void 0, function* () {
-    const donorExist = yield prisma.bloodDonor.findUnique({
+    const donorExist = yield prisma_1.default.bloodDonor.findUnique({
         where: { userId: bloodDonorData === null || bloodDonorData === void 0 ? void 0 : bloodDonorData.userId },
     });
     if (donorExist) {
         throw new AppError_1.default(400, "You already register!");
     }
-    const result = yield prisma.bloodDonor.create({
+    const result = yield prisma_1.default.bloodDonor.create({
         data: bloodDonorData,
     });
     return result;
 });
 const updateBloodDonor = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodDonor.update({
+    const result = yield prisma_1.default.bloodDonor.update({
         where: { id },
         data: payload,
     });
     return result;
 });
 const deleteBloodDonor = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.bloodDonor.delete({
+    const result = yield prisma_1.default.bloodDonor.delete({
         where: { id },
     });
     return result;

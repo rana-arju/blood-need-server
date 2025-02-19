@@ -15,14 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.scheduleDonationReminders = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
 const email_1 = require("../utils/email");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../shared/prisma"));
 const scheduleDonationReminders = () => {
     node_cron_1.default.schedule("0 10 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
         // ✅ Find users who are eligible to donate again
-        const eligibleUsers = yield prisma.user.findMany({
+        const eligibleUsers = yield prisma_1.default.user.findMany({
             where: {
                 lastDonationDate: {
                     lte: threeMonthsAgo, // Last donation was at least 3 months ago

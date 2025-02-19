@@ -17,12 +17,11 @@ exports.subscribe = subscribe;
 exports.sendNotification = sendNotification;
 exports.getUnreadNotifications = getUnreadNotifications;
 exports.markNotificationAsRead = markNotificationAsRead;
-const client_1 = require("@prisma/client");
 const web_push_1 = __importDefault(require("web-push"));
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 function subscribe(userId, subscription) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield prisma.subscription.create({
+        yield prisma_1.default.subscription.create({
             data: {
                 userId,
                 endpoint: subscription.endpoint,
@@ -34,10 +33,10 @@ function subscribe(userId, subscription) {
 }
 function sendNotification(userId, title, body, url) {
     return __awaiter(this, void 0, void 0, function* () {
-        const subscriptions = yield prisma.subscription.findMany({
+        const subscriptions = yield prisma_1.default.subscription.findMany({
             where: { userId },
         });
-        const notification = yield prisma.notification.create({
+        const notification = yield prisma_1.default.notification.create({
             data: {
                 userId,
                 title,
@@ -65,7 +64,7 @@ function sendNotification(userId, title, body, url) {
                 console.error("Error sending notification:", error);
                 // If the subscription is no longer valid, remove it
                 if (error.statusCode === 410) {
-                    yield prisma.subscription.delete({ where: { id: sub.id } });
+                    yield prisma_1.default.subscription.delete({ where: { id: sub.id } });
                 }
             }
         }
@@ -73,7 +72,7 @@ function sendNotification(userId, title, body, url) {
 }
 function getUnreadNotifications(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        return prisma.notification.findMany({
+        return prisma_1.default.notification.findMany({
             where: {
                 userId,
                 isRead: false,
@@ -86,14 +85,14 @@ function getUnreadNotifications(userId) {
 }
 function markNotificationAsRead(notificationId) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield prisma.notification.update({
+        yield prisma_1.default.notification.update({
             where: { id: notificationId },
             data: { isRead: true },
         });
     });
 }
 const synceNotifications = (userId, title, body, url) => __awaiter(void 0, void 0, void 0, function* () {
-    yield prisma.notification.create({
+    yield prisma_1.default.notification.create({
         data: {
             userId: userId,
             title,

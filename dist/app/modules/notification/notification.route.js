@@ -48,8 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const notificationService = __importStar(require("../notification/notification.service"));
 const auth_middleware_1 = require("../../middlewares/auth.middleware");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 const router = express_1.default.Router();
 // ✅ Subscribe to notifications
 router.post("/subscribe", auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -95,7 +94,7 @@ router.post("/sync", (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return res.status(400).json({ message: "Missing required fields" });
         }
         // Create a new notification in the database
-        yield prisma.notification.create({
+        yield prisma_1.default.notification.create({
             data: {
                 userId,
                 title,

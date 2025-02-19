@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VolunteerService = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../../shared/prisma"));
 /*
 const getAllVolunteers = async (
   filters: IVolunteerFilters,
@@ -75,26 +77,26 @@ const getAllVolunteers = async (
 };
 */
 const getVolunteerById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.volunteer.findUnique({
+    const result = yield prisma_1.default.volunteer.findUnique({
         where: { id },
     });
     return result;
 });
 const createVolunteer = (volunteerData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.volunteer.create({
+    const result = yield prisma_1.default.volunteer.create({
         data: volunteerData,
     });
     return result;
 });
 const updateVolunteer = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.volunteer.update({
+    const result = yield prisma_1.default.volunteer.update({
         where: { id },
         data: payload,
     });
     return result;
 });
 const deleteVolunteer = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma.volunteer.delete({
+    const result = yield prisma_1.default.volunteer.delete({
         where: { id },
     });
     return result;

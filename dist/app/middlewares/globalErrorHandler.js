@@ -8,9 +8,9 @@ const zod_1 = require("zod");
 const config_1 = __importDefault(require("../config"));
 const handleZodError_1 = __importDefault(require("../error/handleZodError"));
 const AppError_1 = __importDefault(require("../error/AppError"));
-const logger_1 = __importDefault(require("../shared/logger"));
+const logger_1 = require("../shared/logger");
 const globalErrorHandler = (error, req, res, next) => {
-    logger_1.default.error(`🐱‍🏍 globalErrorHandler ~~`, error);
+    logger_1.logger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
     let statusCode = 500;
     let message = "Something went wrong!";
     let errorMessages = [
