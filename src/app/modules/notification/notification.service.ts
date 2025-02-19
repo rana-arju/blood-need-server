@@ -32,7 +32,7 @@ export async function sendNotification(
       userId,
       title,
       body,
-      url
+      url,
     },
   });
 

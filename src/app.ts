@@ -13,12 +13,13 @@ import { ReviewRoutes } from "./app/modules/review/review.route";
 import { scheduleDonationReminders } from "./app/jobs/donationReminder";
 import webpush from "web-push";
 import notificationRoutes from "./app/modules/notification/notification.route"
+import config from "./app/config";
 const app: Application = express();
 // Web Push setup
 webpush.setVapidDetails(
   "mailto:ranaarju20@gmail.com",
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
+  config.vapid.publicKey,
+  config.vapid.privateKey
 );
 // 🔹 Allowed Domains (Add your multiple domains here)
 const allowedDomains = [

@@ -42,7 +42,7 @@ function sendNotification(userId, title, body, url) {
                 userId,
                 title,
                 body,
-                url
+                url,
             },
         });
         const payload = JSON.stringify({

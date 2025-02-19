@@ -18,9 +18,10 @@ const review_route_1 = require("./app/modules/review/review.route");
 const donationReminder_1 = require("./app/jobs/donationReminder");
 const web_push_1 = __importDefault(require("web-push"));
 const notification_route_1 = __importDefault(require("./app/modules/notification/notification.route"));
+const config_1 = __importDefault(require("./app/config"));
 const app = (0, express_1.default)();
 // Web Push setup
-web_push_1.default.setVapidDetails("mailto:ranaarju20@gmail.com", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
+web_push_1.default.setVapidDetails("mailto:ranaarju20@gmail.com", config_1.default.vapid.publicKey, config_1.default.vapid.privateKey);
 // 🔹 Allowed Domains (Add your multiple domains here)
 const allowedDomains = [
     "http://localhost:3000",

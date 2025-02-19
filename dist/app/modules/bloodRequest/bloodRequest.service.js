@@ -119,7 +119,7 @@ const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 
             blood: bloodRequestData.blood,
             district: bloodRequestData.district,
             id: { not: bloodRequestData.userId },
-            donorInfo: { isNot: null }, // Ensures user is a registered donor
+            //donorInfo: { isNot: null }, // Ensures user is a registered donor
         },
         select: {
             id: true,
@@ -132,7 +132,7 @@ const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 
                 userId: donor.id,
                 title: "Urgent Blood Request",
                 body: `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`,
-                url: `/blood-requests/${request.id}`,
+                url: `/requests/${request.id}`,
             },
         });
         yield notificationService.sendNotification(donor.id, "Urgent Blood Request", `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`, `/requests/${request.id}`);

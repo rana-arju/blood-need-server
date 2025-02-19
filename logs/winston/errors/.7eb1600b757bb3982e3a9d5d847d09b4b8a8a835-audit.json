@@ -84,6 +84,11 @@
             "date": 1739905999095,
             "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-19-01.log",
             "hash": "1ac7a41d3fe96795edd9f117683f22017b103c00655cce33bce3641c7eaa5a52"
+        },
+        {
+            "date": 1739964658783,
+            "name": "D:\\blood-need\\blood-need-server\\logs\\winston\\errors\\error-2025-02-19-17.log",
+            "hash": "05638ec4b38eb1d408dde78cd1ba2299ec65c5c9ce8a67538092ffbce126e575"
         }
     ],
     "hashType": "sha256"
