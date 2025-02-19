@@ -16,7 +16,6 @@ const app_1 = __importDefault(require("./app"));
 const client_1 = require("@prisma/client");
 const logger_1 = __importDefault(require("./app/shared/logger"));
 const prisma = new client_1.PrismaClient();
-const port = process.env.PORT || 3000;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -28,14 +27,24 @@ function main() {
             }
             else {
                 // For local development
+                const port = process.env.PORT || 3000;
                 app_1.default.listen(port, () => {
                     logger_1.default.info(`Server is running on port ${port}`);
                 });
             }
         }
         catch (error) {
-            logger_1.default.error("Unable to connect to the database:", error);
+            logger_1.default.error("Error during server initialization:", error);
+            process.exit(1);
         }
     });
 }
-main();
+main().catch((error) => {
+    logger_1.default.error("Unhandled error:", error);
+    process.exit(1);
+});
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+    logger_1.default.error("Unhandled Rejection at:", promise, "reason:", reason);
+    // Application specific logging, throwing an error, or other logic here
+});

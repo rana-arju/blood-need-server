@@ -14,12 +14,13 @@ import { scheduleDonationReminders } from "./app/jobs/donationReminder";
 import webpush from "web-push";
 import notificationRoutes from "./app/modules/notification/notification.route"
 import config from "./app/config";
+import logger from "./app/shared/logger";
 const app: Application = express();
 // Web Push setup
 webpush.setVapidDetails(
   "mailto:ranaarju20@gmail.com",
-  config.vapid.publicKey,
-  config.vapid.privateKey
+  config.vapid.publicKey || "",
+  config.vapid.privateKey || ""
 );
 // 🔹 Allowed Domains (Add your multiple domains here)
 const allowedDomains = [
@@ -61,9 +62,27 @@ app.use("/api/v1/notifications", notificationRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
-
+// Health check route
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" })
+})
 // Global error handler
 app.use(globalErrorHandler);
+
+// Catch-all route for undefined routes
+app.use((req, res) => {
+  res.status(404).json({ error: "Not Found" })
+})
+
+// Error handling for syntax errors in JSON
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err instanceof SyntaxError && "body" in err) {
+    logger.error("JSON Syntax Error:", err)
+    return res.status(400).json({ error: "Invalid JSON" })
+  }
+  next(err)
+})
+
 // Start donation reminder job
 scheduleDonationReminders();
 // Not found

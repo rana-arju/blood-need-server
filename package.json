@@ -1,7 +1,6 @@
 {
   "name": "blood-need",
   "version": "1.0.0",
-  "description": "Backend API for blood donation project",
   "main": "src/server.ts",
   "scripts": {
     "build": "prisma generate && tsc",
@@ -51,5 +50,8 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
