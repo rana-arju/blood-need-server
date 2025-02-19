@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "src/server.ts",
   "scripts": {
-    "build": "prisma generate && tsc",
+    "prepare": "prisma generate",
+    "build": "npm run prepare && tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "vercel-build": "prisma generate && tsc"
@@ -52,6 +53,6 @@
     "typescript": "^5.0.4"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0 <21.0.0"
   }
 }
