@@ -13,37 +13,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
-const config_1 = __importDefault(require("./app/config"));
-const logger_1 = require("./app/shared/logger");
+const client_1 = require("@prisma/client");
+const logger_1 = __importDefault(require("./app/shared/logger"));
+const prisma = new client_1.PrismaClient();
+const port = process.env.PORT || 3000;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const server = app_1.default.listen(config_1.default.port, () => {
-                logger_1.logger.info(`Server running on port ${config_1.default.port}`);
-            });
-            const exitHandler = () => {
-                if (server) {
-                    server.close(() => {
-                        logger_1.logger.info("Server closed");
-                    });
-                }
-                process.exit(1);
-            };
-            const unexpectedErrorHandler = (error) => {
-                logger_1.logger.error(error);
-                exitHandler();
-            };
-            process.on("uncaughtException", unexpectedErrorHandler);
-            process.on("unhandledRejection", unexpectedErrorHandler);
-            process.on("SIGTERM", () => {
-                logger_1.logger.info("SIGTERM received");
-                if (server) {
-                    server.close();
-                }
-            });
+            yield prisma.$connect();
+            logger_1.default.info("Database connected successfully");
+            if (process.env.VERCEL) {
+                // For Vercel serverless deployment
+                module.exports = app_1.default;
+            }
+            else {
+                // For local development
+                const server = app_1.default.listen(port, () => {
+                    logger_1.default.info(`Server is running on port ${port}`);
+                });
+                const exitHandler = () => {
+                    if (server) {
+                        server.close(() => {
+                            logger_1.default.info("Server closed");
+                        });
+                    }
+                    process.exit(1);
+                };
+                const unexpectedErrorHandler = (error) => {
+                    logger_1.default.error(error);
+                    exitHandler();
+                };
+                process.on("uncaughtException", unexpectedErrorHandler);
+                process.on("unhandledRejection", unexpectedErrorHandler);
+                process.on("SIGTERM", () => {
+                    logger_1.default.info("SIGTERM received");
+                    if (server) {
+                        server.close();
+                    }
+                });
+            }
         }
         catch (err) {
-            logger_1.logger.error("Failed to connect database", err);
+            logger_1.default.error("Unable to connect to the database:", err);
         }
     });
 }

@@ -1,37 +1,19 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.errorLogger = exports.logger = void 0;
-const path_1 = __importDefault(require("path"));
-const winston_1 = __importDefault(require("winston"));
-const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
-const logger = winston_1.default.createLogger({
+// Remove any imports related to file-based logging
+const winston_1 = require("winston");
+const logger = (0, winston_1.createLogger)({
     level: "info",
-    format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
+    format: winston_1.format.combine(winston_1.format.timestamp({
+        format: "YYYY-MM-DD HH:mm:ss",
+    }), winston_1.format.errors({ stack: true }), winston_1.format.splat(), winston_1.format.json()),
+    defaultMeta: { service: "blood-donation-api" },
     transports: [
-        new winston_daily_rotate_file_1.default({
-            filename: path_1.default.join(process.cwd(), "logs", "winston", "successes", "success-%DATE%.log"),
-            datePattern: "YYYY-MM-DD-HH",
-            zippedArchive: true,
-            maxSize: "20m",
-            maxFiles: "14d",
+        new winston_1.transports.Console({
+            format: winston_1.format.combine(winston_1.format.colorize(), winston_1.format.printf(({ timestamp, level, message }) => {
+                return `${timestamp} ${level}: ${message}`;
+            })),
         }),
     ],
 });
-exports.logger = logger;
-const errorLogger = winston_1.default.createLogger({
-    level: "error",
-    format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
-    transports: [
-        new winston_daily_rotate_file_1.default({
-            filename: path_1.default.join(process.cwd(), "logs", "winston", "errors", "error-%DATE%.log"),
-            datePattern: "YYYY-MM-DD-HH",
-            zippedArchive: true,
-            maxSize: "20m",
-            maxFiles: "14d",
-        }),
-    ],
-});
-exports.errorLogger = errorLogger;
+exports.default = logger;

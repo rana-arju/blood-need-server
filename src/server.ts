@@ -1,39 +1,50 @@
 import type { Server } from "http";
 import app from "./app";
 import config from "./app/config";
-import { logger } from "./app/shared/logger";
-
+import { PrismaClient } from "@prisma/client";
+import logger from "./app/shared/logger";
+const prisma = new PrismaClient();
+const port = process.env.PORT || 3000;
 async function main() {
   try {
-    const server: Server = app.listen(config.port, () => {
-      logger.info(`Server running on port ${config.port}`);
-    });
+    await prisma.$connect();
+    logger.info("Database connected successfully");
 
-    const exitHandler = () => {
-      if (server) {
-        server.close(() => {
-          logger.info("Server closed");
-        });
-      }
-      process.exit(1);
-    };
+    if (process.env.VERCEL) {
+      // For Vercel serverless deployment
+      module.exports = app;
+    } else {
+      // For local development
+      const server: Server = app.listen(port, () => {
+        logger.info(`Server is running on port ${port}`);
+      });
 
-    const unexpectedErrorHandler = (error: unknown) => {
-      logger.error(error);
-      exitHandler();
-    };
+      const exitHandler = () => {
+        if (server) {
+          server.close(() => {
+            logger.info("Server closed");
+          });
+        }
+        process.exit(1);
+      };
 
-    process.on("uncaughtException", unexpectedErrorHandler);
-    process.on("unhandledRejection", unexpectedErrorHandler);
+      const unexpectedErrorHandler = (error: unknown) => {
+        logger.error(error);
+        exitHandler();
+      };
 
-    process.on("SIGTERM", () => {
-      logger.info("SIGTERM received");
-      if (server) {
-        server.close();
-      }
-    });
+      process.on("uncaughtException", unexpectedErrorHandler);
+      process.on("unhandledRejection", unexpectedErrorHandler);
+
+      process.on("SIGTERM", () => {
+        logger.info("SIGTERM received");
+        if (server) {
+          server.close();
+        }
+      });
+    }
   } catch (err) {
-    logger.error("Failed to connect database", err);
+    logger.error("Unable to connect to the database:", err);
   }
 }
 

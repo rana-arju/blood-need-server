@@ -2,10 +2,10 @@ import type { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 import config from "../config";
 
-import { logger } from "../shared/logger";
 import { IErrorSources, IGenericErrorResponse } from "../interface/error";
 import handleZodError from "../error/handleZodError";
 import AppError from "../error/AppError";
+import logger from "../shared/logger";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
