@@ -2,8 +2,8 @@ import type { Server } from "http";
 import app from "./app";
 import config from "./app/config";
 import { PrismaClient } from "@prisma/client";
-import logger from "./app/shared/logger";
-const prisma = new PrismaClient();
+import { logger } from "./app/shared/logger";
+import prisma from "./app/shared/prisma";
 const port = process.env.PORT || 3000;
 async function main() {
   try {

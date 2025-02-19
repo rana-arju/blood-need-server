@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { sendEmail } from "../utils/email";
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../shared/prisma";
 export const scheduleDonationReminders = () => {
   cron.schedule("0 10 * * *", async () => {
     const threeMonthsAgo = new Date();

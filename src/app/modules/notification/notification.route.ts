@@ -2,8 +2,8 @@ import express, { Request, Response } from "express";
 import * as notificationService from "../notification/notification.service";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { PrismaClient } from "@prisma/client";
+import prisma from "../../shared/prisma";
 
-const prisma = new PrismaClient();
 const router = express.Router();
 
 // ✅ Define a custom request type that includes `user`

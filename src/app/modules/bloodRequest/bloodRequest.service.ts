@@ -7,7 +7,7 @@ import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import * as notificationService from "../notification/notification.service";
-const prisma = new PrismaClient();
+import prisma from "../../shared/prisma";
 
 const getAllBloodRequests = async (
   filters: IBloodRequestFilters,

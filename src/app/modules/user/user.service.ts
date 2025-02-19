@@ -5,8 +5,8 @@ import AppError from "../../error/AppError";
 import bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
+import prisma from "../../shared/prisma";
 
-const prisma = new PrismaClient();
 
 const randomPass = Math.random().toString(36).slice(2, 12);
 

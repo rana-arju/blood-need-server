@@ -3,9 +3,9 @@ import type { IDonation, IDonationFilters } from "./donation.interface"
 import { paginationHelpers } from "../../helpers/paginationHelper"
 import { IPaginationOptions } from "../../interface/pagination"
 import { IGenericResponse } from "../../interface/common"
+import prisma from "../../shared/prisma"
 
 
-const prisma = new PrismaClient()
 
 const getAllDonations = async (
   filters: IDonationFilters,

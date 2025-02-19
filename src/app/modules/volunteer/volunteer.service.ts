@@ -3,9 +3,8 @@ import type { IVolunteer, IVolunteerFilters } from "./volunteer.interface";
 import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
+import prisma from "../../shared/prisma";
 
-
-const prisma = new PrismaClient();
 /*
 const getAllVolunteers = async (
   filters: IVolunteerFilters,

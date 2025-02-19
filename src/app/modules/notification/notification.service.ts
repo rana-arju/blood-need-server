@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import webpush from "web-push";
+import prisma from "../../shared/prisma";
 
-const prisma = new PrismaClient();
 
 export async function subscribe(
   userId: string,
