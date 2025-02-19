@@ -12,9 +12,6 @@
       "dest": "dist/server.js"
     }
   ],
-  "hooks": {
-    "build": "npx prisma generate"
-  },
   "env": {
     "DATABASE_URL": "@my-database-url"
   }
