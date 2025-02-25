@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -76,31 +67,31 @@ const getAllVolunteers = async (
   };
 };
 */
-const getVolunteerById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.volunteer.findUnique({
+const getVolunteerById = async (id) => {
+    const result = await prisma_1.default.volunteer.findUnique({
         where: { id },
     });
     return result;
-});
-const createVolunteer = (volunteerData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.volunteer.create({
+};
+const createVolunteer = async (volunteerData) => {
+    const result = await prisma_1.default.volunteer.create({
         data: volunteerData,
     });
     return result;
-});
-const updateVolunteer = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.volunteer.update({
+};
+const updateVolunteer = async (id, payload) => {
+    const result = await prisma_1.default.volunteer.update({
         where: { id },
         data: payload,
     });
     return result;
-});
-const deleteVolunteer = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.volunteer.delete({
+};
+const deleteVolunteer = async (id) => {
+    const result = await prisma_1.default.volunteer.delete({
         where: { id },
     });
     return result;
-});
+};
 exports.VolunteerService = {
     getVolunteerById,
     createVolunteer,

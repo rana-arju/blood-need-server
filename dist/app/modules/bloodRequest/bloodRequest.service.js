@@ -32,15 +32,6 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -51,7 +42,7 @@ const notificationService = __importStar(require("../notification/notification.s
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const bson_1 = require("bson");
-const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllBloodRequests = async (filters, paginationOptions) => {
     const { searchTerm, bloodType, urgency, status } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const andConditions = [];
@@ -75,7 +66,7 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
         andConditions.push({ status });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma_1.default.bloodRequest.findMany({
+    const result = await prisma_1.default.bloodRequest.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -83,7 +74,7 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma_1.default.bloodRequest.count({ where: whereConditions });
+    const total = await prisma_1.default.bloodRequest.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -92,55 +83,55 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
         },
         data: result,
     };
-});
-const getBloodRequestById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const getBloodRequestById = async (id) => {
     if (!bson_1.ObjectId.isValid(id)) {
         throw new AppError_1.default(400, "Invalid blood request ID format");
     }
-    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    const isExist = await prisma_1.default.bloodRequest.findUnique({ where: { id } });
     if (!isExist) {
         throw new AppError_1.default(404, "Blood request not found");
     }
-    const result = yield prisma_1.default.bloodRequest.findUnique({
+    const result = await prisma_1.default.bloodRequest.findUnique({
         where: { id },
     });
     return result;
-});
-const deleteBloodRequest = (id) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const deleteBloodRequest = async (id) => {
     if (!bson_1.ObjectId.isValid(id)) {
         throw new AppError_1.default(400, "Invalid blood request ID format");
     }
-    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    const isExist = await prisma_1.default.bloodRequest.findUnique({ where: { id } });
     if (!isExist) {
         throw new AppError_1.default(404, "Blood request not found");
     }
-    const result = yield prisma_1.default.bloodRequest.delete({
+    const result = await prisma_1.default.bloodRequest.delete({
         where: { id },
     });
     return result;
-});
-const updateBloodRequest = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const updateBloodRequest = async (id, payload) => {
     if (!bson_1.ObjectId.isValid(id)) {
         throw new AppError_1.default(400, "Invalid blood request ID format");
     }
-    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    const isExist = await prisma_1.default.bloodRequest.findUnique({ where: { id } });
     if (!isExist) {
         throw new AppError_1.default(404, "Blood request not found");
     }
-    const result = yield prisma_1.default.bloodRequest.update({
+    const result = await prisma_1.default.bloodRequest.update({
         where: { id },
         data: payload,
     });
     return result;
-});
-const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.bloodRequest.create({
+};
+const createBloodRequest = async (bloodRequestData) => {
+    const result = await prisma_1.default.bloodRequest.create({
         data: bloodRequestData,
     });
     // Send notifications to matching donors
-    yield notificationService.sendNotificationToMatchingDonors(result);
+    await notificationService.sendNotificationToMatchingDonors(result);
     return result;
-});
+};
 exports.createBloodRequest = createBloodRequest;
 exports.BloodRequestService = {
     getAllBloodRequests,

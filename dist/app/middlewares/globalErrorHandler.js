@@ -23,30 +23,30 @@ const globalErrorHandler = (error, req, res, next) => {
         const simplifiedError = (0, handleZodError_1.default)(error);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
-        errorMessages = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorMessages.map((err) => ({
+        errorMessages = simplifiedError?.errorMessages.map((err) => ({
             path: err.path,
             message: err.message,
         }));
     }
     else if (error instanceof AppError_1.default) {
-        statusCode = error === null || error === void 0 ? void 0 : error.statusCode;
+        statusCode = error?.statusCode;
         message = error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
     }
     else if (error instanceof Error) {
-        message = error === null || error === void 0 ? void 0 : error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        message = error?.message;
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
@@ -55,7 +55,7 @@ const globalErrorHandler = (error, req, res, next) => {
         success: false,
         message,
         errorMessages,
-        stack: config_1.default.env !== "production" ? error === null || error === void 0 ? void 0 : error.stack : undefined,
+        stack: config_1.default.env !== "production" ? error?.stack : undefined,
     });
 };
 exports.globalErrorHandler = globalErrorHandler;

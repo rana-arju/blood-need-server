@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,7 +9,7 @@ const AppError_1 = __importDefault(require("../../error/AppError"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const randomPass = Math.random().toString(36).slice(2, 12);
-const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUsers = async (filters, paginationOptions) => {
     const { searchTerm, bloodType } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const andConditions = [];
@@ -40,7 +31,7 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = yield prisma_1.default.user.findMany({
+    const result = await prisma_1.default.user.findMany({
         where: whereConditions,
         skip,
         take: limit,
@@ -48,7 +39,7 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
             [sortBy]: sortOrder,
         },
     });
-    const total = yield prisma_1.default.user.count({ where: whereConditions });
+    const total = await prisma_1.default.user.count({ where: whereConditions });
     return {
         meta: {
             page,
@@ -57,32 +48,32 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
         },
         data: result,
     };
-});
-const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const password = (payload === null || payload === void 0 ? void 0 : payload.password) || randomPass;
-    const userExist = yield prisma_1.default.user.findUnique({
+};
+const createUser = async (payload) => {
+    const password = payload?.password || randomPass;
+    const userExist = await prisma_1.default.user.findUnique({
         where: {
-            email: payload === null || payload === void 0 ? void 0 : payload.email,
+            email: payload?.email,
         },
     });
     if (userExist) {
-        if (((userExist === null || userExist === void 0 ? void 0 : userExist.provider) && (userExist === null || userExist === void 0 ? void 0 : userExist.provider) == "google") ||
-            (userExist === null || userExist === void 0 ? void 0 : userExist.provider) == "facebook") {
+        if ((userExist?.provider && userExist?.provider == "google") ||
+            userExist?.provider == "facebook") {
             return userExist;
         }
         throw new AppError_1.default(401, "User already exist!");
     }
     // 🔹 Hash the password before storing it
-    const hashedPassword = yield bcrypt_1.default.hash(password, 10); // 10 = salt rounds
+    const hashedPassword = await bcrypt_1.default.hash(password, 10); // 10 = salt rounds
     payload.password = hashedPassword;
-    const result = yield prisma_1.default.user.create({
+    const result = await prisma_1.default.user.create({
         data: payload,
     });
     return result;
-});
-const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const password = payload === null || payload === void 0 ? void 0 : payload.password;
-    const userExist = yield prisma_1.default.user.findUnique({
+};
+const loginUser = async (payload) => {
+    const password = payload?.password;
+    const userExist = await prisma_1.default.user.findUnique({
         where: {
             email: payload.email,
         },
@@ -91,13 +82,13 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(401, "User does not exist!");
     }
     // 🔹 Compare the password
-    const isMatch = yield bcrypt_1.default.compare(password, userExist.password);
+    const isMatch = await bcrypt_1.default.compare(password, userExist.password);
     if (!isMatch)
         throw new AppError_1.default(401, "Invalid email or password");
     return userExist;
-});
-const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const userExist = yield prisma_1.default.user.findUnique({
+};
+const updateUser = async (id, payload) => {
+    const userExist = await prisma_1.default.user.findUnique({
         where: {
             id: id,
         },
@@ -105,22 +96,22 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!userExist) {
         throw new AppError_1.default(404, "This user not found!");
     }
-    const result = yield prisma_1.default.user.update({
+    const result = await prisma_1.default.user.update({
         where: {
             id,
         },
         data: payload,
     });
     return result;
-});
-const deleteUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.user.delete({
+};
+const deleteUser = async (id) => {
+    const result = await prisma_1.default.user.delete({
         where: {
             id,
         },
     });
     return result;
-});
+};
 exports.UserService = {
     getAllUsers,
     createUser,

@@ -1,0 +1,1 @@
+{"version":3,"file":"pagination.js","sourceRoot":"","sources":["../../../src/app/constants/pagination.ts"],"names":[],"mappings":";;;AAAa,QAAA,gBAAgB,GAAG,CAAC,MAAM,EAAE,OAAO,EAAE,QAAQ,EAAE,WAAW,CAAC,CAAC;AAE5D,QAAA,4BAA4B,GAAG;IAC1C,GAAG,wBAAgB;IACnB,WAAW;IACX,SAAS;IACT,QAAQ;CACT,CAAC;AAEW,QAAA,0BAA0B,GAAG;IACxC,GAAG,wBAAgB;IACnB,WAAW;IACX,WAAW;IACX,SAAS;CACV,CAAC"}

@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const handleZodError = (error) => {
     const errorMessages = error.issues.map((issuse) => {
         return {
-            path: issuse === null || issuse === void 0 ? void 0 : issuse.path[issuse.path.length - 1],
-            message: issuse === null || issuse === void 0 ? void 0 : issuse.message,
+            path: issuse?.path[issuse.path.length - 1],
+            message: issuse?.message,
         };
     });
     const statusCode = 400;

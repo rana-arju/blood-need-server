@@ -32,28 +32,18 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unsubscribe = exports.subscribe = exports.syncNotification = exports.getUnreadNotifications = exports.markAsRead = exports.getNotifications = void 0;
 const client_1 = require("@prisma/client");
 const notificationService = __importStar(require("./notification.service"));
 const prisma = new client_1.PrismaClient();
-const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getNotifications = async (req, res) => {
     try {
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Assuming you set user info in auth middleware
+        const userId = req.user?.id; // Assuming you set user info in auth middleware
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        const notifications = yield prisma.notification.findMany({
+        const notifications = await prisma.notification.findMany({
             where: { userId },
             orderBy: { createdAt: "desc" },
         });
@@ -62,17 +52,16 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
     catch (error) {
         res.status(500).json({ error: "Error fetching notifications" });
     }
-});
+};
 exports.getNotifications = getNotifications;
-const markAsRead = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const markAsRead = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const userId = req?.user?.id;
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        const updatedNotification = yield prisma.notification.updateMany({
+        const updatedNotification = await prisma.notification.updateMany({
             where: { id, userId },
             data: { isRead: true },
         });
@@ -84,30 +73,29 @@ const markAsRead = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         res.status(500).json({ error: "Error marking notification as read" });
     }
-});
+};
 exports.markAsRead = markAsRead;
-const getUnreadNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getUnreadNotifications = async (req, res) => {
     try {
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        const notifications = yield notificationService.getUnreadNotifications(userId);
+        const notifications = await notificationService.getUnreadNotifications(userId);
         res.json(notifications);
     }
     catch (error) {
         res.status(500).json({ error: "Failed to fetch unread notifications" });
     }
-});
+};
 exports.getUnreadNotifications = getUnreadNotifications;
-const syncNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const syncNotification = async (req, res) => {
     try {
         const { userId, title, body, url } = req.body;
         if (!userId || !title || !body) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-        yield prisma.notification.create({
+        await prisma.notification.create({
             data: {
                 userId,
                 title,
@@ -123,17 +111,16 @@ const syncNotification = (req, res) => __awaiter(void 0, void 0, void 0, functio
         console.error("Error syncing notification:", error);
         return res.status(500).json({ message: "Error syncing notification" });
     }
-});
+};
 exports.syncNotification = syncNotification;
-const subscribe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const subscribe = async (req, res) => {
     try {
-        const userId = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const userId = req?.user?.id;
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
         const { subscription } = req.body;
-        yield prisma.subscription.create({
+        await prisma.subscription.create({
             data: {
                 userId,
                 endpoint: subscription.endpoint,
@@ -146,16 +133,15 @@ const subscribe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         res.status(500).json({ error: "Error subscribing to notifications" });
     }
-});
+};
 exports.subscribe = subscribe;
-const unsubscribe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const unsubscribe = async (req, res) => {
     try {
-        const userId = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const userId = req?.user?.id;
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        yield prisma.subscription.deleteMany({
+        await prisma.subscription.deleteMany({
             where: { userId },
         });
         res.json({ message: "Unsubscribed from notifications" });
@@ -163,5 +149,5 @@ const unsubscribe = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         res.status(500).json({ error: "Error unsubscribing from notifications" });
     }
-});
+};
 exports.unsubscribe = unsubscribe;

@@ -4,17 +4,14 @@ import logger from "./app/shared/logger";
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function bootstrap() {
   try {
     await prisma.$connect();
     logger.info("Database connected successfully");
 
-    if (process.env.VERCEL) {
-      // For Vercel serverless deployment
-      module.exports = app;
-    } else {
-      // For local development
-      const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3000;
+
+    if (!process.env.VERCEL) {
       app.listen(port, () => {
         logger.info(`Server is running on port ${port}`);
       });
@@ -25,13 +22,18 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  logger.error("Unhandled error:", error);
-  process.exit(1);
-});
+// Start the server in non-Vercel environments
+if (!process.env.VERCEL) {
+  bootstrap().catch((error) => {
+    logger.error("Unhandled error:", error);
+    process.exit(1);
+  });
+}
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Application specific logging, throwing an error, or other logic here
 });
+
+// Export the Express app for Vercel
+export default app;

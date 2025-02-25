@@ -1,4 +1,4 @@
-import { PrismaClient, type BloodDrive } from "@prisma/client";
+import {  type BloodDrive } from "@prisma/client";
 import type { IBloodDrive, IBloodDriveFilters } from "./bloodDrive.interface";
 import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";

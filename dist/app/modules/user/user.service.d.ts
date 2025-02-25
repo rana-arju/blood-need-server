@@ -1,0 +1,33 @@
+import { type User } from "@prisma/client";
+import type { IUser, IUserFilters } from "./user.interface";
+import { IPaginationOptions } from "../../interface/pagination";
+import { IGenericResponse } from "../../interface/common";
+export declare const UserService: {
+    getAllUsers: (filters: IUserFilters, paginationOptions: IPaginationOptions) => Promise<IGenericResponse<User[]>>;
+    createUser: (payload: IUser) => Promise<User>;
+    updateUser: (id: string, payload: Partial<IUser>) => Promise<User>;
+    deleteUser: (id: string) => Promise<User>;
+    loginUser: (payload: Partial<IUser>) => Promise<import("@prisma/client/runtime").GetResult<{
+        id: string;
+        name: string;
+        email: string;
+        image: string;
+        password: string;
+        provider: string;
+        providerId: string;
+        blood: string;
+        status: string;
+        dateOfBirth: Date;
+        gender: string;
+        division: string;
+        district: string;
+        upazila: string;
+        address: string;
+        lastDonationDate: Date;
+        role: string;
+        donationCount: number;
+        rewardBadge: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }, unknown, never> & {}>;
+};
