@@ -42,7 +42,17 @@ const getReviewById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 const createReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield review_service_1.ReviewService.createReview(req.body);
+    var _a;
+    const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    if (!id) {
+        (0, sendResponse_1.default)(res, {
+            statusCode: 401,
+            success: false,
+            message: "Unauthorized",
+        });
+        return;
+    }
+    const result = yield review_service_1.ReviewService.createReview(req.body, id);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,

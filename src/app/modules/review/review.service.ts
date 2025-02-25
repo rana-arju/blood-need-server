@@ -4,8 +4,8 @@ import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import prisma from "../../shared/prisma";
-
-
+import AppError from "../../error/AppError";
+import { ObjectId } from "bson";
 
 const getAllReviews = async (
   filters: IReviewFilters,
@@ -61,15 +61,30 @@ const getAllReviews = async (
 };
 
 const getReviewById = async (id: string): Promise<Review | null> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid review ID format");
+  }
+  const isExist = await prisma.review.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Review not found");
+  }
   const result = await prisma.review.findUnique({
     where: { id },
   });
   return result;
 };
 
-const createReview = async (reviewData: IReview): Promise<Review> => {
+const createReview = async (
+  reviewData: IReview,
+  id: string
+): Promise<Review> => {
+  const modified = {
+    ...reviewData,
+    userId: id,
+  };
   const result = await prisma.review.create({
-    data: reviewData,
+    data: modified,
   });
   return result;
 };
@@ -78,6 +93,15 @@ const updateReview = async (
   id: string,
   payload: Partial<IReview>
 ): Promise<Review> => {
+  // ✅ Validate if `id` is a valid MongoDB ObjectId
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid review ID format");
+  }
+  const isExist = await prisma.review.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Review not found");
+  }
   const result = await prisma.review.update({
     where: { id },
     data: payload,
@@ -86,6 +110,14 @@ const updateReview = async (
 };
 
 const deleteReview = async (id: string): Promise<Review> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid review ID format");
+  }
+  const isExist = await prisma.review.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Review not found");
+  }
   const result = await prisma.review.delete({
     where: { id },
   });

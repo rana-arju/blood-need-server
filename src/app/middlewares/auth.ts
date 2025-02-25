@@ -1,41 +1,52 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+type IUserRole = "user" | "admin" | "superadmin" | "volunteer"; // Define user roles
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key"; // Ensure this is set in a .env file for security
 
-interface AuthRequest extends Request {
-  user?: { id: number; email: string; role: string };
-}
-
-const authMiddleware = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): void => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res
-      .status(401)
-      .json({ message: "Authentication token missing or invalid" });
-    return;
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as {
-      id: number;
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      id: string;
+      role: IUserRole;
       email: string;
-      role: string;
     };
-    req.user = decoded; // Attach user data to the request object for downstream handlers
-    next(); // Call next() to pass control to the next handler
-    return;
-  } catch (error) {
-    res.status(403).json({ message: "Token is invalid or expired" });
-    return;
   }
+}
+import prisma from "../shared/prisma"; // Prisma instance for MongoDB
+import AppError from "../error/AppError";
+// Auth middleware for checking userId and user roles
+const auth = (...requiredRoles: IUserRole[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.headers.authorization?.split(" ")[1]; // Get userId from "Bearer <userId>"
+    
+
+    if (!userId) {
+      return next(new AppError(401, "You are unauthorized to access"));
+    }
+
+    // Fetch user from MongoDB using Prisma based on the userId passed in the token
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      return next(new AppError(404, "User not found"));
+    }
+
+    // Check if the user is blocked
+    if (user.status === "blocked") {
+      return next(new AppError(403, "User is blocked"));
+    }
+
+    // Check for role-based access control
+    if (
+      requiredRoles.length &&
+      !requiredRoles.includes(user.role as IUserRole)
+    ) {
+      return next(
+        new AppError(403, "You are not authorized to access this resource")
+      );
+    }
+    req.user = { id: user.id, role: user?.role as IUserRole, email: user?.email}; // Set user in the request object
+    next();
+  };
 };
 
-export default authMiddleware;
+export default auth;

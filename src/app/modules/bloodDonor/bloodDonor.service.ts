@@ -5,7 +5,7 @@ import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import AppError from "../../error/AppError";
 import prisma from "../../shared/prisma";
-
+import { ObjectId } from "bson";
 
 const getAllBloodDonors = async (
   filters: IBloodDonorFilters,
@@ -46,6 +46,18 @@ const getAllBloodDonors = async (
     orderBy: {
       [sortBy]: sortOrder,
     },
+    include: {
+      user: {
+        select: {
+          id: true, // Select user ID
+          name: true, // Select user name
+          email: true, // Select user email
+          blood: true, // Select user email
+          gender: true, // Select user email
+          lastDonationDate: true, // Select user email
+        },
+      },
+    },
   });
 
   const total = await prisma.bloodDonor.count({ where: whereConditions });
@@ -61,8 +73,28 @@ const getAllBloodDonors = async (
 };
 
 const getBloodDonorById = async (id: string): Promise<BloodDonor | null> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood donor ID format");
+  }
+  const isExist = await prisma.bloodDonor.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood donor not found");
+  }
   const result = await prisma.bloodDonor.findUnique({
     where: { id },
+    include: {
+      user: {
+        select: {
+          id: true, // Select user ID
+          name: true, // Select user name
+          email: true, // Select user email
+          blood: true, // Select user email
+          gender: true, // Select user email
+          lastDonationDate: true, // Select user email
+        },
+      },
+    },
   });
   return result;
 };
@@ -86,6 +118,14 @@ const updateBloodDonor = async (
   id: string,
   payload: Partial<IBloodDonor>
 ): Promise<BloodDonor> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood donor ID format");
+  }
+  const isExist = await prisma.bloodDonor.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood donor not found");
+  }
   const result = await prisma.bloodDonor.update({
     where: { id },
     data: payload,
@@ -94,6 +134,14 @@ const updateBloodDonor = async (
 };
 
 const deleteBloodDonor = async (id: string): Promise<BloodDonor> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood donor ID format");
+  }
+  const isExist = await prisma.bloodDonor.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood donor not found");
+  }
   const result = await prisma.bloodDonor.delete({
     where: { id },
   });

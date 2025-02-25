@@ -7,19 +7,28 @@ exports.createBloodRequestZodSchema = zod_1.z.object({
         userId: zod_1.z.string({
             required_error: "User ID is required",
         }),
-        bloodType: zod_1.z.string({
+        blood: zod_1.z.string({
             required_error: "Blood type is required",
         }),
-        units: zod_1.z
+        bloodAmount: zod_1.z
             .number({
             required_error: "Units are required",
         })
             .positive(),
-        location: zod_1.z.string({
-            required_error: "Location is required",
+        division: zod_1.z.string({
+            required_error: "Division is required",
         }),
-        urgency: zod_1.z.enum(["low", "medium", "high"], {
-            required_error: "Urgency is required",
+        district: zod_1.z.string({
+            required_error: "District is required",
+        }),
+        upazila: zod_1.z.string({
+            required_error: "Upzila is required",
+        }),
+        contactNumber: zod_1.z.string({
+            required_error: "Contact Number is required",
+        }),
+        hospitalName: zod_1.z.string({
+            required_error: "hospitalName/Donation center is required",
         }),
     }),
 });

@@ -45,10 +45,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BloodRequestService = void 0;
+exports.BloodRequestService = exports.createBloodRequest = void 0;
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const notificationService = __importStar(require("../notification/notification.service"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const bson_1 = require("bson");
 const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, bloodType, urgency, status } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -92,18 +94,39 @@ const getAllBloodRequests = (filters, paginationOptions) => __awaiter(void 0, vo
     };
 });
 const getBloodRequestById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood request ID format");
+    }
+    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood request not found");
+    }
     const result = yield prisma_1.default.bloodRequest.findUnique({
         where: { id },
     });
     return result;
 });
 const deleteBloodRequest = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood request ID format");
+    }
+    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood request not found");
+    }
     const result = yield prisma_1.default.bloodRequest.delete({
         where: { id },
     });
     return result;
 });
 const updateBloodRequest = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood request ID format");
+    }
+    const isExist = yield prisma_1.default.bloodRequest.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood request not found");
+    }
     const result = yield prisma_1.default.bloodRequest.update({
         where: { id },
         data: payload,
@@ -111,40 +134,18 @@ const updateBloodRequest = (id, payload) => __awaiter(void 0, void 0, void 0, fu
     return result;
 });
 const createBloodRequest = (bloodRequestData) => __awaiter(void 0, void 0, void 0, function* () {
-    // Step 1: Create Blood Request
-    const request = yield prisma_1.default.bloodRequest.create({
+    const result = yield prisma_1.default.bloodRequest.create({
         data: bloodRequestData,
     });
-    // Step 2: Find Matching Donors (Same Blood Type & District, Exclude Requester)
-    const matchingDonors = yield prisma_1.default.user.findMany({
-        where: {
-            blood: bloodRequestData.blood,
-            district: bloodRequestData.district,
-            id: { not: bloodRequestData.userId },
-            //donorInfo: { isNot: null }, // Ensures user is a registered donor
-        },
-        select: {
-            id: true,
-        },
-    });
-    // Step 3: Send Notifications to Matching Donors
-    for (const donor of matchingDonors) {
-        yield prisma_1.default.notification.create({
-            data: {
-                userId: donor.id,
-                title: "Urgent Blood Request",
-                body: `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`,
-                url: `/requests/${request.id}`,
-            },
-        });
-        yield notificationService.sendNotification(donor.id, "Urgent Blood Request", `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`, `/requests/${request.id}`);
-    }
-    return request;
+    // Send notifications to matching donors
+    yield notificationService.sendNotificationToMatchingDonors(result);
+    return result;
 });
+exports.createBloodRequest = createBloodRequest;
 exports.BloodRequestService = {
     getAllBloodRequests,
     getBloodRequestById,
-    createBloodRequest,
+    createBloodRequest: exports.createBloodRequest,
     updateBloodRequest,
     deleteBloodRequest,
 };

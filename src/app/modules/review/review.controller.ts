@@ -33,7 +33,17 @@ const getReviewById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ReviewService.createReview(req.body);
+  const id = req.user?.id;
+  if (!id) {
+    sendResponse(res, {
+      statusCode: 401,
+      success: false,
+      message: "Unauthorized",
+    });
+    return;
+    
+  }
+  const result = await ReviewService.createReview(req.body, id);
   sendResponse(res, {
     statusCode: 201,
     success: true,

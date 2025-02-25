@@ -16,6 +16,7 @@ exports.BloodDonorService = void 0;
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const bson_1 = require("bson");
 const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, eligibleToDonateSince } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -45,6 +46,18 @@ const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void
         orderBy: {
             [sortBy]: sortOrder,
         },
+        include: {
+            user: {
+                select: {
+                    id: true, // Select user ID
+                    name: true, // Select user name
+                    email: true, // Select user email
+                    blood: true, // Select user email
+                    gender: true, // Select user email
+                    lastDonationDate: true, // Select user email
+                },
+            },
+        },
     });
     const total = yield prisma_1.default.bloodDonor.count({ where: whereConditions });
     return {
@@ -57,8 +70,27 @@ const getAllBloodDonors = (filters, paginationOptions) => __awaiter(void 0, void
     };
 });
 const getBloodDonorById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood donor ID format");
+    }
+    const isExist = yield prisma_1.default.bloodDonor.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood donor not found");
+    }
     const result = yield prisma_1.default.bloodDonor.findUnique({
         where: { id },
+        include: {
+            user: {
+                select: {
+                    id: true, // Select user ID
+                    name: true, // Select user name
+                    email: true, // Select user email
+                    blood: true, // Select user email
+                    gender: true, // Select user email
+                    lastDonationDate: true, // Select user email
+                },
+            },
+        },
     });
     return result;
 });
@@ -75,6 +107,13 @@ const createBloodDonor = (bloodDonorData) => __awaiter(void 0, void 0, void 0, f
     return result;
 });
 const updateBloodDonor = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood donor ID format");
+    }
+    const isExist = yield prisma_1.default.bloodDonor.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood donor not found");
+    }
     const result = yield prisma_1.default.bloodDonor.update({
         where: { id },
         data: payload,
@@ -82,6 +121,13 @@ const updateBloodDonor = (id, payload) => __awaiter(void 0, void 0, void 0, func
     return result;
 });
 const deleteBloodDonor = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood donor ID format");
+    }
+    const isExist = yield prisma_1.default.bloodDonor.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood donor not found");
+    }
     const result = yield prisma_1.default.bloodDonor.delete({
         where: { id },
     });

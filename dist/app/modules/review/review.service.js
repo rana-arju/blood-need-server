@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReviewService = void 0;
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const bson_1 = require("bson");
 const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm, rating } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -56,18 +58,34 @@ const getAllReviews = (filters, paginationOptions) => __awaiter(void 0, void 0, 
     };
 });
 const getReviewById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid review ID format");
+    }
+    const isExist = yield prisma_1.default.review.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Review not found");
+    }
     const result = yield prisma_1.default.review.findUnique({
         where: { id },
     });
     return result;
 });
-const createReview = (reviewData) => __awaiter(void 0, void 0, void 0, function* () {
+const createReview = (reviewData, id) => __awaiter(void 0, void 0, void 0, function* () {
+    const modified = Object.assign(Object.assign({}, reviewData), { userId: id });
     const result = yield prisma_1.default.review.create({
-        data: reviewData,
+        data: modified,
     });
     return result;
 });
 const updateReview = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // ✅ Validate if `id` is a valid MongoDB ObjectId
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid review ID format");
+    }
+    const isExist = yield prisma_1.default.review.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Review not found");
+    }
     const result = yield prisma_1.default.review.update({
         where: { id },
         data: payload,
@@ -75,6 +93,13 @@ const updateReview = (id, payload) => __awaiter(void 0, void 0, void 0, function
     return result;
 });
 const deleteReview = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid review ID format");
+    }
+    const isExist = yield prisma_1.default.review.findUnique({ where: { id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Review not found");
+    }
     const result = yield prisma_1.default.review.delete({
         where: { id },
     });

@@ -8,6 +8,8 @@ import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import * as notificationService from "../notification/notification.service";
 import prisma from "../../shared/prisma";
+import AppError from "../../error/AppError";
+import { ObjectId } from "bson";
 
 const getAllBloodRequests = async (
   filters: IBloodRequestFilters,
@@ -69,12 +71,28 @@ const getAllBloodRequests = async (
 const getBloodRequestById = async (
   id: string
 ): Promise<BloodRequest | null> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood request ID format");
+  }
+  const isExist = await prisma.bloodRequest.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood request not found");
+  }
   const result = await prisma.bloodRequest.findUnique({
     where: { id },
   });
   return result;
 };
 const deleteBloodRequest = async (id: string): Promise<BloodRequest> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood request ID format");
+  }
+  const isExist = await prisma.bloodRequest.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood request not found");
+  }
   const result = await prisma.bloodRequest.delete({
     where: { id },
   });
@@ -84,6 +102,14 @@ const updateBloodRequest = async (
   id: string,
   payload: Partial<IBloodRequest>
 ): Promise<BloodRequest> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood request ID format");
+  }
+  const isExist = await prisma.bloodRequest.findUnique({ where: { id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood request not found");
+  }
   const result = await prisma.bloodRequest.update({
     where: { id },
     data: payload,
@@ -91,45 +117,17 @@ const updateBloodRequest = async (
   return result;
 };
 
-const createBloodRequest = async (bloodRequestData: IBloodRequest) => {
-  // Step 1: Create Blood Request
-  const request = await prisma.bloodRequest.create({
+export const createBloodRequest = async (
+  bloodRequestData: any
+): Promise<any> => {
+  const result = await prisma.bloodRequest.create({
     data: bloodRequestData,
   });
 
-  // Step 2: Find Matching Donors (Same Blood Type & District, Exclude Requester)
-  const matchingDonors = await prisma.user.findMany({
-    where: {
-      blood: bloodRequestData.blood,
-      district: bloodRequestData.district,
-      id: { not: bloodRequestData.userId },
-      //donorInfo: { isNot: null }, // Ensures user is a registered donor
-    },
-    select: {
-      id: true,
-    },
-  });
+  // Send notifications to matching donors
+  await notificationService.sendNotificationToMatchingDonors(result);
 
-  // Step 3: Send Notifications to Matching Donors
-  for (const donor of matchingDonors) {
-    await prisma.notification.create({
-      data: {
-        userId: donor.id,
-        title: "Urgent Blood Request",
-        body: `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`,
-        url: `/requests/${request.id}`,
-      },
-    });
-
-    await notificationService.sendNotification(
-      donor.id,
-      "Urgent Blood Request",
-      `A ${bloodRequestData.blood} blood donation is needed at ${bloodRequestData.hospitalName}, ${bloodRequestData.district}.`,
-      `/requests/${request.id}`
-    );
-  }
-
-  return request;
+  return result;
 };
 
 export const BloodRequestService = {
