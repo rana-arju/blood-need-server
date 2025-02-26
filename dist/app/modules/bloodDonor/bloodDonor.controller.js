@@ -33,7 +33,6 @@ const getBloodDonorById = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 const createBloodDonor = (0, catchAsync_1.default)(async (req, res) => {
-    console.log(req.body);
     const result = await bloodDonor_service_1.BloodDonorService.createBloodDonor(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,

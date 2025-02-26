@@ -60,10 +60,21 @@ const deleteUser = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
+const singleUser = (0, catchAsync_1.default)(async (req, res) => {
+    const { id } = req.params;
+    const result = await user_service_1.UserService.getMeUser(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "get me successfully",
+        data: result,
+    });
+});
 exports.UserController = {
     getAllUsers,
     createUser,
     updateUser,
     deleteUser,
     login,
+    singleUser,
 };

@@ -32,6 +32,7 @@ model User {
   district      String?
   upazila       String?
   address       String?
+  profileUpdate Boolean  @default(false)
   lastDonationDate DateTime?
   role          String   @default("user")
   donationCount Int      @default(0)

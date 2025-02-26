@@ -67,6 +67,16 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+const singleUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params
+  const result = await UserService.getMeUser(id)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "get me successfully",
+    data: result,
+  })
+})
 
 export const UserController = {
   getAllUsers,
@@ -74,5 +84,6 @@ export const UserController = {
   updateUser,
   deleteUser,
   login,
+  singleUser,
 };
 

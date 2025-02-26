@@ -89,19 +89,19 @@ const loginUser = async (payload) => {
 };
 const updateUser = async (id, payload) => {
     const userExist = await prisma_1.default.user.findUnique({
-        where: {
-            id: id,
-        },
+        where: { id },
     });
     if (!userExist) {
         throw new AppError_1.default(404, "This user not found!");
     }
+    const cleanPayload = Object.fromEntries(Object.entries(payload).filter(([_, v]) => v !== undefined));
+    console.log("Updating User:", userExist);
+    console.log("Data:", { ...cleanPayload, profileUpdate: true });
     const result = await prisma_1.default.user.update({
-        where: {
-            id,
-        },
-        data: payload,
+        where: { id },
+        data: { ...cleanPayload, profileUpdate: true },
     });
+    console.log("Updated User:", result);
     return result;
 };
 const deleteUser = async (id) => {
@@ -112,10 +112,20 @@ const deleteUser = async (id) => {
     });
     return result;
 };
+const getMeUser = async (id) => {
+    const user = await prisma_1.default.user.findUnique({
+        where: { id },
+    });
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
+};
 exports.UserService = {
     getAllUsers,
     createUser,
     updateUser,
     deleteUser,
     loginUser,
+    getMeUser,
 };

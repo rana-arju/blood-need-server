@@ -7,7 +7,6 @@ import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import prisma from "../../shared/prisma";
 
-
 const randomPass = Math.random().toString(36).slice(2, 12);
 
 const getAllUsers = async (
@@ -112,23 +111,29 @@ const loginUser = async (payload: Partial<IUser>) => {
 
 const updateUser = async (
   id: string,
-  payload: Partial<IUser>
+  payload: Partial<User>
 ): Promise<User> => {
   const userExist = await prisma.user.findUnique({
-    where: {
-      id: id,
-    },
+    where: { id },
   });
 
   if (!userExist) {
     throw new AppError(404, "This user not found!");
   }
+
+  const cleanPayload = Object.fromEntries(
+    Object.entries(payload).filter(([_, v]) => v !== undefined)
+  );
+
+  console.log("Updating User:", userExist);
+  console.log("Data:", { ...cleanPayload, profileUpdate: true });
+
   const result = await prisma.user.update({
-    where: {
-      id,
-    },
-    data: payload,
+    where: { id },
+    data: { ...cleanPayload, profileUpdate: true },
   });
+
+  console.log("Updated User:", result);
   return result;
 };
 
@@ -140,6 +145,15 @@ const deleteUser = async (id: string): Promise<User> => {
   });
   return result;
 };
+const getMeUser = async (id: string): Promise<User> => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
 
 export const UserService = {
   getAllUsers,
@@ -147,4 +161,5 @@ export const UserService = {
   updateUser,
   deleteUser,
   loginUser,
+  getMeUser,
 };

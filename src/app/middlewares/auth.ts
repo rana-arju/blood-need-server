@@ -16,6 +16,7 @@ import AppError from "../error/AppError";
 // Auth middleware for checking userId and user roles
 const auth = (...requiredRoles: IUserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
+    
     const userId = req.headers.authorization?.split(" ")[1]; // Get userId from "Bearer <userId>"
     
 
