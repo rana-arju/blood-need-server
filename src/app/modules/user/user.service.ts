@@ -125,15 +125,13 @@ const updateUser = async (
     Object.entries(payload).filter(([_, v]) => v !== undefined)
   );
 
-  console.log("Updating User:", userExist);
-  console.log("Data:", { ...cleanPayload, profileUpdate: true });
 
   const result = await prisma.user.update({
     where: { id },
     data: { ...cleanPayload, profileUpdate: true },
   });
 
-  console.log("Updated User:", result);
+
   return result;
 };
 

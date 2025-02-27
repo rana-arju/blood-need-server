@@ -4,24 +4,61 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodRequestController = void 0;
+exports.getAllBloodRequests = getAllBloodRequests;
 const bloodRequest_service_1 = require("./bloodRequest.service");
 const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
-const pick_1 = __importDefault(require("../../shared/pick"));
-const bloodRequest_constant_1 = require("./bloodRequest.constant");
-const pagination_1 = require("../../constants/pagination");
-const getAllBloodRequests = (0, catchAsync_1.default)(async (req, res) => {
-    const filters = (0, pick_1.default)(req.query, bloodRequest_constant_1.bloodRequestFilterableFields);
-    const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
-    const result = await bloodRequest_service_1.BloodRequestService.getAllBloodRequests(filters, paginationOptions);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: "Blood requests retrieved successfully",
-        meta: result.meta,
-        data: result.data,
-    });
-});
+async function getAllBloodRequests(req, res) {
+    try {
+        const { page, limit, search, blood, division, district, upazila, requiredDateStart, requiredDateEnd, createdAtStart, createdAtEnd, bloodAmountMin, bloodAmountMax, hemoglobinMin, hemoglobinMax, } = req.query;
+        const params = {
+            page: page ? Number.parseInt(page) : undefined,
+            limit: limit ? Number.parseInt(limit) : undefined,
+            search: search,
+            blood: blood,
+            division: division,
+            district: district,
+            upazila: upazila,
+            requiredDateStart: requiredDateStart
+                ? new Date(requiredDateStart)
+                : undefined,
+            requiredDateEnd: requiredDateEnd
+                ? new Date(requiredDateEnd)
+                : undefined,
+            createdAtStart: createdAtStart
+                ? new Date(createdAtStart)
+                : undefined,
+            createdAtEnd: createdAtEnd ? new Date(createdAtEnd) : undefined,
+            bloodAmountMin: bloodAmountMin
+                ? Number.parseInt(bloodAmountMin)
+                : undefined,
+            bloodAmountMax: bloodAmountMax
+                ? Number.parseInt(bloodAmountMax)
+                : undefined,
+            hemoglobinMin: hemoglobinMin
+                ? Number.parseInt(hemoglobinMin)
+                : undefined,
+            hemoglobinMax: hemoglobinMax
+                ? Number.parseInt(hemoglobinMax)
+                : undefined,
+        };
+        const { bloodRequests, total } = await bloodRequest_service_1.BloodRequestService.getAllBloodRequests(params);
+        res.json({
+            success: true,
+            data: bloodRequests,
+            meta: {
+                total,
+                page: params.page || 1,
+                limit: params.limit || 10,
+                totalPages: Math.ceil(total / (params.limit || 10)),
+            },
+        });
+    }
+    catch (error) {
+        console.error("Error in getAllBloodRequests:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
 const getBloodRequestById = (0, catchAsync_1.default)(async (req, res) => {
     const { id } = req.params;
     const result = await bloodRequest_service_1.BloodRequestService.getBloodRequestById(id);

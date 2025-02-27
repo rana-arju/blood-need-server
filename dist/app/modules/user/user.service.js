@@ -95,13 +95,10 @@ const updateUser = async (id, payload) => {
         throw new AppError_1.default(404, "This user not found!");
     }
     const cleanPayload = Object.fromEntries(Object.entries(payload).filter(([_, v]) => v !== undefined));
-    console.log("Updating User:", userExist);
-    console.log("Data:", { ...cleanPayload, profileUpdate: true });
     const result = await prisma_1.default.user.update({
         where: { id },
         data: { ...cleanPayload, profileUpdate: true },
     });
-    console.log("Updated User:", result);
     return result;
 };
 const deleteUser = async (id) => {

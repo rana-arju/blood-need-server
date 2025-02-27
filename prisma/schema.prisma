@@ -77,13 +77,11 @@ model BloodRequest {
   requireTime         DateTime
   hemoglobin          Int?
   patientProblem      String?
-  reference           String?
   //status             String   @default("Pending")
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
-
 
 model BloodDonor {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId

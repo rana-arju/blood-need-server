@@ -1,72 +1,115 @@
-import { PrismaClient, type BloodRequest } from "@prisma/client";
+import { Prisma, type BloodRequest } from "@prisma/client";
 import type {
-  IBloodRequest,
-  IBloodRequestFilters,
+  IBloodRequest
 } from "./bloodRequest.interface";
-import { paginationHelpers } from "../../helpers/paginationHelper";
-import { IPaginationOptions } from "../../interface/pagination";
-import { IGenericResponse } from "../../interface/common";
+
 import * as notificationService from "../notification/notification.service";
 import prisma from "../../shared/prisma";
 import AppError from "../../error/AppError";
 import { ObjectId } from "bson";
 
-const getAllBloodRequests = async (
-  filters: IBloodRequestFilters,
-  paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<BloodRequest[]>> => {
-  const { searchTerm, bloodType, urgency, status } = filters;
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(paginationOptions);
+interface GetAllBloodRequestsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  blood?: string;
+  division?: string;
+  district?: string;
+  upazila?: string;
+  requiredDateStart?: Date;
+  requiredDateEnd?: Date;
+  createdAtStart?: Date;
+  createdAtEnd?: Date;
+  bloodAmountMin?: number;
+  bloodAmountMax?: number;
+  hemoglobinMin?: number;
+  hemoglobinMax?: number;
+}
+export async function getAllBloodRequests(
+  params: GetAllBloodRequestsParams
+): Promise<{ bloodRequests: BloodRequest[]; total: number }> {
+  const {
+    page = 1,
+    limit = 10,
+    search,
+    blood,
+    division,
+    district,
+    upazila,
+    requiredDateStart,
+    requiredDateEnd,
+    createdAtStart,
+    createdAtEnd,
+    bloodAmountMin,
+    bloodAmountMax,
+    hemoglobinMin,
+    hemoglobinMax,
+  } = params;
 
-  const andConditions = [];
+  // Get current date and time
+  const now = new Date();
 
-  if (searchTerm) {
-    andConditions.push({
-      OR: ["location"].map((field) => ({
-        [field]: {
-          contains: searchTerm,
-          mode: "insensitive",
-        },
-      })),
-    });
-  }
-
-  if (bloodType) {
-    andConditions.push({ bloodType });
-  }
-
-  if (urgency) {
-    andConditions.push({ urgency });
-  }
-
-  if (status) {
-    andConditions.push({ status });
-  }
-
-  const whereConditions =
-    andConditions.length > 0 ? { AND: andConditions } : {};
-
-  const result = await prisma.bloodRequest.findMany({
-    where: whereConditions,
-    skip,
-    take: limit,
-    orderBy: {
-      [sortBy]: sortOrder,
-    },
-  });
-
-  const total = await prisma.bloodRequest.count({ where: whereConditions });
-
-  return {
-    meta: {
-      page,
-      limit,
-      total,
-    },
-    data: result,
+  const where: Prisma.BloodRequestWhereInput = {
+    AND: [
+      // Exclude past requests
+      {
+        OR: [
+          { requiredDate: { gt: new Date() } },
+          {
+            AND: [
+              { requiredDate: { equals: new Date() } },
+              { requireTime: { gt: new Date() } },
+            ],
+          },
+        ],
+      },
+      // Search
+      search
+        ? {
+            OR: [
+              { patientName: { contains: search, mode: "insensitive" } },
+              { hospitalName: { contains: search, mode: "insensitive" } },
+              { address: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {},
+      // Filters
+      blood && blood !== "all" ? { blood } : {},
+      division ? { division } : {},
+      district ? { district } : {},
+      upazila ? { upazila } : {},
+      requiredDateStart ? { requiredDate: { gte: requiredDateStart } } : {},
+      requiredDateEnd ? { requiredDate: { lte: requiredDateEnd } } : {},
+      createdAtStart ? { createdAt: { gte: createdAtStart } } : {},
+      createdAtEnd ? { createdAt: { lte: createdAtEnd } } : {},
+      bloodAmountMin ? { bloodAmount: { gte: bloodAmountMin } } : {},
+      bloodAmountMax ? { bloodAmount: { lte: bloodAmountMax } } : {},
+      hemoglobinMin ? { hemoglobin: { gte: hemoglobinMin } } : {},
+      hemoglobinMax ? { hemoglobin: { lte: hemoglobinMax } } : {},
+    ],
   };
-};
+
+  const [bloodRequests, total] = await Promise.all([
+    prisma.bloodRequest.findMany({
+      where,
+      orderBy: [{ requiredDate: "asc" }, { requireTime: "asc" }],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    }),
+    prisma.bloodRequest.count({ where }),
+  ]);
+
+  return { bloodRequests, total };
+}
 
 const getBloodRequestById = async (
   id: string
@@ -74,16 +117,27 @@ const getBloodRequestById = async (
   if (!ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid blood request ID format");
   }
-  const isExist = await prisma.bloodRequest.findUnique({ where: { id } });
 
-  if (!isExist) {
+  const bloodRequest = await prisma.bloodRequest.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true
+        },
+      },
+    },
+  });
+
+  if (!bloodRequest) {
     throw new AppError(404, "Blood request not found");
   }
-  const result = await prisma.bloodRequest.findUnique({
-    where: { id },
-  });
-  return result;
+
+  return bloodRequest;
 };
+
 const deleteBloodRequest = async (id: string): Promise<BloodRequest> => {
   if (!ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid blood request ID format");

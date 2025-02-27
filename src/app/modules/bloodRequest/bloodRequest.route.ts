@@ -10,7 +10,6 @@ const router = express.Router();
 router.get("/", BloodRequestController.getAllBloodRequests);
 router.get(
   "/:id",
-  auth("user", "admin", "superadmin", "volunteer"),
   BloodRequestController.getBloodRequestById
 );
 router.post(
