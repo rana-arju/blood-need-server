@@ -11,33 +11,95 @@ const getAllBloodDonors = async (
   filters: IBloodDonorFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<BloodDonor[]>> => {
-  const { searchTerm, eligibleToDonateSince } = filters;
+  const {
+    searchTerm,
+    eligibleToDonateSince,
+    blood,
+    division,
+    district,
+    upazila,
+    gender,
+    lastDonationDate,
+  } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  // Build the where condition for Prisma
+  const whereConditions: any = {};
 
+  // Search term handling
   if (searchTerm) {
-    andConditions.push({
-      OR: ["userId"].map((field) => ({
-        [field]: {
+    whereConditions.OR = [
+      {
+        phone: {
           contains: searchTerm,
           mode: "insensitive",
         },
-      })),
-    });
-  }
-
-  if (eligibleToDonateSince) {
-    andConditions.push({
-      eligibleToDonateSince: {
-        lte: eligibleToDonateSince,
       },
-    });
+      {
+        user: {
+          name: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+      },
+      {
+        user: {
+          email: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+      },
+    ];
   }
 
-  const whereConditions =
-    andConditions.length > 0 ? { AND: andConditions } : {};
+  // User relation filters
+  if (
+    blood ||
+    division ||
+    district ||
+    upazila ||
+    gender ||
+    lastDonationDate ||
+    eligibleToDonateSince
+  ) {
+    whereConditions.user = {};
+
+    if (blood) {
+      whereConditions.user.blood = blood;
+    }
+
+    if (division) {
+      whereConditions.user.division = division;
+    }
+
+    if (district) {
+      whereConditions.user.district = district;
+    }
+
+    if (upazila) {
+      whereConditions.user.upazila = upazila;
+    }
+
+    if (gender && gender !== "all") {
+      whereConditions.user.gender = gender;
+    }
+
+    if (lastDonationDate) {
+      whereConditions.user.lastDonationDate = {
+        lte: new Date(lastDonationDate),
+      };
+    }
+
+    if (eligibleToDonateSince) {
+      whereConditions.user.lastDonationDate = {
+        ...(whereConditions.user.lastDonationDate || {}),
+        lte: new Date(eligibleToDonateSince),
+      };
+    }
+  }
 
   const result = await prisma.bloodDonor.findMany({
     where: whereConditions,
@@ -49,12 +111,16 @@ const getAllBloodDonors = async (
     include: {
       user: {
         select: {
-          id: true, // Select user ID
-          name: true, // Select user name
-          email: true, // Select user email
-          blood: true, // Select user email
-          gender: true, // Select user email
-          lastDonationDate: true, // Select user email
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          district: true,
+          division: true,
+          upazila: true,
+          blood: true,
+          gender: true,
+          lastDonationDate: true,
         },
       },
     },
@@ -89,9 +155,13 @@ const getBloodDonorById = async (id: string): Promise<BloodDonor | null> => {
           id: true, // Select user ID
           name: true, // Select user name
           email: true, // Select user email
-          blood: true, // Select user email
-          gender: true, // Select user email
-          lastDonationDate: true, // Select user email
+          image: true, // Select user image
+          district: true, // Select user district
+          division: true, // Select user division
+          upazila: true, // Select user upazila
+          blood: true, // Select user blood
+          gender: true, // Select user gender
+          lastDonationDate: true, // Select user last donation
         },
       },
     },

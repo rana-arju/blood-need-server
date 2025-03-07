@@ -1,4 +1,3 @@
-
 export type IBloodDonor = {
   id: string;
   userId: string;
@@ -22,8 +21,13 @@ export type IBloodDonor = {
   updatedAt: Date;
 };
 
-
 export type IBloodDonorFilters = {
   searchTerm?: string;
-  eligibleToDonateSince?: Date;
+  eligibleToDonateSince?: Date | string;
+  blood?: string;
+  division?: string;
+  district?: string;
+  upazila?: string;
+  gender?: string;
+  lastDonationDate?: Date | string;
 };

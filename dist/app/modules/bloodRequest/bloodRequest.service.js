@@ -72,9 +72,9 @@ async function getAllBloodRequests(params) {
                 : {},
             // Filters
             blood && blood !== "all" ? { blood } : {},
-            division ? { division } : {},
-            district ? { district } : {},
-            upazila ? { upazila } : {},
+            division ? { division: division } : {},
+            district ? { district: district } : {},
+            upazila ? { upazila: upazila } : {},
             requiredDateStart ? { requiredDate: { gte: requiredDateStart } } : {},
             requiredDateEnd ? { requiredDate: { lte: requiredDateEnd } } : {},
             createdAtStart ? { createdAt: { gte: createdAtStart } } : {},
