@@ -18,6 +18,7 @@ const notification_route_1 = __importDefault(require("./app/modules/notification
 const donationReminder_1 = require("./app/jobs/donationReminder");
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const notFound_1 = require("./app/middlewares/notFound");
+const statistics_route_1 = require("./app/modules/statistics/statistics.route");
 const app = (0, express_1.default)();
 // 🌐 Allowed Domains
 const allowedDomains = [
@@ -55,6 +56,7 @@ app.use("/api/v1/blood-donor", bloodDonor_route_1.BloodDonorRoutes);
 app.use("/api/v1/volunteers", volunteer_route_1.VolunteerRoutes);
 app.use("/api/v1/reviews", review_route_1.ReviewRoutes);
 app.use("/api/v1/notifications", notification_route_1.default);
+app.use("/api/v1/statistics", statistics_route_1.StatisticsRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });
