@@ -17,6 +17,7 @@ import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { notFound } from "./app/middlewares/notFound";
 import config from "./app/config";
 import { StatisticsRoutes } from "./app/modules/statistics/statistics.route";
+import { BlogRoutes } from "./app/modules/blog/blog.route";
 
 const app: Application = express();
 
@@ -62,6 +63,7 @@ app.use("/api/v1/volunteers", VolunteerRoutes);
 app.use("/api/v1/reviews", ReviewRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/statistics", StatisticsRoutes);
+app.use("/api/v1/blog", BlogRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });
