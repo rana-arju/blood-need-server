@@ -28,5 +28,10 @@ router.get(
   auth("user", "admin", "superadmin", "volunteer"),
   UserController.singleUser
 );
+router.get(
+  "/user/:id",
+  auth( "admin", "superadmin", "volunteer"),
+  UserController.getUserById
+);
 
 export const UserRoutes = router;

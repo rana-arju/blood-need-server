@@ -78,6 +78,16 @@ const singleUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params
+  const result = await UserService.getUser(id)
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "get me successfully",
+    data: result,
+  })
+})
 
 export const UserController = {
   getAllUsers,
@@ -86,5 +96,6 @@ export const UserController = {
   deleteUser,
   login,
   singleUser,
+  getUserById
 };
 

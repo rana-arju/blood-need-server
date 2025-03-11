@@ -152,6 +152,15 @@ const getMeUser = async (id: string): Promise<User> => {
   }
   return user;
 };
+const getUser = async (id: string): Promise<User> => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
 
 export const UserService = {
   getAllUsers,
@@ -159,5 +168,5 @@ export const UserService = {
   updateUser,
   deleteUser,
   loginUser,
-  getMeUser,
+  getMeUser,getUser
 };
