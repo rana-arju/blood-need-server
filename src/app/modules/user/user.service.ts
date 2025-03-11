@@ -13,7 +13,7 @@ const getAllUsers = async (
   filters: IUserFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<User[]>> => {
-  const { searchTerm, bloodType } = filters;
+  const { searchTerm, blood } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -30,10 +30,10 @@ const getAllUsers = async (
     });
   }
 
-  if (bloodType) {
+  if (blood) {
     andConditions.push({
-      bloodType: {
-        equals: bloodType,
+      blood: {
+        equals: blood,
       },
     });
   }

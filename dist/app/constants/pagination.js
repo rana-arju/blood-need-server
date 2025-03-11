@@ -4,7 +4,7 @@ exports.bloodDrivePaginationFields = exports.bloodRequestPaginationFields = expo
 exports.paginationFields = ["page", "limit", "sortBy", "sortOrder"];
 exports.bloodRequestPaginationFields = [
     ...exports.paginationFields,
-    "bloodType",
+    "blood",
     "urgency",
     "status",
 ];

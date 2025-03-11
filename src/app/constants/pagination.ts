@@ -2,7 +2,7 @@ export const paginationFields = ["page", "limit", "sortBy", "sortOrder"];
 
 export const bloodRequestPaginationFields = [
   ...paginationFields,
-  "bloodType",
+  "blood",
   "urgency",
   "status",
 ];

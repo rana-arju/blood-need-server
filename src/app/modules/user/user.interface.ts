@@ -10,7 +10,6 @@ export type IUser = {
 };
 
 export type IUserFilters = {
-  searchTerm?: string
-  bloodType?: string
-}
-
+  searchTerm?: string;
+  blood?: string;
+};

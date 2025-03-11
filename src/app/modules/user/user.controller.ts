@@ -9,6 +9,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields)
   const paginationOptions = pick(req.query, paginationFields)
 
+
   const result = await UserService.getAllUsers(filters, paginationOptions)
 
   sendResponse(res, {

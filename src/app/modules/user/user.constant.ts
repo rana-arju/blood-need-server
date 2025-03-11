@@ -1,1 +1,1 @@
-export const userFilterableFields = ["name", "email"];
+export const userFilterableFields = ["searchTerm", "blood", "name", "email"];

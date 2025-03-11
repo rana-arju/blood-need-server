@@ -10,7 +10,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const randomPass = Math.random().toString(36).slice(2, 12);
 const getAllUsers = async (filters, paginationOptions) => {
-    const { searchTerm, bloodType } = filters;
+    const { searchTerm, blood } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const andConditions = [];
     if (searchTerm) {
@@ -23,10 +23,10 @@ const getAllUsers = async (filters, paginationOptions) => {
             })),
         });
     }
-    if (bloodType) {
+    if (blood) {
         andConditions.push({
-            bloodType: {
-                equals: bloodType,
+            blood: {
+                equals: blood,
             },
         });
     }
