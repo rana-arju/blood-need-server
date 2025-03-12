@@ -37,6 +37,15 @@ const getAllReviews = async (filters, paginationOptions) => {
         orderBy: {
             [sortBy]: sortOrder,
         },
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    image: true,
+                    email: true,
+                },
+            },
+        },
     });
     const total = await prisma_1.default.review.count({ where: whereConditions });
     return {
@@ -52,12 +61,23 @@ const getReviewById = async (id) => {
     if (!bson_1.ObjectId.isValid(id)) {
         throw new AppError_1.default(400, "Invalid review ID format");
     }
-    const isExist = await prisma_1.default.review.findUnique({ where: { id } });
+    const isExist = await prisma_1.default.review.findUnique({
+        where: { id },
+    });
     if (!isExist) {
         throw new AppError_1.default(404, "Review not found");
     }
     const result = await prisma_1.default.review.findUnique({
         where: { id },
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    image: true,
+                    email: true,
+                },
+            },
+        },
     });
     return result;
 };

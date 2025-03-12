@@ -118,6 +118,29 @@ const getMeUser = async (id) => {
     }
     return user;
 };
+const getUser = async (id) => {
+    const user = await prisma_1.default.user.findUnique({
+        where: { id },
+        include: {
+            donorInfo: {
+                select: {
+                    phone: true,
+                    whatsappNumber: true,
+                    facebookId: true,
+                    emergencyContact: true,
+                    height: true,
+                    weight: true,
+                    medicalCondition: true,
+                    currentMedications: true,
+                },
+            },
+        },
+    });
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
+};
 exports.UserService = {
     getAllUsers,
     createUser,
@@ -125,4 +148,5 @@ exports.UserService = {
     deleteUser,
     loginUser,
     getMeUser,
+    getUser,
 };

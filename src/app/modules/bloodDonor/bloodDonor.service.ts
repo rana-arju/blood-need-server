@@ -121,6 +121,7 @@ const getAllBloodDonors = async (
           blood: true,
           gender: true,
           lastDonationDate: true,
+          dateOfBirth: true
         },
       },
     },
@@ -162,6 +163,8 @@ const getBloodDonorById = async (id: string): Promise<BloodDonor | null> => {
           blood: true, // Select user blood
           gender: true, // Select user gender
           lastDonationDate: true, // Select user last donation
+          dateOfBirth: true,
+          address: true
         },
       },
     },
@@ -191,6 +194,7 @@ const updateBloodDonor = async (
   if (!ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid blood donor ID format");
   }
+  const { userId, ...dataToUpdate } = payload;
   const isExist = await prisma.bloodDonor.findUnique({ where: { id } });
 
   if (!isExist) {
@@ -198,7 +202,10 @@ const updateBloodDonor = async (
   }
   const result = await prisma.bloodDonor.update({
     where: { id },
-    data: payload,
+    data: {
+      ...dataToUpdate,
+      user: userId ? { connect: { id: userId } } : undefined,
+    }
   });
   return result;
 };

@@ -16,4 +16,5 @@ router.post("/login", user_controller_1.UserController.login);
 router.patch("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.updateUser);
 router.delete("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.deleteUser);
 router.get("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.singleUser);
+router.get("/user/:id", (0, auth_1.default)("admin", "superadmin", "volunteer"), user_controller_1.UserController.getUserById);
 exports.UserRoutes = router;

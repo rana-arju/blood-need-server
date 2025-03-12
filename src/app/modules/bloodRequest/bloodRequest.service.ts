@@ -165,9 +165,15 @@ const updateBloodRequest = async (
   if (!isExist) {
     throw new AppError(404, "Blood request not found");
   }
+    const { userId, ...dataToUpdate } = payload;
+
+    const updateData: any = { ...dataToUpdate };
+      if (userId) {
+        updateData.user = { connect: { id: userId } }; // ✅ Correct relation update
+      }
   const result = await prisma.bloodRequest.update({
     where: { id },
-    data: payload,
+    data: updateData,
   });
   return result;
 };

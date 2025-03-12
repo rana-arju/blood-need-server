@@ -125,12 +125,10 @@ const updateUser = async (
     Object.entries(payload).filter(([_, v]) => v !== undefined)
   );
 
-
   const result = await prisma.user.update({
     where: { id },
     data: { ...cleanPayload, profileUpdate: true },
   });
-
 
   return result;
 };
@@ -155,6 +153,20 @@ const getMeUser = async (id: string): Promise<User> => {
 const getUser = async (id: string): Promise<User> => {
   const user = await prisma.user.findUnique({
     where: { id },
+    include: {
+      donorInfo: {
+        select: {
+          phone: true,
+          whatsappNumber: true,
+          facebookId: true,
+          emergencyContact: true,
+          height: true,
+          weight: true,
+          medicalCondition: true,
+          currentMedications: true,
+        },
+      },
+    },
   });
   if (!user) {
     throw new Error("User not found");
@@ -168,5 +180,6 @@ export const UserService = {
   updateUser,
   deleteUser,
   loginUser,
-  getMeUser,getUser
+  getMeUser,
+  getUser,
 };
