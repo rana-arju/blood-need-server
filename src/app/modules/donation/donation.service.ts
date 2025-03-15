@@ -7,7 +7,7 @@ import { AchievementService } from "../achievement/achievement.service";
 interface GetAllDonationOffersParams {
   page?: number;
   limit?: number;
-  status?: "pending" | "accepted" | "rejected" | "completed";
+  status?: "pending" | "selected" | "cancelled" | "confirmed";
   bloodRequestId?: string;
   userId?: string;
 }
@@ -235,7 +235,7 @@ async function updateDonationOfferStatus(
   id: string,
   userId: string,
   data: {
-    status: "pending" | "accepted" | "rejected" | "completed";
+    status: "pending" | "selected" | "cancelled" | "confirmed";
     message?: string;
   }
 ) {
@@ -272,13 +272,13 @@ async function updateDonationOfferStatus(
   }
 
   // Validate status transitions
-  if (donationOffer.status === "completed" && data.status !== "completed") {
+  if (donationOffer.status === "confirmed" && data.status !== "confirmed") {
     throw new AppError(400, "Cannot change status once donation is completed");
   }
 
   // Only request creator can accept/reject offers
   if (
-    (data.status === "accepted" || data.status === "rejected") &&
+    (data.status === "selected" || data.status === "cancelled") &&
     !isRequestCreator
   ) {
     throw new AppError(
@@ -288,7 +288,7 @@ async function updateDonationOfferStatus(
   }
 
   // Only request creator can mark as completed
-  if (data.status === "completed" && !isRequestCreator) {
+  if (data.status === "confirmed" && !isRequestCreator) {
     throw new AppError(
       403,
       "Only the blood request creator can mark a donation as completed"
@@ -313,7 +313,7 @@ async function updateDonationOfferStatus(
   });
 
   // If status is completed, update the donor's donation count
-  if (data.status === "completed" && donationOffer.status !== "completed") {
+  if (data.status === "confirmed" && donationOffer.status !== "confirmed") {
     await prisma.user.update({
       where: { id: donationOffer.userId },
       data: {
@@ -336,8 +336,8 @@ async function updateDonationOfferStatus(
     });
     */
   } else if (
-    data.status === "accepted" &&
-    donationOffer.status !== "accepted"
+    data.status === "selected" &&
+    donationOffer.status !== "selected"
   ) {
     /*
     // Send notification to donor when offer is accepted
@@ -349,8 +349,8 @@ async function updateDonationOfferStatus(
     });
     */
   } else if (
-    data.status === "rejected" &&
-    donationOffer.status !== "rejected"
+    data.status === "cancelled" &&
+    donationOffer.status !== "cancelled"
   ) {
     /*
     // Send notification to donor when offer is rejected
@@ -394,7 +394,7 @@ async function deleteDonationOffer(id: string, userId: string) {
   }
 
   // Don't allow deletion of completed donations
-  if (donationOffer.status === "completed") {
+  if (donationOffer.status === "confirmed") {
     throw new AppError(400, "Cannot delete a completed donation");
   }
 
@@ -435,7 +435,7 @@ async function cancelInterest(requestId: string, userId: string) {
   }
 
   // Don't allow cancellation of completed donations
-  if (existingOffer.status === "completed") {
+  if (existingOffer.status === "confirmed") {
     throw new AppError(400, "Cannot cancel a completed donation");
   }
 
@@ -517,7 +517,8 @@ async function getInterestedDonorDetails(
 async function updateDonorStatus(
   requestId: string,
   donorUserId: string,
-  status: "pending" | "accepted" | "rejected" | "completed",
+  status: "pending" | "selected" | "cancelled" | "confirmed",
+  notes: string,
   currentUserId: string
 ) {
   if (!ObjectId.isValid(requestId) || !ObjectId.isValid(donorUserId)) {
@@ -557,16 +558,16 @@ async function updateDonorStatus(
   }
 
   // Map frontend status to backend status
-  let backendStatus: "pending" | "accepted" | "rejected" | "completed";
+  let backendStatus: "pending" | "selected" | "cancelled" | "confirmed";
   switch (status) {
-    case "accepted":
-      backendStatus = "accepted";
+    case "selected":
+      backendStatus = "selected";
       break;
-    case "completed":
-      backendStatus = "completed";
+    case "confirmed":
+      backendStatus = "confirmed";
       break;
-    case "rejected":
-      backendStatus = "rejected";
+    case "cancelled":
+      backendStatus = "cancelled";
       break;
     default:
       backendStatus = status;
@@ -575,7 +576,7 @@ async function updateDonorStatus(
   // Update donation status
   const updatedDonation = await prisma.donation.update({
     where: { id: donationOffer.id },
-    data: { status: backendStatus },
+    data: { status: backendStatus, notes },
     include: {
       user: {
         select: {
@@ -588,7 +589,7 @@ async function updateDonorStatus(
   });
 
   // If status is completed, update the donor's donation count
-  if (backendStatus === "completed" && donationOffer.status !== "completed") {
+  if (backendStatus === "confirmed" && donationOffer.status !== "confirmed") {
     await prisma.user.update({
       where: { id: donorUserId },
       data: {
@@ -616,8 +617,8 @@ async function updateDonorStatus(
     }
       */
   } else if (
-    backendStatus === "accepted" &&
-    donationOffer.status !== "accepted"
+    backendStatus === "selected" &&
+    donationOffer.status !== "selected"
   ) {
     // Send notification to donor when offer is accepted
     /*
@@ -633,8 +634,8 @@ async function updateDonorStatus(
     }
       */
   } else if (
-    backendStatus === "rejected" &&
-    donationOffer.status !== "rejected"
+    backendStatus === "cancelled" &&
+    donationOffer.status !== "cancelled"
   ) {
     // Send notification to donor when offer is rejected
     /*

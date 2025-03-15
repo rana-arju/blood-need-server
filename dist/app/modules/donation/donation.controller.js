@@ -8,6 +8,7 @@ const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
 const donation_service_1 = require("./donation.service");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 const getAllDonationOffers = (0, catchAsync_1.default)(async (req, res) => {
     const { page, limit, status, bloodRequestId, userId } = req.query;
     const params = {
@@ -53,37 +54,38 @@ const getSingleDonation = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
-const getDonationOffersForMyRequests = (0, catchAsync_1.default)(async (req, res) => {
-    const { page, limit, status, bloodRequestId } = req.query;
+const getMyDonations = (0, catchAsync_1.default)(async (req, res) => {
     const userId = req.user?.id;
-    // First get all blood requests by this user
-    const bloodRequests = await prisma_1.default.bloodRequest.findMany({
-        where: { userId },
-        select: { id: true },
+    const userExist = await prisma_1.default.user.findUnique({
+        where: { id: userId },
     });
-    const bloodRequestIds = bloodRequests.map((request) => request.id);
-    const params = {
-        page: page ? Number.parseInt(page) : undefined,
-        limit: limit ? Number.parseInt(limit) : undefined,
-        status: status,
-        bloodRequestId: bloodRequestId,
-    };
-    // Add filter for blood requests created by this user
-    const { donationOffers, total } = await donation_service_1.DonationService.getAllDonationOffers({
-        ...params,
-        //bloodRequestIds,
+    if (!userExist) {
+        throw new AppError_1.default(404, "This user not found!");
+    }
+    const result = await prisma_1.default.donation.findMany({
+        where: { userId },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    blood: true,
+                    lastDonationDate: true,
+                    gender: true,
+                    donorInfo: true,
+                    role: true,
+                },
+            },
+            bloodRequest: true,
+        },
     });
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
-        message: "Donation offers for my requests retrieved successfully",
-        data: donationOffers,
-        meta: {
-            total,
-            page: params.page || 1,
-            limit: params.limit || 10,
-            //totalPages: Math.ceil(total / (params.limit || 10)),
-        },
+        message: "Donation retrieved successfully",
+        data: result,
     });
 });
 const getDonationOfferById = (0, catchAsync_1.default)(async (req, res) => {
@@ -153,9 +155,9 @@ const getInterestedDonorDetails = (0, catchAsync_1.default)(async (req, res) => 
 });
 const updateDonorStatus = (0, catchAsync_1.default)(async (req, res) => {
     const { requestId, userId } = req.params;
-    const { status } = req.body;
+    const { status, notes } = req.body;
     const currentUserId = req.user?.id;
-    const result = await donation_service_1.DonationService.updateDonorStatus(requestId, userId, status, currentUserId);
+    const result = await donation_service_1.DonationService.updateDonorStatus(requestId, userId, status, notes, currentUserId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -166,7 +168,7 @@ const updateDonorStatus = (0, catchAsync_1.default)(async (req, res) => {
 exports.DonationController = {
     getAllDonationOffers,
     getMyDonationOffers,
-    getDonationOffersForMyRequests,
+    getMyDonations,
     getDonationOfferById,
     createDonationOffer,
     updateDonationOfferStatus,

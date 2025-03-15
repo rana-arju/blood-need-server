@@ -228,16 +228,16 @@ async function updateDonationOfferStatus(id, userId, data) {
         throw new AppError_1.default(403, "You are not authorized to update this donation offer");
     }
     // Validate status transitions
-    if (donationOffer.status === "completed" && data.status !== "completed") {
+    if (donationOffer.status === "confirmed" && data.status !== "confirmed") {
         throw new AppError_1.default(400, "Cannot change status once donation is completed");
     }
     // Only request creator can accept/reject offers
-    if ((data.status === "accepted" || data.status === "rejected") &&
+    if ((data.status === "selected" || data.status === "cancelled") &&
         !isRequestCreator) {
         throw new AppError_1.default(403, "Only the blood request creator can accept or reject offers");
     }
     // Only request creator can mark as completed
-    if (data.status === "completed" && !isRequestCreator) {
+    if (data.status === "confirmed" && !isRequestCreator) {
         throw new AppError_1.default(403, "Only the blood request creator can mark a donation as completed");
     }
     // Update the donation offer
@@ -257,7 +257,7 @@ async function updateDonationOfferStatus(id, userId, data) {
         },
     });
     // If status is completed, update the donor's donation count
-    if (data.status === "completed" && donationOffer.status !== "completed") {
+    if (data.status === "confirmed" && donationOffer.status !== "confirmed") {
         await prisma_1.default.user.update({
             where: { id: donationOffer.userId },
             data: {
@@ -279,8 +279,8 @@ async function updateDonationOfferStatus(id, userId, data) {
         });
         */
     }
-    else if (data.status === "accepted" &&
-        donationOffer.status !== "accepted") {
+    else if (data.status === "selected" &&
+        donationOffer.status !== "selected") {
         /*
         // Send notification to donor when offer is accepted
         await notificationService.createNotification({
@@ -291,8 +291,8 @@ async function updateDonationOfferStatus(id, userId, data) {
         });
         */
     }
-    else if (data.status === "rejected" &&
-        donationOffer.status !== "rejected") {
+    else if (data.status === "cancelled" &&
+        donationOffer.status !== "cancelled") {
         /*
         // Send notification to donor when offer is rejected
         await notificationService.createNotification({
@@ -325,7 +325,7 @@ async function deleteDonationOffer(id, userId) {
         throw new AppError_1.default(403, "You are not authorized to delete this donation offer");
     }
     // Don't allow deletion of completed donations
-    if (donationOffer.status === "completed") {
+    if (donationOffer.status === "confirmed") {
         throw new AppError_1.default(400, "Cannot delete a completed donation");
     }
     const deletedOffer = await prisma_1.default.donation.delete({
@@ -355,7 +355,7 @@ async function cancelInterest(requestId, userId) {
         throw new AppError_1.default(404, "You have not expressed interest in this blood request");
     }
     // Don't allow cancellation of completed donations
-    if (existingOffer.status === "completed") {
+    if (existingOffer.status === "confirmed") {
         throw new AppError_1.default(400, "Cannot cancel a completed donation");
     }
     // Delete the donation offer
@@ -420,7 +420,7 @@ async function getInterestedDonorDetails(requestId, donorUserId) {
         },
     };
 }
-async function updateDonorStatus(requestId, donorUserId, status, currentUserId) {
+async function updateDonorStatus(requestId, donorUserId, status, notes, currentUserId) {
     if (!bson_1.ObjectId.isValid(requestId) || !bson_1.ObjectId.isValid(donorUserId)) {
         throw new AppError_1.default(400, "Invalid ID format");
     }
@@ -451,14 +451,14 @@ async function updateDonorStatus(requestId, donorUserId, status, currentUserId) 
     // Map frontend status to backend status
     let backendStatus;
     switch (status) {
-        case "accepted":
-            backendStatus = "accepted";
+        case "selected":
+            backendStatus = "selected";
             break;
-        case "completed":
-            backendStatus = "completed";
+        case "confirmed":
+            backendStatus = "confirmed";
             break;
-        case "rejected":
-            backendStatus = "rejected";
+        case "cancelled":
+            backendStatus = "cancelled";
             break;
         default:
             backendStatus = status;
@@ -466,7 +466,7 @@ async function updateDonorStatus(requestId, donorUserId, status, currentUserId) 
     // Update donation status
     const updatedDonation = await prisma_1.default.donation.update({
         where: { id: donationOffer.id },
-        data: { status: backendStatus },
+        data: { status: backendStatus, notes },
         include: {
             user: {
                 select: {
@@ -478,7 +478,7 @@ async function updateDonorStatus(requestId, donorUserId, status, currentUserId) 
         },
     });
     // If status is completed, update the donor's donation count
-    if (backendStatus === "completed" && donationOffer.status !== "completed") {
+    if (backendStatus === "confirmed" && donationOffer.status !== "confirmed") {
         await prisma_1.default.user.update({
             where: { id: donorUserId },
             data: {
@@ -504,8 +504,8 @@ async function updateDonorStatus(requestId, donorUserId, status, currentUserId) 
         }
           */
     }
-    else if (backendStatus === "accepted" &&
-        donationOffer.status !== "accepted") {
+    else if (backendStatus === "selected" &&
+        donationOffer.status !== "selected") {
         // Send notification to donor when offer is accepted
         /*
         try {
@@ -520,8 +520,8 @@ async function updateDonorStatus(requestId, donorUserId, status, currentUserId) 
         }
           */
     }
-    else if (backendStatus === "rejected" &&
-        donationOffer.status !== "rejected") {
+    else if (backendStatus === "cancelled" &&
+        donationOffer.status !== "cancelled") {
         // Send notification to donor when offer is rejected
         /*
         try {

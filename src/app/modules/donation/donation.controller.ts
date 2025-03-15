@@ -3,6 +3,7 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { DonationService } from "./donation.service";
 import prisma from "../../shared/prisma";
+import AppError from "../../error/AppError";
 
 const getAllDonationOffers = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, status, bloodRequestId, userId } = req.query;
@@ -12,9 +13,9 @@ const getAllDonationOffers = catchAsync(async (req: Request, res: Response) => {
     limit: limit ? Number.parseInt(limit as string) : undefined,
     status: status as
       | "pending"
-      | "accepted"
-      | "rejected"
-      | "completed"
+      | "selected"
+      | "cancelled"
+      | "confirmed"
       | undefined,
     bloodRequestId: bloodRequestId as string | undefined,
     userId: userId as string | undefined,
@@ -65,53 +66,42 @@ const getSingleDonation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getDonationOffersForMyRequests = catchAsync(
-  async (req: Request, res: Response) => {
-    const { page, limit, status, bloodRequestId } = req.query;
-
-    const userId = req.user?.id;
-
-    // First get all blood requests by this user
-    const bloodRequests = await prisma.bloodRequest.findMany({
-      where: { userId },
-      select: { id: true },
-    });
-
-    const bloodRequestIds = bloodRequests.map((request) => request.id);
-
-    const params = {
-      page: page ? Number.parseInt(page as string) : undefined,
-      limit: limit ? Number.parseInt(limit as string) : undefined,
-      status: status as
-        | "pending"
-        | "accepted"
-        | "rejected"
-        | "completed"
-        | undefined,
-      bloodRequestId: bloodRequestId as string | undefined,
-    };
-
-    // Add filter for blood requests created by this user
-    const { donationOffers, total } =
-      await DonationService.getAllDonationOffers({
-        ...params,
-        //bloodRequestIds,
-      });
-
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Donation offers for my requests retrieved successfully",
-      data: donationOffers,
-      meta: {
-        total,
-        page: params.page || 1,
-        limit: params.limit || 10,
-        //totalPages: Math.ceil(total / (params.limit || 10)),
-      },
-    });
+const getMyDonations = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const userExist = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (!userExist) {
+    throw new AppError(404, "This user not found!");
   }
-);
+
+  const result = await prisma.donation.findMany({
+    where: { userId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          blood: true,
+          lastDonationDate: true,
+          gender: true,
+          donorInfo: true,
+          role: true,
+        },
+      },
+      bloodRequest: true,
+    },
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Donation retrieved successfully",
+    data: result,
+  });
+});
 
 const getDonationOfferById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -170,8 +160,6 @@ const deleteDonationOffer = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
 // New endpoints to match frontend API calls
 
 const cancelInterest = catchAsync(async (req: Request, res: Response) => {
@@ -208,13 +196,14 @@ const getInterestedDonorDetails = catchAsync(
 
 const updateDonorStatus = catchAsync(async (req: Request, res: Response) => {
   const { requestId, userId } = req.params;
-  const { status } = req.body;
+  const { status, notes } = req.body;
   const currentUserId = req.user?.id!;
 
   const result = await DonationService.updateDonorStatus(
     requestId,
     userId,
     status,
+    notes,
     currentUserId
   );
 
@@ -228,13 +217,13 @@ const updateDonorStatus = catchAsync(async (req: Request, res: Response) => {
 export const DonationController = {
   getAllDonationOffers,
   getMyDonationOffers,
-  getDonationOffersForMyRequests,
+  getMyDonations,
   getDonationOfferById,
   createDonationOffer,
   updateDonationOfferStatus,
   deleteDonationOffer,
   getSingleDonation,
-  
+
   cancelInterest,
   getInterestedDonorDetails,
   updateDonorStatus,

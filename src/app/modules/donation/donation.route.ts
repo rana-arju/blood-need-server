@@ -19,9 +19,9 @@ router.get(
 );
 
 router.get(
-  "/for-my-requests",
+  "/my-donation",
   auth("user", "admin", "superadmin", "volunteer"),
-  DonationController.getDonationOffersForMyRequests
+  DonationController.getMyDonations
 );
 router.get(
   "/single/:id",

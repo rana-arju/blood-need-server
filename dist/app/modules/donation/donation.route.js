@@ -11,7 +11,7 @@ const donation_controller_1 = require("./donation.controller");
 const donation_validation_1 = require("./donation.validation");
 const router = express_1.default.Router();
 router.get("/", (0, auth_1.default)("admin", "superadmin", "user", "volunteer"), donation_controller_1.DonationController.getAllDonationOffers);
-router.get("/for-my-requests", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), donation_controller_1.DonationController.getDonationOffersForMyRequests);
+router.get("/my-donation", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), donation_controller_1.DonationController.getMyDonations);
 router.get("/single/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), donation_controller_1.DonationController.getSingleDonation);
 router.get("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), donation_controller_1.DonationController.getMyDonationOffers);
 router.get("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), donation_controller_1.DonationController.getSingleDonation);
