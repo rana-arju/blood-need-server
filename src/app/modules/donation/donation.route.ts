@@ -1,24 +1,78 @@
 import express from "express";
+
+import validationRequest from "../../middlewares/validationRequest";
+
+import auth from "../../middlewares/auth";
 import { DonationController } from "./donation.controller";
 import {
-  createDonationZodSchema,
-  updateDonationZodSchema,
+  createDonationOfferZodSchema,
+ 
+  updateDonorStatusZodSchema,
 } from "./donation.validation";
-import validationRequest from "../../middlewares/validationRequest";
 
 const router = express.Router();
 
-router.get("/", DonationController.getAllDonations);
+router.get(
+  "/",
+  auth("admin", "superadmin", "user", "volunteer"),
+  DonationController.getAllDonationOffers
+);
+
+router.get(
+  "/for-my-requests",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getDonationOffersForMyRequests
+);
+router.get(
+  "/single/:id",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getSingleDonation
+);
+router.get(
+  "/:id",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getMyDonationOffers
+);
+router.get(
+  "/:id",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getSingleDonation
+);
+
+router.get(
+  "/:id",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getDonationOfferById
+);
+
 router.post(
   "/",
-  validationRequest(createDonationZodSchema),
-  DonationController.createDonation
+  auth("user", "admin", "superadmin", "volunteer"),
+  validationRequest(createDonationOfferZodSchema),
+  DonationController.createDonationOffer
 );
-router.patch(
-  "/:id",
-  validationRequest(updateDonationZodSchema),
-  DonationController.updateDonation
-);
-router.delete("/:id", DonationController.deleteDonation);
 
+// New routes to match frontend API calls
+
+// Cancel interest in a blood request
+router.delete(
+  "/blood-requests/:requestId/interest",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.cancelInterest
+);
+
+// Get interested donor details
+router.get(
+  "/blood-requests/:requestId/donors/:userId",
+  auth("user", "admin", "superadmin", "volunteer"),
+  DonationController.getInterestedDonorDetails
+);
+
+// Update interested donor status
+router.patch(
+  "/blood-requests/:requestId/donors/:userId/status",
+  auth("user", "admin", "superadmin", "volunteer"),
+  validationRequest(updateDonorStatusZodSchema),
+  DonationController.updateDonorStatus
+);
 export const DonationRoutes = router;

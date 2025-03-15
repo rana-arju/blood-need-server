@@ -4,7 +4,7 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 
 
-export async function getAllBloodRequests(req: Request, res: Response) {
+async function getAllBloodRequests(req: Request, res: Response) {
   try {
     const {
       page,
@@ -74,6 +74,77 @@ export async function getAllBloodRequests(req: Request, res: Response) {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
+ async function getAllMyBloodRequests(req: Request, res: Response) {
+  try {
+    const {
+      page,
+      limit,
+      search,
+      blood,
+      division,
+      district,
+      upazila,
+      requiredDateStart,
+      requiredDateEnd,
+      createdAtStart,
+      createdAtEnd,
+      bloodAmountMin,
+      bloodAmountMax,
+      hemoglobinMin,
+      hemoglobinMax,
+    } = req.query;
+    const userId = req.user?.id!;
+
+    const params = {
+      page: page ? Number.parseInt(page as string) : undefined,
+      limit: limit ? Number.parseInt(limit as string) : undefined,
+      search: search as string | undefined,
+      blood: blood as string | undefined,
+      division: division as string | undefined,
+      district: district as string | undefined,
+      upazila: upazila as string | undefined,
+      requiredDateStart: requiredDateStart
+        ? new Date(requiredDateStart as string)
+        : undefined,
+      requiredDateEnd: requiredDateEnd
+        ? new Date(requiredDateEnd as string)
+        : undefined,
+      createdAtStart: createdAtStart
+        ? new Date(createdAtStart as string)
+        : undefined,
+      createdAtEnd: createdAtEnd ? new Date(createdAtEnd as string) : undefined,
+      bloodAmountMin: bloodAmountMin
+        ? Number.parseInt(bloodAmountMin as string)
+        : undefined,
+      bloodAmountMax: bloodAmountMax
+        ? Number.parseInt(bloodAmountMax as string)
+        : undefined,
+      hemoglobinMin: hemoglobinMin
+        ? Number.parseInt(hemoglobinMin as string)
+        : undefined,
+      hemoglobinMax: hemoglobinMax
+        ? Number.parseInt(hemoglobinMax as string)
+        : undefined,
+    };
+
+    const { bloodRequests, total } =
+      await BloodRequestService.getAllMyBloodRequests(userId, params);
+
+    res.json({
+      success: true,
+      data: bloodRequests,
+      meta: {
+        total,
+        page: params.page || 1,
+        limit: params.limit || 10,
+        totalPages: Math.ceil(total / (params.limit || 10)),
+      },
+    });
+  } catch (error) {
+    console.error("Error in getAllBloodRequests:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+}
 
 const getBloodRequestById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -98,7 +169,12 @@ const createBloodRequest = catchAsync(async (req: Request, res: Response) => {
 
 const updateBloodRequest = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await BloodRequestService.updateBloodRequest(id, req.body);
+   const userId = req.user?.id;
+  const result = await BloodRequestService.updateBloodRequest(
+    id,
+    req.body,
+   
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -109,6 +185,7 @@ const updateBloodRequest = catchAsync(async (req: Request, res: Response) => {
 
 const deleteBloodRequest = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  const userId = req.user?.id
   const result = await BloodRequestService.deleteBloodRequest(id);
   sendResponse(res, {
     statusCode: 200,
@@ -124,4 +201,5 @@ export const BloodRequestController = {
   createBloodRequest,
   updateBloodRequest,
   deleteBloodRequest,
+  getAllMyBloodRequests,
 };

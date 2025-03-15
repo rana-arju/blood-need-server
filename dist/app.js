@@ -8,7 +8,6 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const logger_1 = __importDefault(require("./app/shared/logger"));
 const user_route_1 = require("./app/modules/user/user.route");
-const donation_route_1 = require("./app/modules/donation/donation.route");
 const bloodRequest_route_1 = require("./app/modules/bloodRequest/bloodRequest.route");
 const bloodDrive_route_1 = require("./app/modules/bloodDrive/bloodDrive.route");
 const bloodDonor_route_1 = require("./app/modules/bloodDonor/bloodDonor.route");
@@ -20,6 +19,8 @@ const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const notFound_1 = require("./app/middlewares/notFound");
 const statistics_route_1 = require("./app/modules/statistics/statistics.route");
 const blog_route_1 = require("./app/modules/blog/blog.route");
+const achievement_route_1 = require("./app/modules/achievement/achievement.route");
+const donation_route_1 = require("./app/modules/donation/donation.route");
 const app = (0, express_1.default)();
 // 🌐 Allowed Domains
 const allowedDomains = [
@@ -59,6 +60,7 @@ app.use("/api/v1/reviews", review_route_1.ReviewRoutes);
 app.use("/api/v1/notifications", notification_route_1.default);
 app.use("/api/v1/statistics", statistics_route_1.StatisticsRoutes);
 app.use("/api/v1/blog", blog_route_1.BlogRoutes);
+app.use("/api/v1/achievements", achievement_route_1.AchievementRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });

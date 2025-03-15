@@ -48,17 +48,22 @@ model User {
   volunteers    Volunteer[]
   subscriptions Subscription[]
   notifications Notification[]
+   achievements      Achievement[]
+   healthRecords     HealthRecord[]
 }
 
 
+
 model Donation {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  date      DateTime
-  location  String
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bloodRequestId String   @db.ObjectId
+  bloodRequest   BloodRequest @relation(fields: [bloodRequestId], references: [id], onDelete: Cascade)
+  status         String   @default("pending") // completed, pending, cancelled
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model BloodRequest {
@@ -78,6 +83,7 @@ model BloodRequest {
   requireTime         DateTime
   hemoglobin          Int?
   patientProblem      String?
+  donations         Donation[]
   //status             String   @default("Pending")
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt          DateTime @default(now())
@@ -178,3 +184,30 @@ model Notification {
 }
 
 
+model HealthRecord {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime
+  hemoglobin   Float
+  bloodPressure String
+  weight       Float
+  height       Float?
+  pulse        Int?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+model Achievement {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String
+  progress     Int      @default(0) // 0-100
+  achieved     Boolean  @default(false)
+  achievedDate DateTime?
+  badgeImage   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

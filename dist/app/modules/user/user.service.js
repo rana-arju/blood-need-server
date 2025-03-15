@@ -8,6 +8,8 @@ const paginationHelper_1 = require("../../helpers/paginationHelper");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const bson_1 = require("bson");
+const achievement_service_1 = require("../achievement/achievement.service");
 const randomPass = Math.random().toString(36).slice(2, 12);
 const getAllUsers = async (filters, paginationOptions) => {
     const { searchTerm, blood } = filters;
@@ -141,6 +143,34 @@ const getUser = async (id) => {
     }
     return user;
 };
+const updateDonationCount = async (userId) => {
+    if (!bson_1.ObjectId.isValid(userId)) {
+        throw new AppError_1.default(400, "Invalid user ID format");
+    }
+    const user = await prisma_1.default.user.findUnique({
+        where: { id: userId },
+    });
+    if (!user) {
+        throw new AppError_1.default(404, "User not found");
+    }
+    // Count completed donations
+    const completedDonationsCount = await prisma_1.default.donation.count({
+        where: {
+            userId,
+            status: "completed",
+        },
+    });
+    // Update user's donation count
+    await prisma_1.default.user.update({
+        where: { id: userId },
+        data: {
+            donationCount: completedDonationsCount,
+            lastDonationDate: new Date(),
+        },
+    });
+    // Check and update achievements
+    await achievement_service_1.AchievementService.checkAndUpdateAchievements(userId);
+};
 exports.UserService = {
     getAllUsers,
     createUser,
@@ -149,4 +179,5 @@ exports.UserService = {
     loginUser,
     getMeUser,
     getUser,
+    updateDonationCount,
 };

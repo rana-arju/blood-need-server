@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import logger from "./app/shared/logger";
 
 import { UserRoutes } from "./app/modules/user/user.route";
-import { DonationRoutes } from "./app/modules/donation/donation.route";
 import { BloodRequestRoutes } from "./app/modules/bloodRequest/bloodRequest.route";
 import { BloodDriveRoutes } from "./app/modules/bloodDrive/bloodDrive.route";
 import { BloodDonorRoutes } from "./app/modules/bloodDonor/bloodDonor.route";
@@ -18,6 +17,8 @@ import { notFound } from "./app/middlewares/notFound";
 import config from "./app/config";
 import { StatisticsRoutes } from "./app/modules/statistics/statistics.route";
 import { BlogRoutes } from "./app/modules/blog/blog.route";
+import { AchievementRoutes } from "./app/modules/achievement/achievement.route";
+import { DonationRoutes } from "./app/modules/donation/donation.route";
 
 const app: Application = express();
 
@@ -64,6 +65,7 @@ app.use("/api/v1/reviews", ReviewRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/statistics", StatisticsRoutes);
 app.use("/api/v1/blog", BlogRoutes);
+app.use("/api/v1/achievements", AchievementRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });

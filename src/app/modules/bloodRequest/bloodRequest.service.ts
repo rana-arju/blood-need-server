@@ -1,7 +1,5 @@
 import { Prisma, type BloodRequest } from "@prisma/client";
-import type {
-  IBloodRequest
-} from "./bloodRequest.interface";
+import type { IBloodRequest } from "./bloodRequest.interface";
 
 import * as notificationService from "../notification/notification.service";
 import prisma from "../../shared/prisma";
@@ -25,7 +23,7 @@ interface GetAllBloodRequestsParams {
   hemoglobinMin?: number;
   hemoglobinMax?: number;
 }
-export async function getAllBloodRequests(
+ async function getAllBloodRequests(
   params: GetAllBloodRequestsParams
 ): Promise<{ bloodRequests: BloodRequest[]; total: number }> {
   const {
@@ -111,6 +109,85 @@ export async function getAllBloodRequests(
 
   return { bloodRequests, total };
 }
+ async function getAllMyBloodRequests(
+  userId: string,
+  params: GetAllBloodRequestsParams
+): Promise<{ bloodRequests: BloodRequest[]; total: number }> {
+  const {
+    page = 1,
+    limit = 10,
+    search,
+    blood,
+    division,
+    district,
+    upazila,
+    requiredDateStart,
+    requiredDateEnd,
+    createdAtStart,
+    createdAtEnd,
+    bloodAmountMin,
+    bloodAmountMax,
+    hemoglobinMin,
+    hemoglobinMax,
+  } = params;
+  const userExist = await prisma.user.findUnique({ where: { id: userId } });
+  if (!userExist) {
+    throw new AppError(404, "User not found!");
+  }
+  // Get current date and time
+  const now = new Date();
+
+  const where: Prisma.BloodRequestWhereInput = {
+    userId,
+    AND: [
+
+      // Search
+      search
+        ? {
+            OR: [
+              { patientName: { contains: search, mode: "insensitive" } },
+              { hospitalName: { contains: search, mode: "insensitive" } },
+              { address: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {},
+      // Filters
+      blood && blood !== "all" ? { blood } : {},
+      division ? { division: division } : {},
+      district ? { district: district } : {},
+      upazila ? { upazila: upazila } : {},
+      requiredDateStart ? { requiredDate: { gte: requiredDateStart } } : {},
+      requiredDateEnd ? { requiredDate: { lte: requiredDateEnd } } : {},
+      createdAtStart ? { createdAt: { gte: createdAtStart } } : {},
+      createdAtEnd ? { createdAt: { lte: createdAtEnd } } : {},
+      bloodAmountMin ? { bloodAmount: { gte: bloodAmountMin } } : {},
+      bloodAmountMax ? { bloodAmount: { lte: bloodAmountMax } } : {},
+      hemoglobinMin ? { hemoglobin: { gte: hemoglobinMin } } : {},
+      hemoglobinMax ? { hemoglobin: { lte: hemoglobinMax } } : {},
+    ],
+  };
+
+  const [bloodRequests, total] = await Promise.all([
+    prisma.bloodRequest.findMany({
+      where,
+      orderBy: [{ requiredDate: "asc" }, { requireTime: "asc" }],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    }),
+    prisma.bloodRequest.count({ where }),
+  ]);
+
+  return { bloodRequests, total };
+}
 
 const getBloodRequestById = async (
   id: string
@@ -126,7 +203,7 @@ const getBloodRequestById = async (
         select: {
           id: true,
           name: true,
-          image: true
+          image: true,
         },
       },
     },
@@ -156,6 +233,7 @@ const deleteBloodRequest = async (id: string): Promise<BloodRequest> => {
 const updateBloodRequest = async (
   id: string,
   payload: Partial<IBloodRequest>
+
 ): Promise<BloodRequest> => {
   if (!ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid blood request ID format");
@@ -165,12 +243,12 @@ const updateBloodRequest = async (
   if (!isExist) {
     throw new AppError(404, "Blood request not found");
   }
-    const { userId, ...dataToUpdate } = payload;
+  const { userId, ...dataToUpdate } = payload;
 
-    const updateData: any = { ...dataToUpdate };
-      if (userId) {
-        updateData.user = { connect: { id: userId } }; // ✅ Correct relation update
-      }
+  const updateData: any = { ...dataToUpdate };
+  if (userId) {
+    updateData.user = { connect: { id: userId } }; // ✅ Correct relation update
+  }
   const result = await prisma.bloodRequest.update({
     where: { id },
     data: updateData,
@@ -178,7 +256,7 @@ const updateBloodRequest = async (
   return result;
 };
 
-export const createBloodRequest = async (
+ const createBloodRequest = async (
   bloodRequestData: any
 ): Promise<any> => {
   const result = await prisma.bloodRequest.create({
@@ -197,4 +275,5 @@ export const BloodRequestService = {
   createBloodRequest,
   updateBloodRequest,
   deleteBloodRequest,
+  getAllMyBloodRequests,
 };

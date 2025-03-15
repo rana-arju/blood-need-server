@@ -1,34 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDonationZodSchema = exports.createDonationZodSchema = void 0;
+exports.updateDonorStatusZodSchema = exports.updateDonationOfferZodSchema = exports.createDonationOfferZodSchema = void 0;
 const zod_1 = require("zod");
-exports.createDonationZodSchema = zod_1.z.object({
+const bson_1 = require("bson");
+exports.createDonationOfferZodSchema = zod_1.z.object({
     body: zod_1.z.object({
-        userId: zod_1.z.string({
-            required_error: "User ID is required",
-        }),
-        date: zod_1.z
-            .string({
-            required_error: "Date is required",
-        })
-            .transform((str) => new Date(str)),
-        amount: zod_1.z
-            .number({
-            required_error: "Amount is required",
-        })
-            .positive(),
-        location: zod_1.z.string({
-            required_error: "Location is required",
+        bloodRequestId: zod_1.z.string().refine((val) => bson_1.ObjectId.isValid(val), {
+            message: "Invalid bloodRequestId format",
         }),
     }),
 });
-exports.updateDonationZodSchema = zod_1.z.object({
+exports.updateDonationOfferZodSchema = zod_1.z.object({
     body: zod_1.z.object({
-        date: zod_1.z
-            .string()
-            .transform((str) => new Date(str))
-            .optional(),
-        amount: zod_1.z.number().positive().optional(),
-        location: zod_1.z.string().optional(),
+        status: zod_1.z.enum(["pending", "accepted", "rejected", "completed"]).optional(),
+        message: zod_1.z.string().optional(),
+    }),
+});
+exports.updateDonorStatusZodSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        status: zod_1.z.enum(["pending", "selected", "confirmed", "cancelled"]),
     }),
 });

@@ -2,18 +2,20 @@ import express from "express";
 import { BloodRequestController } from "./bloodRequest.controller";
 
 import validationRequest from "../../middlewares/validationRequest";
-import { createBloodRequestZodSchema, updateBloodRequestZodSchema } from "./bloodRequest.validation";
+import {
+  createBloodRequestZodSchema,
+  updateBloodRequestZodSchema,
+} from "./bloodRequest.validation";
 import auth from "../../middlewares/auth";
 
 const router = express.Router();
 
 router.get("/", BloodRequestController.getAllBloodRequests);
-router.get(
-  "/:id",
-  BloodRequestController.getBloodRequestById
-);
+router.get("/myrequest",auth("admin","user", "superadmin", "volunteer"), BloodRequestController.getAllMyBloodRequests);
+router.get("/:id", BloodRequestController.getBloodRequestById);
 router.post(
-  "/", auth("user", "admin", "superadmin", "volunteer"),
+  "/",
+  auth("user", "admin", "superadmin", "volunteer"),
   validationRequest(createBloodRequestZodSchema),
   BloodRequestController.createBloodRequest
 );

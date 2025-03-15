@@ -1,34 +1,24 @@
-import { z } from "zod"
+import { z } from "zod";
+import { ObjectId } from "bson";
 
-export const createDonationZodSchema = z.object({
+export const createDonationOfferZodSchema = z.object({
   body: z.object({
-    userId: z.string({
-      required_error: "User ID is required",
-    }),
-    date: z
-      .string({
-        required_error: "Date is required",
-      })
-      .transform((str) => new Date(str)),
-    amount: z
-      .number({
-        required_error: "Amount is required",
-      })
-      .positive(),
-    location: z.string({
-      required_error: "Location is required",
+    bloodRequestId: z.string().refine((val) => ObjectId.isValid(val), {
+      message: "Invalid bloodRequestId format",
     }),
   }),
-})
+});
 
-export const updateDonationZodSchema = z.object({
+
+export const updateDonationOfferZodSchema = z.object({
   body: z.object({
-    date: z
-      .string()
-      .transform((str) => new Date(str))
-      .optional(),
-    amount: z.number().positive().optional(),
-    location: z.string().optional(),
+    status: z.enum(["pending", "accepted", "rejected", "completed"]).optional(),
+    message: z.string().optional(),
   }),
-})
+});
 
+export const updateDonorStatusZodSchema = z.object({
+  body: z.object({
+    status: z.enum(["pending", "selected", "confirmed", "cancelled"]),
+  }),
+});

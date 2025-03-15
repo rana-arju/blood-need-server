@@ -1,17 +1,15 @@
-export type IDonation = {
-  id: string
-  userId: string
-  date: Date
-  amount: number
-  location: string
-  createdAt: Date
-  updatedAt: Date
+export interface IDonationOffer {
+  id: string;
+  userId: string;
+  bloodRequestId: string;
+  status: "pending" | "accepted" | "rejected" | "completed";
+  message?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export type IDonationFilters = {
-  searchTerm?: string
-  userId?: string
-  startDate?: Date
-  endDate?: Date
-}
-
+export type IDonationOfferFilters = {
+  status?: "pending" | "accepted" | "rejected" | "completed";
+  bloodRequestId?: string;
+  userId?: string;
+};

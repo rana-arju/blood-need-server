@@ -36,8 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BloodRequestService = exports.createBloodRequest = void 0;
-exports.getAllBloodRequests = getAllBloodRequests;
+exports.BloodRequestService = void 0;
 const notificationService = __importStar(require("../notification/notification.service"));
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const AppError_1 = __importDefault(require("../../error/AppError"));
@@ -105,6 +104,62 @@ async function getAllBloodRequests(params) {
     ]);
     return { bloodRequests, total };
 }
+async function getAllMyBloodRequests(userId, params) {
+    const { page = 1, limit = 10, search, blood, division, district, upazila, requiredDateStart, requiredDateEnd, createdAtStart, createdAtEnd, bloodAmountMin, bloodAmountMax, hemoglobinMin, hemoglobinMax, } = params;
+    const userExist = await prisma_1.default.user.findUnique({ where: { id: userId } });
+    if (!userExist) {
+        throw new AppError_1.default(404, "User not found!");
+    }
+    // Get current date and time
+    const now = new Date();
+    const where = {
+        userId,
+        AND: [
+            // Search
+            search
+                ? {
+                    OR: [
+                        { patientName: { contains: search, mode: "insensitive" } },
+                        { hospitalName: { contains: search, mode: "insensitive" } },
+                        { address: { contains: search, mode: "insensitive" } },
+                    ],
+                }
+                : {},
+            // Filters
+            blood && blood !== "all" ? { blood } : {},
+            division ? { division: division } : {},
+            district ? { district: district } : {},
+            upazila ? { upazila: upazila } : {},
+            requiredDateStart ? { requiredDate: { gte: requiredDateStart } } : {},
+            requiredDateEnd ? { requiredDate: { lte: requiredDateEnd } } : {},
+            createdAtStart ? { createdAt: { gte: createdAtStart } } : {},
+            createdAtEnd ? { createdAt: { lte: createdAtEnd } } : {},
+            bloodAmountMin ? { bloodAmount: { gte: bloodAmountMin } } : {},
+            bloodAmountMax ? { bloodAmount: { lte: bloodAmountMax } } : {},
+            hemoglobinMin ? { hemoglobin: { gte: hemoglobinMin } } : {},
+            hemoglobinMax ? { hemoglobin: { lte: hemoglobinMax } } : {},
+        ],
+    };
+    const [bloodRequests, total] = await Promise.all([
+        prisma_1.default.bloodRequest.findMany({
+            where,
+            orderBy: [{ requiredDate: "asc" }, { requireTime: "asc" }],
+            skip: (page - 1) * limit,
+            take: limit,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                    },
+                },
+            },
+        }),
+        prisma_1.default.bloodRequest.count({ where }),
+    ]);
+    return { bloodRequests, total };
+}
 const getBloodRequestById = async (id) => {
     if (!bson_1.ObjectId.isValid(id)) {
         throw new AppError_1.default(400, "Invalid blood request ID format");
@@ -116,7 +171,7 @@ const getBloodRequestById = async (id) => {
                 select: {
                     id: true,
                     name: true,
-                    image: true
+                    image: true,
                 },
             },
         },
@@ -166,11 +221,11 @@ const createBloodRequest = async (bloodRequestData) => {
     await notificationService.sendNotificationToMatchingDonors(result);
     return result;
 };
-exports.createBloodRequest = createBloodRequest;
 exports.BloodRequestService = {
     getAllBloodRequests,
     getBloodRequestById,
-    createBloodRequest: exports.createBloodRequest,
+    createBloodRequest,
     updateBloodRequest,
     deleteBloodRequest,
+    getAllMyBloodRequests,
 };

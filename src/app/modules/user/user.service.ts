@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import prisma from "../../shared/prisma";
+import { ObjectId } from "bson";
+import { AchievementService } from "../achievement/achievement.service";
 
 const randomPass = Math.random().toString(36).slice(2, 12);
 
@@ -173,7 +175,39 @@ const getUser = async (id: string): Promise<User> => {
   }
   return user;
 };
+const updateDonationCount = async (userId: string): Promise<void> => {
+  if (!ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid user ID format");
+  }
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  // Count completed donations
+  const completedDonationsCount = await prisma.donation.count({
+    where: {
+      userId,
+      status: "completed",
+    },
+  });
+
+  // Update user's donation count
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      donationCount: completedDonationsCount,
+      lastDonationDate: new Date(),
+    },
+  });
+
+  // Check and update achievements
+  await AchievementService.checkAndUpdateAchievements(userId);
+};
 export const UserService = {
   getAllUsers,
   createUser,
@@ -182,4 +216,5 @@ export const UserService = {
   loginUser,
   getMeUser,
   getUser,
+  updateDonationCount,
 };
