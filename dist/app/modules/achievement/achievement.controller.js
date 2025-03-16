@@ -17,17 +17,6 @@ const getMyAchievements = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
-const initializeMyAchievements = (0, catchAsync_1.default)(async (req, res) => {
-    const userId = req.user?.id;
-    const result = await achievement_service_1.AchievementService.initializeUserAchievements(userId);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: "Achievements initialized successfully",
-        data: result,
-    });
-});
 exports.AchievementController = {
     getMyAchievements,
-    initializeMyAchievements,
 };

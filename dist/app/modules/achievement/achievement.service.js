@@ -13,43 +13,43 @@ const ACHIEVEMENTS = [
         name: "First Time Donor",
         description: "Donated blood for the first time",
         requiredDonations: 1,
-        badgeImage: "/badges/first-time-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123398/award_1_rpylxe.png",
     },
     {
         name: "Regular Donor",
         description: "Donated blood 3 times",
         requiredDonations: 3,
-        badgeImage: "/badges/regular-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123399/medal_2_a1b3ed.png",
     },
     {
         name: "Silver Donor",
         description: "Donated blood 5 times",
         requiredDonations: 5,
-        badgeImage: "/badges/silver-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123661/achivement_1_iz2jkn.png",
     },
     {
         name: "Gold Donor",
         description: "Donated blood 10 times",
         requiredDonations: 10,
-        badgeImage: "/badges/gold-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123399/achievement_1_cimamx.png",
     },
     {
         name: "Platinum Donor",
         description: "Donated blood 25 times",
         requiredDonations: 25,
-        badgeImage: "/badges/platinum-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742124021/trophy_1_mr4hyw.png",
     },
     {
         name: "Diamond Donor",
         description: "Donated blood 50 times",
         requiredDonations: 50,
-        badgeImage: "/badges/diamond-donor.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123399/medal_1_lkgtmx.png",
     },
     {
         name: "Lifesaver",
         description: "Donated blood 100 times",
         requiredDonations: 100,
-        badgeImage: "/badges/lifesaver.png",
+        badgeImage: "https://res.cloudinary.com/db8l1ulfq/image/upload/v1742123943/target_2_1_ltmyv5.png",
     },
 ];
 async function getUserAchievements(userId) {
@@ -142,11 +142,20 @@ async function initializeUserAchievements(userId) {
     if (!bson_1.ObjectId.isValid(userId)) {
         throw new AppError_1.default(400, "Invalid user ID format");
     }
+    // Check if user exists
     const user = await prisma_1.default.user.findUnique({
         where: { id: userId },
     });
     if (!user) {
         throw new AppError_1.default(404, "User not found");
+    }
+    // Check if user already has achievements
+    const existingAchievements = await prisma_1.default.achievement.findMany({
+        where: { userId },
+    });
+    // If user already has achievements, don't initialize again
+    if (existingAchievements.length > 0) {
+        return existingAchievements;
     }
     const donationCount = user.donationCount;
     const achievements = [];

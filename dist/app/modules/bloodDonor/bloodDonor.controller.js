@@ -32,6 +32,16 @@ const getBloodDonorById = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
+const getBloodDonorUserId = (0, catchAsync_1.default)(async (req, res) => {
+    const { id } = req.params;
+    const result = await bloodDonor_service_1.BloodDonorService.getBloodDonorByUserId(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Blood donor retrieved successfully",
+        data: result,
+    });
+});
 const createBloodDonor = (0, catchAsync_1.default)(async (req, res) => {
     const result = await bloodDonor_service_1.BloodDonorService.createBloodDonor(req.body);
     (0, sendResponse_1.default)(res, {
@@ -67,4 +77,5 @@ exports.BloodDonorController = {
     createBloodDonor,
     updateBloodDonor,
     deleteBloodDonor,
+    getBloodDonorUserId,
 };

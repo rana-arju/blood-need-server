@@ -68,8 +68,14 @@ const createUser = async (payload) => {
     // 🔹 Hash the password before storing it
     const hashedPassword = await bcrypt_1.default.hash(password, 10); // 10 = salt rounds
     payload.password = hashedPassword;
-    const result = await prisma_1.default.user.create({
-        data: payload,
+    const result = await prisma_1.default.$transaction(async (tx) => {
+        // Create the user
+        const newUser = await tx.user.create({
+            data: payload,
+        });
+        // Initialize achievements for the new user
+        await achievement_service_1.AchievementService.initializeUserAchievements(newUser.id);
+        return newUser;
     });
     return result;
 };

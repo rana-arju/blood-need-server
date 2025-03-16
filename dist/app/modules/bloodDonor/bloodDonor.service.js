@@ -142,6 +142,37 @@ const getBloodDonorById = async (id) => {
     });
     return result;
 };
+const getBloodDonorByUserId = async (id) => {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blood donor ID format");
+    }
+    const isExist = await prisma_1.default.bloodDonor.findUnique({ where: { userId: id } });
+    if (!isExist) {
+        throw new AppError_1.default(404, "Blood donor not found");
+    }
+    const result = await prisma_1.default.bloodDonor.findUnique({
+        where: { userId: id },
+        include: {
+            user: {
+                select: {
+                    id: true, // Select user ID
+                    name: true, // Select user name
+                    email: true, // Select user email
+                    image: true, // Select user image
+                    district: true, // Select user district
+                    division: true, // Select user division
+                    upazila: true, // Select user upazila
+                    blood: true, // Select user blood
+                    gender: true, // Select user gender
+                    lastDonationDate: true, // Select user last donation
+                    dateOfBirth: true,
+                    address: true,
+                },
+            },
+        },
+    });
+    return result;
+};
 const createBloodDonor = async (bloodDonorData) => {
     const donorExist = await prisma_1.default.bloodDonor.findUnique({
         where: { userId: bloodDonorData?.userId },
@@ -191,4 +222,5 @@ exports.BloodDonorService = {
     createBloodDonor,
     updateBloodDonor,
     deleteBloodDonor,
+    getBloodDonorByUserId,
 };

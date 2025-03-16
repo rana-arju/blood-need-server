@@ -10,12 +10,6 @@ router.get(
   AchievementController.getMyAchievements
 );
 
-router.post(
-  "/initialize",
-  auth("user", "admin", "superadmin", "volunteer"),
-  AchievementController.initializeMyAchievements
-);
-
 router.get(
   "/:userId",
   auth("admin", "superadmin"),

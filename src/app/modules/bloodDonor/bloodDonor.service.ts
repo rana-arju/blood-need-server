@@ -171,6 +171,38 @@ const getBloodDonorById = async (id: string): Promise<BloodDonor | null> => {
   });
   return result;
 };
+const getBloodDonorByUserId = async (id: string): Promise<BloodDonor | null> => {
+  if (!ObjectId.isValid(id)) {
+    throw new AppError(400, "Invalid blood donor ID format");
+  }
+  const isExist = await prisma.bloodDonor.findUnique({ where: { userId: id } });
+
+  if (!isExist) {
+    throw new AppError(404, "Blood donor not found");
+  }
+  const result = await prisma.bloodDonor.findUnique({
+    where: { userId:id },
+    include: {
+      user: {
+        select: {
+          id: true, // Select user ID
+          name: true, // Select user name
+          email: true, // Select user email
+          image: true, // Select user image
+          district: true, // Select user district
+          division: true, // Select user division
+          upazila: true, // Select user upazila
+          blood: true, // Select user blood
+          gender: true, // Select user gender
+          lastDonationDate: true, // Select user last donation
+          dateOfBirth: true,
+          address: true,
+        },
+      },
+    },
+  });
+  return result;
+};
 
 const createBloodDonor = async (
   bloodDonorData: IBloodDonor
@@ -231,4 +263,5 @@ export const BloodDonorService = {
   createBloodDonor,
   updateBloodDonor,
   deleteBloodDonor,
+  getBloodDonorByUserId,
 };

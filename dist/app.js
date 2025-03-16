@@ -21,6 +21,7 @@ const statistics_route_1 = require("./app/modules/statistics/statistics.route");
 const blog_route_1 = require("./app/modules/blog/blog.route");
 const achievement_route_1 = require("./app/modules/achievement/achievement.route");
 const donation_route_1 = require("./app/modules/donation/donation.route");
+const healthRecord_route_1 = require("./app/modules/healthRecord/healthRecord.route");
 const app = (0, express_1.default)();
 // 🌐 Allowed Domains
 const allowedDomains = [
@@ -61,6 +62,7 @@ app.use("/api/v1/notifications", notification_route_1.default);
 app.use("/api/v1/statistics", statistics_route_1.StatisticsRoutes);
 app.use("/api/v1/blog", blog_route_1.BlogRoutes);
 app.use("/api/v1/achievements", achievement_route_1.AchievementRoutes);
+app.use("/api/v1/health-records", healthRecord_route_1.HealthRecordRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });
