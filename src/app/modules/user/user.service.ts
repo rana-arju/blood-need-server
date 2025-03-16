@@ -84,19 +84,19 @@ const createUser = async (payload: IUser): Promise<User> => {
   // 🔹 Hash the password before storing it
   const hashedPassword = await bcrypt.hash(password, 10); // 10 = salt rounds
   payload.password = hashedPassword;
-const result = await prisma.$transaction(async (tx) => {
-  // Create the user
-  const newUser = await tx.user.create({
-    data: payload,
+  const result = await prisma.$transaction(async (tx) => {
+    // Create the user
+    const newUser = await tx.user.create({
+      data: payload,
+    });
+
+    // Initialize achievements for the new user
+    await AchievementService.initializeUserAchievements(newUser.id);
+
+    return newUser;
   });
 
-  // Initialize achievements for the new user
-  await AchievementService.initializeUserAchievements(newUser.id);
-
-  return newUser;
-});
-
-return result;
+  return result;
 };
 
 const loginUser = async (payload: Partial<IUser>) => {
@@ -139,6 +139,26 @@ const updateUser = async (
   const result = await prisma.user.update({
     where: { id },
     data: { ...cleanPayload, profileUpdate: true },
+  });
+
+  return result;
+};
+const updatePassword = async (id: string, payload: string) => {
+  const userExist = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!userExist) {
+    throw new AppError(404, "This user not found!");
+  }
+  if (userExist.status == "blocked") {
+    throw new AppError(401, "You are blocked. You can't password update!");
+  }
+  const hashedPassword = await bcrypt.hash(payload, 10); // 10 = salt rounds
+
+  const result = await prisma.user.update({
+    where: { id },
+    data: { password: hashedPassword },
   });
 
   return result;
@@ -226,4 +246,5 @@ export const UserService = {
   getMeUser,
   getUser,
   updateDonationCount,
+  updatePassword,
 };

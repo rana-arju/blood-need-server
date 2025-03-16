@@ -10,11 +10,16 @@ const user_validation_1 = require("./user.validation");
 const validationRequest_1 = __importDefault(require("../../middlewares/validationRequest"));
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = express_1.default.Router();
-router.get("/users", (0, auth_1.default)("admin"), user_controller_1.UserController.getAllUsers);
+// 🔹 Public Routes (No Authentication Required)
 router.post("/register", (0, validationRequest_1.default)(user_validation_1.createUserZodSchema), user_controller_1.UserController.createUser);
 router.post("/login", user_controller_1.UserController.login);
-router.patch("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.updateUser);
-router.delete("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.deleteUser);
+// 🔹 Admin Routes (Require Admin Role)
+router.get("/users", (0, auth_1.default)("admin"), user_controller_1.UserController.getAllUsers);
+// 🔹 User Routes (Require Authentication)
 router.get("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.singleUser);
-router.get("/user/:id", (0, auth_1.default)("admin", "superadmin", "volunteer"), user_controller_1.UserController.getUserById);
+router.patch("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.updateUser);
+router.patch("/password/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.updatePassword);
+router.delete("/user/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), user_controller_1.UserController.deleteUser);
+// 🔹 Admin + Volunteer Routes (Extended Access)
+router.get("/user/details/:id", (0, auth_1.default)("admin", "superadmin", "volunteer"), user_controller_1.UserController.getUserById);
 exports.UserRoutes = router;

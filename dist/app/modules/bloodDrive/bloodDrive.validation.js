@@ -4,28 +4,31 @@ exports.updateBloodDriveZodSchema = exports.createBloodDriveZodSchema = void 0;
 const zod_1 = require("zod");
 exports.createBloodDriveZodSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string({
-            required_error: "Name is required",
+        title: zod_1.z.string({
+            required_error: "Title is required",
         }),
         organizer: zod_1.z.string({
             required_error: "Organizer is required",
         }),
-        location: zod_1.z.string({
-            required_error: "Location is required",
+        address: zod_1.z.string({
+            required_error: "Address is required",
+        }),
+        division: zod_1.z.string({
+            required_error: "Division is required",
+        }),
+        district: zod_1.z.string({
+            required_error: "District is required",
+        }),
+        upazila: zod_1.z.string({
+            required_error: "Upazila is required",
         }),
         date: zod_1.z
             .string({
             required_error: "Date is required",
         })
             .transform((str) => new Date(str)),
-        startTime: zod_1.z.string({
-            required_error: "Start time is required",
-        }),
-        endTime: zod_1.z.string({
-            required_error: "End time is required",
-        }),
-        description: zod_1.z.string({
-            required_error: "Description is required",
+        banner: zod_1.z.string({
+            required_error: "banner is required",
         }),
     }),
 });

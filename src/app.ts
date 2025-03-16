@@ -32,29 +32,31 @@ const allowedDomains = [
   "https://www.bloodneed.com",
 ];
 
-// ✅ CORS Configuration
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedDomains.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // Required for cookies
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"], // Explicitly define headers
-  })
-);
+const corsOptions = {
+  origin: (origin:any, callback:any) => {
+    if (!origin || allowedDomains.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // ✅ Allow cookies
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204, // ✅ Fixes Preflight CORS issue
+};
+
+// ✅ Apply CORS Middleware
+app.use(cors(corsOptions));
 
 // ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ Preflight Request Handling
-app.options("*", cors());
+// ✅ Fix Preflight CORS for All Routes
+app.options("*", cors(corsOptions));
 
 // 🔔 Application Routes
 app.use("/api/v1/auth", UserRoutes);

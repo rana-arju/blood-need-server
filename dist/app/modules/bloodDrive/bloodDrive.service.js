@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodDriveService = void 0;
 const paginationHelper_1 = require("../../helpers/paginationHelper");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 const getAllBloodDrives = async (filters, paginationOptions) => {
     const { searchTerm, organizer, startDate, endDate } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
@@ -65,6 +66,7 @@ const createBloodDrive = async (bloodDriveData) => {
             },
         },
     });
+    console.log("result", result);
     return result;
 };
 const updateBloodDrive = async (id, payload) => {
@@ -76,6 +78,12 @@ const updateBloodDrive = async (id, payload) => {
     return result;
 };
 const deleteBloodDrive = async (id) => {
+    const exist = await prisma_1.default.bloodDrive.findUnique({
+        where: { id },
+    });
+    if (!exist) {
+        throw new AppError_1.default(404, "This drive not exist");
+    }
     const result = await prisma_1.default.bloodDrive.delete({
         where: { id },
     });

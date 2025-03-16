@@ -22,6 +22,7 @@ const blog_route_1 = require("./app/modules/blog/blog.route");
 const achievement_route_1 = require("./app/modules/achievement/achievement.route");
 const donation_route_1 = require("./app/modules/donation/donation.route");
 const healthRecord_route_1 = require("./app/modules/healthRecord/healthRecord.route");
+const dashboard_routes_1 = require("./app/modules/dashboard/dashboard.routes");
 const app = (0, express_1.default)();
 // 🌐 Allowed Domains
 const allowedDomains = [
@@ -30,8 +31,7 @@ const allowedDomains = [
     "https://bloodneed.com",
     "https://www.bloodneed.com",
 ];
-// ✅ CORS Configuration
-app.use((0, cors_1.default)({
+const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedDomains.includes(origin)) {
             callback(null, true);
@@ -40,16 +40,20 @@ app.use((0, cors_1.default)({
             callback(new Error("Not allowed by CORS"));
         }
     },
-    credentials: true, // Required for cookies
+    credentials: true, // ✅ Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"], // Explicitly define headers
-}));
+    allowedHeaders: ["Content-Type", "Authorization"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204, // ✅ Fixes Preflight CORS issue
+};
+// ✅ Apply CORS Middleware
+app.use((0, cors_1.default)(corsOptions));
 // ✅ Middleware
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-// ✅ Preflight Request Handling
-app.options("*", (0, cors_1.default)());
+// ✅ Fix Preflight CORS for All Routes
+app.options("*", (0, cors_1.default)(corsOptions));
 // 🔔 Application Routes
 app.use("/api/v1/auth", user_route_1.UserRoutes);
 app.use("/api/v1/donations", donation_route_1.DonationRoutes);
@@ -63,6 +67,7 @@ app.use("/api/v1/statistics", statistics_route_1.StatisticsRoutes);
 app.use("/api/v1/blog", blog_route_1.BlogRoutes);
 app.use("/api/v1/achievements", achievement_route_1.AchievementRoutes);
 app.use("/api/v1/health-records", healthRecord_route_1.HealthRecordRoutes);
+app.use("/api/v1/dashboard", dashboard_routes_1.dashboardRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is running" });

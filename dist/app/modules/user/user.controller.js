@@ -50,6 +50,17 @@ const updateUser = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
+const updatePassword = (0, catchAsync_1.default)(async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+    const result = await user_service_1.UserService.updatePassword(id, password);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "User password updated successfully",
+        data: result,
+    });
+});
 const deleteUser = (0, catchAsync_1.default)(async (req, res) => {
     const { id } = req.params;
     const result = await user_service_1.UserService.deleteUser(id);
@@ -87,5 +98,6 @@ exports.UserController = {
     deleteUser,
     login,
     singleUser,
-    getUserById
+    getUserById,
+    updatePassword,
 };

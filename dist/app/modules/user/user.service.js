@@ -109,6 +109,23 @@ const updateUser = async (id, payload) => {
     });
     return result;
 };
+const updatePassword = async (id, payload) => {
+    const userExist = await prisma_1.default.user.findUnique({
+        where: { id },
+    });
+    if (!userExist) {
+        throw new AppError_1.default(404, "This user not found!");
+    }
+    if (userExist.status == "blocked") {
+        throw new AppError_1.default(401, "You are blocked. You can't password update!");
+    }
+    const hashedPassword = await bcrypt_1.default.hash(payload, 10); // 10 = salt rounds
+    const result = await prisma_1.default.user.update({
+        where: { id },
+        data: { password: hashedPassword },
+    });
+    return result;
+};
 const deleteUser = async (id) => {
     const result = await prisma_1.default.user.delete({
         where: {
@@ -186,4 +203,5 @@ exports.UserService = {
     getMeUser,
     getUser,
     updateDonationCount,
+    updatePassword,
 };

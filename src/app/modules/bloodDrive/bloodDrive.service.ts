@@ -1,11 +1,10 @@
-import {  type BloodDrive } from "@prisma/client";
+import { type BloodDrive } from "@prisma/client";
 import type { IBloodDrive, IBloodDriveFilters } from "./bloodDrive.interface";
 import { paginationHelpers } from "../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../interface/pagination";
 import { IGenericResponse } from "../../interface/common";
 import prisma from "../../shared/prisma";
-
-
+import AppError from "../../error/AppError";
 
 const getAllBloodDrives = async (
   filters: IBloodDriveFilters,
@@ -85,9 +84,10 @@ const createBloodDrive = async (
       },
     },
   });
+  console.log("result", result);
+
   return result;
 };
-
 
 const updateBloodDrive = async (
   id: string,
@@ -102,6 +102,12 @@ const updateBloodDrive = async (
 };
 
 const deleteBloodDrive = async (id: string): Promise<BloodDrive> => {
+  const exist = await prisma.bloodDrive.findUnique({
+    where: { id },
+  });
+  if (!exist) {
+    throw new AppError(404, "This drive not exist");
+  }
   const result = await prisma.bloodDrive.delete({
     where: { id },
   });
