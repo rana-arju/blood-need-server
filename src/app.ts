@@ -20,6 +20,7 @@ import { BlogRoutes } from "./app/modules/blog/blog.route";
 import { AchievementRoutes } from "./app/modules/achievement/achievement.route";
 import { DonationRoutes } from "./app/modules/donation/donation.route";
 import { HealthRecordRoutes } from "./app/modules/healthRecord/healthRecord.route";
+import { dashboardRoutes } from "./app/modules/dashboard/dashboard.routes";
 
 const app: Application = express();
 
@@ -68,6 +69,7 @@ app.use("/api/v1/statistics", StatisticsRoutes);
 app.use("/api/v1/blog", BlogRoutes);
 app.use("/api/v1/achievements", AchievementRoutes);
 app.use("/api/v1/health-records", HealthRecordRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });
