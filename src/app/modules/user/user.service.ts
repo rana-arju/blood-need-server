@@ -65,38 +65,55 @@ const getAllUsers = async (
 };
 
 const createUser = async (payload: IUser): Promise<User> => {
+  if (!payload?.email) {
+    throw new AppError(400, "Email is required!");
+  }
+
   const password = payload?.password || randomPass;
 
-  const userExist = await prisma.user.findUnique({
-    where: {
-      email: payload?.email,
-    },
+  // 🔹 Check if user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email: payload.email },
   });
-  if (userExist) {
-    if (
-      (userExist?.provider && userExist?.provider == "google") ||
-      userExist?.provider == "facebook"
-    ) {
-      return userExist;
-    }
-    throw new AppError(401, "User already exist!");
-  }
-  // 🔹 Hash the password before storing it
-  const hashedPassword = await bcrypt.hash(password, 10); // 10 = salt rounds
-  payload.password = hashedPassword;
-  const result = await prisma.$transaction(async (tx) => {
-    // Create the user
-    const newUser = await tx.user.create({
-      data: payload,
-    });
 
-    // Initialize achievements for the new user
-    await AchievementService.initializeUserAchievements(newUser.id);
+  if (existingUser) {
+
+    // 🔹 If user exists with a social provider, return the user
+    if (
+      existingUser.provider === "google" ||
+      existingUser.provider === "facebook"
+    ) {
+      return existingUser;
+    }
+
+    // 🔹 Otherwise, return existing user for login
+    return existingUser;
+  }
+
+  // 🔹 If user doesn't exist, create a new one
+  const hashedPassword = await bcrypt.hash(password, 10);
+  payload.password = hashedPassword;
+
+
+  try {
+    // ✅ Create user
+    const newUser = await prisma.user.create({ data: payload });
+
+
+    // ✅ Delay before initializing achievements to allow Prisma transaction to fully commit
+    setTimeout(async () => {
+      try {
+        await AchievementService.initializeUserAchievements(newUser.id);
+      } catch (achievementError) {
+        throw new AppError(401, "Achivment not initialize")
+      }
+    }, 500);
 
     return newUser;
-  });
-
-  return result;
+  } catch (error) {
+    
+    throw new AppError(500, "User creation failed!");
+  }
 };
 
 const loginUser = async (payload: Partial<IUser>) => {

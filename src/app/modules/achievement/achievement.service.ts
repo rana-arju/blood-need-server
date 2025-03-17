@@ -171,26 +171,32 @@ async function checkAndUpdateAchievements(userId: string) {
     ? updatedAchievements
     : existingAchievements;
 }
+async function waitForUser(userId: string, retries = 5, delay = 200) {
+  for (let i = 0; i < retries; i++) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user) return user;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+  return null;
+}
+
 async function initializeUserAchievements(userId: string) {
   if (!ObjectId.isValid(userId)) {
     throw new AppError(400, "Invalid user ID format");
   }
 
-  // Check if user exists
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+  // ✅ Wait for user to be available in the database
+  const user = await waitForUser(userId);
 
   if (!user) {
-    throw new AppError(404, "User not found");
+    throw new AppError(404, `User with ID ${userId} not found.`);
   }
 
-  // Check if user already has achievements
+  // ✅ Check if achievements already exist
   const existingAchievements = await prisma.achievement.findMany({
     where: { userId },
   });
 
-  // If user already has achievements, don't initialize again
   if (existingAchievements.length > 0) {
     return existingAchievements;
   }
@@ -198,7 +204,6 @@ async function initializeUserAchievements(userId: string) {
   const donationCount = user.donationCount;
   const achievements = [];
 
-  // Create all achievement records for the user
   for (const achievement of ACHIEVEMENTS) {
     const progress = Math.min(
       100,
@@ -221,21 +226,19 @@ async function initializeUserAchievements(userId: string) {
     achievements.push(newAchievement);
   }
 
-  // Set the highest achieved badge as the user's reward badge
+  // ✅ Assign highest achieved badge
   const highestAchieved = achievements
     .filter((a) => a.achieved)
     .sort((a, b) => {
       const aIndex = ACHIEVEMENTS.findIndex((ach) => ach.name === a.name);
       const bIndex = ACHIEVEMENTS.findIndex((ach) => ach.name === b.name);
-      return bIndex - aIndex; // Sort in descending order
+      return bIndex - aIndex;
     })[0];
 
   if (highestAchieved) {
     await prisma.user.update({
       where: { id: userId },
-      data: {
-        rewardBadge: highestAchieved.name,
-      },
+      data: { rewardBadge: highestAchieved.name },
     });
   }
 
