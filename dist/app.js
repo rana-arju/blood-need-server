@@ -31,6 +31,7 @@ const allowedDomains = [
     "https://bloodneed.com",
     "https://www.bloodneed.com",
 ];
+// ✅ Proper CORS Configuration with Type Safety
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedDomains.includes(origin)) {
@@ -40,20 +41,22 @@ const corsOptions = {
             callback(new Error("Not allowed by CORS"));
         }
     },
-    credentials: true, // ✅ Allow cookies
+    credentials: true, // ✅ Required for cookies/authentication
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     preflightContinue: false,
-    optionsSuccessStatus: 204, // ✅ Fixes Preflight CORS issue
+    optionsSuccessStatus: 200, // ✅ Fixes Preflight CORS issue
 };
-// ✅ Apply CORS Middleware
+// ✅ Apply CORS Middleware Before Routes
 app.use((0, cors_1.default)(corsOptions));
+// ✅ Explicitly Handle `OPTIONS` Preflight Requests
+app.options("*", (0, cors_1.default)(corsOptions), (req, res) => {
+    res.sendStatus(200); // ✅ Must return HTTP 200 OK for CORS preflight
+});
 // ✅ Middleware
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
-// ✅ Fix Preflight CORS for All Routes
-app.options("*", (0, cors_1.default)(corsOptions));
 // 🔔 Application Routes
 app.use("/api/v1/auth", user_route_1.UserRoutes);
 app.use("/api/v1/donations", donation_route_1.DonationRoutes);

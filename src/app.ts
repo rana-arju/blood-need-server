@@ -1,5 +1,5 @@
 import express, { type Application } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 
 import logger from "./app/shared/logger";
@@ -24,39 +24,42 @@ import { dashboardRoutes } from "./app/modules/dashboard/dashboard.routes";
 
 const app: Application = express();
 
+
 // 🌐 Allowed Domains
-const allowedDomains = [
+const allowedDomains: string[] = [
   "http://localhost:3000",
   "https://blood-need.vercel.app",
   "https://bloodneed.com",
   "https://www.bloodneed.com",
 ];
 
-const corsOptions = {
-  origin: (origin:any, callback:any) => {
+// ✅ Proper CORS Configuration with Type Safety
+const corsOptions: CorsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin || allowedDomains.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // ✅ Allow cookies
+  credentials: true, // ✅ Required for cookies/authentication
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   preflightContinue: false,
-  optionsSuccessStatus: 204, // ✅ Fixes Preflight CORS issue
+  optionsSuccessStatus: 200, // ✅ Fixes Preflight CORS issue
 };
-
-// ✅ Apply CORS Middleware
+// ✅ Apply CORS Middleware Before Routes
 app.use(cors(corsOptions));
-
+// ✅ Explicitly Handle `OPTIONS` Preflight Requests
+app.options("*", cors(corsOptions), (req, res) => {
+  res.sendStatus(200); // ✅ Must return HTTP 200 OK for CORS preflight
+});
 // ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ Fix Preflight CORS for All Routes
-app.options("*", cors(corsOptions));
+
 
 // 🔔 Application Routes
 app.use("/api/v1/auth", UserRoutes);
