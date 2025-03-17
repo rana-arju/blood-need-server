@@ -121,7 +121,14 @@ const loginUser = async (payload: Partial<IUser>) => {
     },
   });
   if (!userExist) {
-    throw new AppError(401, "User does not exist!");
+    throw new AppError(401, "Invalid credentials");
+  }
+  // Check if user is active
+  if (userExist.status !== "active") {
+    throw new AppError(
+      403,
+      "Your account is not active. Please contact support."
+    );
   }
   // 🔹 Compare the password
   const isMatch = await bcrypt.compare(
@@ -129,7 +136,10 @@ const loginUser = async (payload: Partial<IUser>) => {
     userExist.password as string
   );
 
-  if (!isMatch) throw new AppError(401, "Invalid email or password");
+  if (!isMatch) {
+    // Use a generic message to prevent user enumeration
+    throw new AppError(401, "Invalid credentials");
+  }
   return userExist;
 };
 

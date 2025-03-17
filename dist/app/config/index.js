@@ -25,4 +25,15 @@ exports.default = {
         publicKey: process.env.VAPID_PUBLIC_KEY,
         privateKey: process.env.VAPID_PRIVATE_KEY,
     },
+    security: {
+        bcrypt_salt_rounds: Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || "12", 10),
+        rate_limit: {
+            window_ms: Number.parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000", 10), // 15 minutes
+            max_requests: Number.parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100", 10),
+        },
+        cors: {
+            origin: process.env.CORS_ORIGIN || "*",
+            methods: process.env.CORS_METHODS || "GET,HEAD,PUT,PATCH,POST,DELETE",
+        },
+    },
 };

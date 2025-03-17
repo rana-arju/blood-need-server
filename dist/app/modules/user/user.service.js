@@ -98,12 +98,18 @@ const loginUser = async (payload) => {
         },
     });
     if (!userExist) {
-        throw new AppError_1.default(401, "User does not exist!");
+        throw new AppError_1.default(401, "Invalid credentials");
+    }
+    // Check if user is active
+    if (userExist.status !== "active") {
+        throw new AppError_1.default(403, "Your account is not active. Please contact support.");
     }
     // 🔹 Compare the password
     const isMatch = await bcrypt_1.default.compare(password, userExist.password);
-    if (!isMatch)
-        throw new AppError_1.default(401, "Invalid email or password");
+    if (!isMatch) {
+        // Use a generic message to prevent user enumeration
+        throw new AppError_1.default(401, "Invalid credentials");
+    }
     return userExist;
 };
 const updateUser = async (id, payload) => {

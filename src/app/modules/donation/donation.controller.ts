@@ -182,9 +182,9 @@ const getInterestedDonorDetails = catchAsync(
 
     const result = await DonationService.getInterestedDonorDetails(
       requestId,
-      userId
+      userId,
+      req.loaders // Pass the loaders from the request
     );
-
     sendResponse(res, {
       statusCode: 200,
       success: true,

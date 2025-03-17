@@ -7,12 +7,18 @@ const calculatePagination = (options) => {
     const skip = (page - 1) * limit;
     const sortBy = options.sortBy || "createdAt";
     const sortOrder = options.sortOrder === "asc" ? "asc" : "desc"; // Default to "desc"
+    // Create projection object if fields are specified
+    const select = options.fields?.reduce((acc, field) => {
+        acc[field] = true;
+        return acc;
+    }, {});
     return {
         page,
         limit,
         skip,
         sortBy,
         sortOrder,
+        ...(select && { select }),
     };
 };
 exports.paginationHelpers = {

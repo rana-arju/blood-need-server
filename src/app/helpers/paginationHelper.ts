@@ -5,6 +5,7 @@ type IOptions = {
   limit?: number;
   sortBy?: string;
   sortOrder?: SortOrderType;
+  fields?: string[]; // Added fields for projection
 };
 
 type IOptionsResult = {
@@ -13,6 +14,7 @@ type IOptionsResult = {
   skip: number;
   sortBy: string;
   sortOrder: SortOrderType;
+  select?: Record<string, boolean>; // Added select for projection
 };
 
 const calculatePagination = (options: IOptions): IOptionsResult => {
@@ -22,6 +24,11 @@ const calculatePagination = (options: IOptions): IOptionsResult => {
 
   const sortBy = options.sortBy || "createdAt";
   const sortOrder: SortOrderType = options.sortOrder === "asc" ? "asc" : "desc"; // Default to "desc"
+  // Create projection object if fields are specified
+  const select = options.fields?.reduce((acc, field) => {
+    acc[field] = true;
+    return acc;
+  }, {} as Record<string, boolean>);
 
   return {
     page,
@@ -29,6 +36,7 @@ const calculatePagination = (options: IOptions): IOptionsResult => {
     skip,
     sortBy,
     sortOrder,
+    ...(select && { select }),
   };
 };
 

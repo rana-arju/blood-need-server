@@ -449,16 +449,17 @@ async function cancelInterest(requestId: string, userId: string) {
 
 async function getInterestedDonorDetails(
   requestId: string,
-  donorUserId: string
+  donorUserId: string,
+  loaders?: any
 ) {
   if (!ObjectId.isValid(requestId) || !ObjectId.isValid(donorUserId)) {
     throw new AppError(400, "Invalid ID format");
   }
 
   // Check if blood request exists
-  const bloodRequest = await prisma.bloodRequest.findUnique({
-    where: { id: requestId },
-  });
+  const bloodRequest = loaders
+    ? await loaders.bloodRequestLoader.load(requestId)
+    : await prisma.bloodRequest.findUnique({ where: { id: requestId } });
 
   if (!bloodRequest) {
     throw new AppError(404, "Blood request not found");
@@ -476,34 +477,41 @@ async function getInterestedDonorDetails(
     throw new AppError(404, "Donation offer not found");
   }
 
-  // Get user details
-  const user = await prisma.user.findUnique({
-    where: { id: donorUserId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      blood: true,
-      gender: true,
-      division: true,
-      district: true,
-      upazila: true,
-      address: true,
-      lastDonationDate: true,
-      donationCount: true,
-      rewardBadge: true,
-      donorInfo: true,
-    },
-  });
+  // Get user details - use dataloader if available
+  const user = loaders
+    ? await loaders.userLoader.load(donorUserId)
+    : await prisma.user.findUnique({
+        where: { id: donorUserId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          blood: true,
+          gender: true,
+          division: true,
+          district: true,
+          upazila: true,
+          address: true,
+          lastDonationDate: true,
+          donationCount: true,
+          rewardBadge: true,
+        },
+      });
 
   if (!user) {
     throw new AppError(404, "User not found");
   }
-
+  // Get donor info - use dataloader if available
+  const donorInfo = loaders
+    ? await loaders.bloodDonorLoader.load(donorUserId)
+    : await prisma.bloodDonor.findUnique({
+        where: { userId: donorUserId },
+      });
   // Combine user and donation offer details
   return {
     ...user,
+    donorInfo,
     donationOffer: {
       id: donationOffer.id,
       status: donationOffer.status,

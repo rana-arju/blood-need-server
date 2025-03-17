@@ -1,11 +1,10 @@
 import type { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 import config from "../config";
-
-import { IErrorSources, IGenericErrorResponse } from "../interface/error";
+import type { IErrorSources } from "../interface/error";
 import handleZodError from "../error/handleZodError";
 import AppError from "../error/AppError";
-import logger from "../shared/logger";
+import { logger } from "../shared/logger"; // Fixed import
 
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
@@ -13,7 +12,10 @@ export const globalErrorHandler: ErrorRequestHandler = (
   res,
   next
 ) => {
-  logger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
+  // Fixed error logging to avoid accessing undefined properties
+  logger.error(
+    `Global error handler caught an error: ${error?.message || "Unknown error"}`
+  );
 
   let statusCode = 500;
   let message = "Something went wrong!";

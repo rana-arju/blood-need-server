@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\Future project\\blood-need\\blood-need-server\\logs\\winston\\successes\\.068f46c9ae677907dde3aa23ca8eb261b7c74eb8-audit.json",
+    "files": [
+        {
+            "date": 1742236299788,
+            "name": "D:\\Future project\\blood-need\\blood-need-server\\logs\\winston\\successes\\success-2025-03-18-00.log",
+            "hash": "20d6fea92e1255ffa12ed5901cbfff03e74914ef35a7f74a85063d9baf148b8e"
+        },
+        {
+            "date": 1742238014769,
+            "name": "D:\\Future project\\blood-need\\blood-need-server\\logs\\winston\\successes\\success-2025-03-18-01.log",
+            "hash": "9b5d9c7b9bc2b3b5068b447dac4cbeaa0513e8bf13bf3c0e83c17f614044ac2e"
+        }
+    ],
+    "hashType": "sha256"
+}

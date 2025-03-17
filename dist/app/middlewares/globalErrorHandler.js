@@ -8,9 +8,10 @@ const zod_1 = require("zod");
 const config_1 = __importDefault(require("../config"));
 const handleZodError_1 = __importDefault(require("../error/handleZodError"));
 const AppError_1 = __importDefault(require("../error/AppError"));
-const logger_1 = __importDefault(require("../shared/logger"));
+const logger_1 = require("../shared/logger"); // Fixed import
 const globalErrorHandler = (error, req, res, next) => {
-    logger_1.default.error(`🐱‍🏍 globalErrorHandler ~~`, error);
+    // Fixed error logging to avoid accessing undefined properties
+    logger_1.logger.error(`Global error handler caught an error: ${error?.message || "Unknown error"}`);
     let statusCode = 500;
     let message = "Something went wrong!";
     let errorMessages = [

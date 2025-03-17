@@ -1,0 +1,30 @@
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:52:4852"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:56:4856"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:56:4856"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:56:4856"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:57:4857"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:48:59:4859"}
+{"level":"warn","message":"Slow query detected (1469ms): User.findMany","metadata":{},"timestamp":"2025-03-18 00:50:11:5011"}
+{"level":"warn","message":"Slow query detected (518ms): BloodRequest.findMany","metadata":{},"timestamp":"2025-03-18 00:50:15:5015"}
+{"level":"warn","message":"Slow query detected (566ms): BloodDrive.count","metadata":{},"timestamp":"2025-03-18 00:51:40:5140"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:33:5333"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:36:5336"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:36:5336"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:36:5336"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:37:5337"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:53:39:5339"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:54:54:5454"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:54:58:5458"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:54:58:5458"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:54:58:5458"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:54:59:5459"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:55:01:551"}
+{"level":"warn","message":"Slow query detected (11257ms): User.findMany","metadata":{},"timestamp":"2025-03-18 00:55:45:5545"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:31:5631"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:34:5634"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:34:5634"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:34:5634"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:36:5636"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 00:56:39:5639"}
+{"level":"warn","message":"Slow query detected (577ms): User.findMany","metadata":{},"timestamp":"2025-03-18 00:56:54:5654"}
+{"level":"error","message":"Unhandled Rejection at:","metadata":{"promise":"[object Promise]","reason":"\nInvalid `prisma.user.findUnique()` invocation in\nD:\\Future project\\blood-need\\blood-need-server\\src\\app\\middlewares\\auth.ts:28:36\n\n  25 }\n  26 \n  27 // Fetch user from MongoDB using Prisma based on the userId passed in the token\n→ 28 const user = await prisma.user.findUnique(\nInconsistent column data: Malformed ObjectID: provided hex string representation must be exactly 12 bytes, instead got: \"undefined\", length 9."},"timestamp":"2025-03-18 00:57:47:5747"}
