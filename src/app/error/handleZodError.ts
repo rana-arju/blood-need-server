@@ -1,15 +1,13 @@
-import { ZodError } from "zod";
-import { IErrorSources, IGenericErrorResponse } from "../interface/error";
+import * as z from "zod";
 
-const handleZodError = (error: ZodError): IGenericErrorResponse => {
-  const errorMessages: IErrorSources = error.issues.map((issue) => ({
-    path: issue.path[issue.path.length - 1],
+const handleZodError = (error: z.ZodError) => {
+  const errorMessages = error.issues.map((issue) => ({
+    path: issue.path.join("."), // Join path array into a string
     message: issue.message,
   }));
 
-  const statusCode = 400;
   return {
-    statusCode,
+    statusCode: 400,
     message: "Validation error",
     errorMessages,
   };

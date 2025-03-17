@@ -2,12 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const handleZodError = (error) => {
     const errorMessages = error.issues.map((issue) => ({
-        path: issue.path[issue.path.length - 1],
+        path: issue.path.join("."), // Join path array into a string
         message: issue.message,
     }));
-    const statusCode = 400;
     return {
-        statusCode,
+        statusCode: 400,
         message: "Validation error",
         errorMessages,
     };
