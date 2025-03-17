@@ -12,6 +12,7 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = express_1.default.Router();
 // 🟢 Get all blood donors (Public)
 router.get("/", bloodDonor_controller_1.BloodDonorController.getAllBloodDonors);
+router.get("/top", bloodDonor_controller_1.BloodDonorController.getTopDonors);
 // 🟢 Get blood donor by User ID (Public)
 router.get("/user/:id", bloodDonor_controller_1.BloodDonorController.getBloodDonorUserId);
 // 🟢 Get blood donor by BloodDonor ID (Public)

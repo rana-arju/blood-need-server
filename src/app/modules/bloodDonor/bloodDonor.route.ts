@@ -11,7 +11,7 @@ const router = express.Router();
 
 // 🟢 Get all blood donors (Public)
 router.get("/", BloodDonorController.getAllBloodDonors);
-
+router.get("/top", BloodDonorController.getTopDonors);
 // 🟢 Get blood donor by User ID (Public)
 router.get("/user/:id", BloodDonorController.getBloodDonorUserId);
 

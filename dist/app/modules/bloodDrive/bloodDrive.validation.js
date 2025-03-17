@@ -34,15 +34,25 @@ exports.createBloodDriveZodSchema = zod_1.z.object({
 });
 exports.updateBloodDriveZodSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string().optional(),
+        title: zod_1.z.string().optional(),
         organizer: zod_1.z.string().optional(),
-        location: zod_1.z.string().optional(),
+        address: zod_1.z.string().optional(),
+        division: zod_1.z.string({
+            required_error: "Division is required",
+        }),
+        district: zod_1.z.string({
+            required_error: "District is required",
+        }),
+        upazila: zod_1.z.string({
+            required_error: "Upazila is required",
+        }),
         date: zod_1.z
-            .string()
-            .transform((str) => new Date(str))
-            .optional(),
-        startTime: zod_1.z.string().optional(),
-        endTime: zod_1.z.string().optional(),
-        description: zod_1.z.string().optional(),
+            .string({
+            required_error: "Date is required",
+        })
+            .transform((str) => new Date(str)),
+        banner: zod_1.z.string({
+            required_error: "banner is required",
+        }),
     }),
 });

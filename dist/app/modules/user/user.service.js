@@ -67,7 +67,7 @@ const createUser = async (payload) => {
             return existingUser;
         }
         // 🔹 Otherwise, return existing user for login
-        return existingUser;
+        throw new AppError_1.default(401, "Login with Email and Password");
     }
     // 🔹 If user doesn't exist, create a new one
     const hashedPassword = await bcrypt_1.default.hash(password, 10);

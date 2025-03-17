@@ -77,7 +77,6 @@ const createUser = async (payload: IUser): Promise<User> => {
   });
 
   if (existingUser) {
-
     // 🔹 If user exists with a social provider, return the user
     if (
       existingUser.provider === "google" ||
@@ -87,31 +86,28 @@ const createUser = async (payload: IUser): Promise<User> => {
     }
 
     // 🔹 Otherwise, return existing user for login
-    return existingUser;
+    throw new AppError(401, "Login with Email and Password");
   }
 
   // 🔹 If user doesn't exist, create a new one
   const hashedPassword = await bcrypt.hash(password, 10);
   payload.password = hashedPassword;
 
-
   try {
     // ✅ Create user
     const newUser = await prisma.user.create({ data: payload });
-
 
     // ✅ Delay before initializing achievements to allow Prisma transaction to fully commit
     setTimeout(async () => {
       try {
         await AchievementService.initializeUserAchievements(newUser.id);
       } catch (achievementError) {
-        throw new AppError(401, "Achivment not initialize")
+        throw new AppError(401, "Achivment not initialize");
       }
     }, 500);
 
     return newUser;
   } catch (error) {
-    
     throw new AppError(500, "User creation failed!");
   }
 };

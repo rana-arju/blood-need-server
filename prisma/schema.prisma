@@ -109,7 +109,7 @@ model BloodDonor {
 model BloodDrive {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
-  userId    String   @unique @db.ObjectId
+  userId    String    @db.ObjectId
   division  String
   district  String
   upazila   String

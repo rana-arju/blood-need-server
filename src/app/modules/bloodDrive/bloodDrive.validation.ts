@@ -25,7 +25,7 @@ export const createBloodDriveZodSchema = z.object({
         required_error: "Date is required",
       })
       .transform((str) => new Date(str)),
-   
+
     banner: z.string({
       required_error: "banner is required",
     }),
@@ -34,15 +34,26 @@ export const createBloodDriveZodSchema = z.object({
 
 export const updateBloodDriveZodSchema = z.object({
   body: z.object({
-    name: z.string().optional(),
+    title: z.string().optional(),
     organizer: z.string().optional(),
-    location: z.string().optional(),
+    address: z.string().optional(),
+    division: z.string({
+      required_error: "Division is required",
+    }),
+    district: z.string({
+      required_error: "District is required",
+    }),
+    upazila: z.string({
+      required_error: "Upazila is required",
+    }),
     date: z
-      .string()
-      .transform((str) => new Date(str))
-      .optional(),
-    startTime: z.string().optional(),
-    endTime: z.string().optional(),
-    description: z.string().optional(),
+      .string({
+        required_error: "Date is required",
+      })
+      .transform((str) => new Date(str)),
+
+    banner: z.string({
+      required_error: "banner is required",
+    }),
   }),
 });

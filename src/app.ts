@@ -75,6 +75,7 @@ app.use("/api/v1/blog", BlogRoutes);
 app.use("/api/v1/achievements", AchievementRoutes);
 app.use("/api/v1/health-records", HealthRecordRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Server is running" });
