@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const handleZodError = (error: z.ZodError) => {
+const handleZodError = (error: z.ZodError<any>) => {
   const errorMessages = error.issues.map((issue) => ({
     path: issue.path.join("."), // Join path array into a string
     message: issue.message,
@@ -14,3 +14,6 @@ const handleZodError = (error: z.ZodError) => {
 };
 
 export default handleZodError;
+
+
+
