@@ -12,10 +12,17 @@ export const globalErrorHandler: ErrorRequestHandler = (
   res,
   next
 ) => {
-  // Fixed error logging to avoid accessing undefined properties
-  logger.error(
-    `Global error handler caught an error: ${error?.message || "Unknown error"}`
-  );
+  // Safe error logging
+  try {
+    logger.error(
+      `Global error handler caught an error: ${
+        error?.message || "Unknown error"
+      }`
+    );
+  } catch (loggingError) {
+    console.error("Error while logging:", loggingError);
+    console.error("Original error:", error);
+  }
 
   let statusCode = 500;
   let message = "Something went wrong!";

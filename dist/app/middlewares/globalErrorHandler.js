@@ -10,8 +10,14 @@ const handleZodError_1 = __importDefault(require("../error/handleZodError"));
 const AppError_1 = __importDefault(require("../error/AppError"));
 const logger_1 = require("../shared/logger"); // Fixed import
 const globalErrorHandler = (error, req, res, next) => {
-    // Fixed error logging to avoid accessing undefined properties
-    logger_1.logger.error(`Global error handler caught an error: ${error?.message || "Unknown error"}`);
+    // Safe error logging
+    try {
+        logger_1.logger.error(`Global error handler caught an error: ${error?.message || "Unknown error"}`);
+    }
+    catch (loggingError) {
+        console.error("Error while logging:", loggingError);
+        console.error("Original error:", error);
+    }
     let statusCode = 500;
     let message = "Something went wrong!";
     let errorMessages = [

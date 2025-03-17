@@ -1,8 +1,6 @@
 import express, { type Application } from "express";
 import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
-import csrf from "csurf";
-
 import { UserRoutes } from "./app/modules/user/user.route";
 import { BloodRequestRoutes } from "./app/modules/bloodRequest/bloodRequest.route";
 import { BloodDriveRoutes } from "./app/modules/bloodDrive/bloodDrive.route";
@@ -12,7 +10,6 @@ import { ReviewRoutes } from "./app/modules/review/review.route";
 import notificationRoutes from "./app/modules/notification/notification.route";
 import { scheduleDonationReminders } from "./app/jobs/donationReminder";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
-
 import { StatisticsRoutes } from "./app/modules/statistics/statistics.route";
 import { BlogRoutes } from "./app/modules/blog/blog.route";
 import { AchievementRoutes } from "./app/modules/achievement/achievement.route";
@@ -37,6 +34,9 @@ import { notFound } from "./app/middlewares/notFound";
 
 const app: Application = express();
 
+// Check if we're running on Vercel
+const isVercel = process.env.VERCEL_REGION || process.env.VERCEL_URL;
+
 // Security Middlewares
 app.use(helmet());
 
@@ -54,6 +54,7 @@ const corsOptions: CorsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) => {
+    // Allow requests with no origin (like mobile apps, curl, etc)
     if (!origin || allowedDomains.includes(origin)) {
       callback(null, true);
     } else {
@@ -77,17 +78,22 @@ app.options("*", cors(corsOptions), (req, res) => {
 
 app.use(securityHeadersMiddleware); // Custom security headers
 
-// Only use CSRF if it's properly configured
+// Only use CSRF if not on Vercel (it requires cookies which can be tricky in serverless)
 /*
-try {
-  const csrfProtection = csrf({ cookie: true });
-  app.use(csrfProtection);
-} catch (error) {
-  logger.warn("CSRF protection not enabled:", {
-    error: error instanceof Error ? error.message : String(error),
-  });
+if (!isVercel) {
+  try {
+    const csrf = require("csurf");
+    const csrfProtection = csrf({ cookie: true });
+    app.use(csrfProtection);
+    logger.info("CSRF protection enabled");
+  } catch (error) {
+    logger.warn("CSRF protection not enabled:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
-*/
+  */
+
 // ✅ Middleware
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
@@ -157,7 +163,16 @@ app.use(
   }
 );
 
-// 🕒 Start donation reminder job
-scheduleDonationReminders();
+// 🕒 Start donation reminder job only if not on Vercel
+if (!isVercel) {
+  try {
+    scheduleDonationReminders();
+    logger.info("Donation reminder job scheduled");
+  } catch (error) {
+    logger.error("Failed to schedule donation reminders:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
 
 export default app;

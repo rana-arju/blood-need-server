@@ -180,11 +180,15 @@ const getInterestedDonorDetails = catchAsync(
   async (req: Request, res: Response) => {
     const { requestId, userId } = req.params;
 
+    // Check if loaders are available, otherwise pass undefined
+    const loaders = req.loaders;
+
     const result = await DonationService.getInterestedDonorDetails(
       requestId,
       userId,
-      req.loaders // Pass the loaders from the request
+      loaders // This might be undefined, but the service should handle that
     );
+
     sendResponse(res, {
       statusCode: 200,
       success: true,

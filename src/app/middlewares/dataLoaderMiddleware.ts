@@ -5,7 +5,7 @@ import { createLoaders } from "../shared/dataloader";
 declare global {
   namespace Express {
     interface Request {
-      loaders?: any;
+      loaders?: ReturnType<typeof createLoaders>;
     }
   }
 }
@@ -15,7 +15,13 @@ export const dataLoaderMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // Create new loaders for each request
-  req.loaders = createLoaders();
-  next();
+  try {
+    // Create new loaders for each request
+    req.loaders = createLoaders();
+    next();
+  } catch (error) {
+    console.error("Error creating dataloaders:", error);
+    // Continue without loaders if there's an error
+    next();
+  }
 };

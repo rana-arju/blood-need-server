@@ -9,3 +9,9 @@
 {"level":"warn","message":"Security response: 401","metadata":{"ip":"::1","method":"POST","path":"/api/v1/auth/login","statusCode":401,"user":"unauthenticated"},"timestamp":"2025-03-18 01:07:59:759"}
 {"level":"warn","message":"Slow query detected (2198ms): BloodDrive.findMany","metadata":{},"timestamp":"2025-03-18 01:16:27:1627"}
 {"level":"warn","message":"Slow query detected (712ms): BloodRequest.count","metadata":{},"timestamp":"2025-03-18 01:21:20:2120"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:10:5510"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:15:5515"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:15:5515"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:15:5515"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:16:5516"}
+{"level":"error","message":"Global error handler caught an error: misconfigured csrf","metadata":{},"timestamp":"2025-03-18 01:55:20:5520"}

@@ -145,7 +145,9 @@ const cancelInterest = (0, catchAsync_1.default)(async (req, res) => {
 });
 const getInterestedDonorDetails = (0, catchAsync_1.default)(async (req, res) => {
     const { requestId, userId } = req.params;
-    const result = await donation_service_1.DonationService.getInterestedDonorDetails(requestId, userId, req.loaders // Pass the loaders from the request
+    // Check if loaders are available, otherwise pass undefined
+    const loaders = req.loaders;
+    const result = await donation_service_1.DonationService.getInterestedDonorDetails(requestId, userId, loaders // This might be undefined, but the service should handle that
     );
     (0, sendResponse_1.default)(res, {
         statusCode: 200,

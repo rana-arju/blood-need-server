@@ -29,48 +29,60 @@ winston_1.default.addColors(colors);
 const format = winston_1.default.format.combine(winston_1.default.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }), winston_1.default.format.metadata({
     fillExcept: ["message", "level", "timestamp", "label"],
 }), winston_1.default.format.json());
-// Define transport for success logs
-const successTransport = new winston_daily_rotate_file_1.default({
-    filename: path_1.default.join(process.cwd(), "logs", "winston", "successes", "success-%DATE%.log"),
-    datePattern: "YYYY-MM-DD-HH",
-    zippedArchive: true,
-    maxSize: "20m",
-    maxFiles: "14d",
-    level: "info",
-});
-// Define transport for error logs
-const errorTransport = new winston_daily_rotate_file_1.default({
-    filename: path_1.default.join(process.cwd(), "logs", "winston", "errors", "error-%DATE%.log"),
-    datePattern: "YYYY-MM-DD-HH",
-    zippedArchive: true,
-    maxSize: "20m",
-    maxFiles: "30d",
-    level: "error",
-});
-// Define transport for security logs
-const securityTransport = new winston_daily_rotate_file_1.default({
-    filename: path_1.default.join(process.cwd(), "logs", "winston", "security", "security-%DATE%.log"),
-    datePattern: "YYYY-MM-DD-HH",
-    zippedArchive: true,
-    maxSize: "20m",
-    maxFiles: "90d",
-    level: "warn",
-});
-// Define console transport for development
-const consoleTransport = new winston_1.default.transports.Console({
-    format: winston_1.default.format.combine(winston_1.default.format.colorize({ all: true }), winston_1.default.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)),
-});
+// Check if we're running on Vercel
+const isVercel = process.env.VERCEL_REGION || process.env.VERCEL_URL;
+// Create transports array based on environment
+const createTransports = () => {
+    // Always include console transport
+    const transports = [
+        new winston_1.default.transports.Console({
+            format: winston_1.default.format.combine(winston_1.default.format.colorize({ all: true }), winston_1.default.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)),
+        }),
+    ];
+    // Only add file transports if not on Vercel (which has a read-only filesystem)
+    if (!isVercel) {
+        try {
+            // Define transport for success logs
+            const successTransport = new winston_daily_rotate_file_1.default({
+                filename: path_1.default.join(process.cwd(), "logs", "winston", "successes", "success-%DATE%.log"),
+                datePattern: "YYYY-MM-DD-HH",
+                zippedArchive: true,
+                maxSize: "20m",
+                maxFiles: "14d",
+                level: "info",
+            });
+            // Define transport for error logs
+            const errorTransport = new winston_daily_rotate_file_1.default({
+                filename: path_1.default.join(process.cwd(), "logs", "winston", "errors", "error-%DATE%.log"),
+                datePattern: "YYYY-MM-DD-HH",
+                zippedArchive: true,
+                maxSize: "20m",
+                maxFiles: "30d",
+                level: "error",
+            });
+            // Define transport for security logs
+            const securityTransport = new winston_daily_rotate_file_1.default({
+                filename: path_1.default.join(process.cwd(), "logs", "winston", "security", "security-%DATE%.log"),
+                datePattern: "YYYY-MM-DD-HH",
+                zippedArchive: true,
+                maxSize: "20m",
+                maxFiles: "90d",
+                level: "warn",
+            });
+            transports.push(successTransport, errorTransport, securityTransport);
+        }
+        catch (error) {
+            console.error("Error setting up file logging:", error);
+        }
+    }
+    return transports;
+};
 // Create logger instance
 const logger = winston_1.default.createLogger({
     level: process.env.NODE_ENV === "development" ? "debug" : "info",
     levels,
     format,
-    transports: [
-        successTransport,
-        errorTransport,
-        securityTransport,
-        ...(process.env.NODE_ENV !== "production" ? [consoleTransport] : []),
-    ],
+    transports: createTransports(),
 });
 exports.logger = logger;
 // Create security logger for security-related events
@@ -79,8 +91,9 @@ const securityLogger = winston_1.default.createLogger({
     levels,
     format,
     transports: [
-        securityTransport,
-        ...(process.env.NODE_ENV !== "production" ? [consoleTransport] : []),
+        new winston_1.default.transports.Console({
+            format: winston_1.default.format.combine(winston_1.default.format.colorize({ all: true }), winston_1.default.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)),
+        }),
     ],
 });
 exports.securityLogger = securityLogger;
@@ -90,8 +103,9 @@ const errorLogger = winston_1.default.createLogger({
     levels,
     format,
     transports: [
-        errorTransport,
-        ...(process.env.NODE_ENV !== "production" ? [consoleTransport] : []),
+        new winston_1.default.transports.Console({
+            format: winston_1.default.format.combine(winston_1.default.format.colorize({ all: true }), winston_1.default.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)),
+        }),
     ],
 });
 exports.errorLogger = errorLogger;

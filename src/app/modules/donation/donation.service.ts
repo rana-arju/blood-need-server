@@ -456,10 +456,22 @@ async function getInterestedDonorDetails(
     throw new AppError(400, "Invalid ID format");
   }
 
-  // Check if blood request exists
-  const bloodRequest = loaders
-    ? await loaders.bloodRequestLoader.load(requestId)
-    : await prisma.bloodRequest.findUnique({ where: { id: requestId } });
+  // Check if blood request exists - use dataloader if available
+  let bloodRequest;
+  try {
+    if (loaders?.bloodRequestLoader) {
+      bloodRequest = await loaders.bloodRequestLoader.load(requestId);
+    } else {
+      bloodRequest = await prisma.bloodRequest.findUnique({
+        where: { id: requestId },
+      });
+    }
+  } catch (error) {
+    // Fallback to direct database query if loader fails
+    bloodRequest = await prisma.bloodRequest.findUnique({
+      where: { id: requestId },
+    });
+  }
 
   if (!bloodRequest) {
     throw new AppError(404, "Blood request not found");
@@ -478,9 +490,12 @@ async function getInterestedDonorDetails(
   }
 
   // Get user details - use dataloader if available
-  const user = loaders
-    ? await loaders.userLoader.load(donorUserId)
-    : await prisma.user.findUnique({
+  let user;
+  try {
+    if (loaders?.userLoader) {
+      user = await loaders.userLoader.load(donorUserId);
+    } else {
+      user = await prisma.user.findUnique({
         where: { id: donorUserId },
         select: {
           id: true,
@@ -498,16 +513,50 @@ async function getInterestedDonorDetails(
           rewardBadge: true,
         },
       });
+    }
+  } catch (error) {
+    // Fallback to direct database query if loader fails
+    user = await prisma.user.findUnique({
+      where: { id: donorUserId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        blood: true,
+        gender: true,
+        division: true,
+        district: true,
+        upazila: true,
+        address: true,
+        lastDonationDate: true,
+        donationCount: true,
+        rewardBadge: true,
+      },
+    });
+  }
 
   if (!user) {
     throw new AppError(404, "User not found");
   }
+
   // Get donor info - use dataloader if available
-  const donorInfo = loaders
-    ? await loaders.bloodDonorLoader.load(donorUserId)
-    : await prisma.bloodDonor.findUnique({
+  let donorInfo;
+  try {
+    if (loaders?.bloodDonorLoader) {
+      donorInfo = await loaders.bloodDonorLoader.load(donorUserId);
+    } else {
+      donorInfo = await prisma.bloodDonor.findUnique({
         where: { userId: donorUserId },
       });
+    }
+  } catch (error) {
+    // Fallback to direct database query if loader fails
+    donorInfo = await prisma.bloodDonor.findUnique({
+      where: { userId: donorUserId },
+    });
+  }
+
   // Combine user and donation offer details
   return {
     ...user,

@@ -33,6 +33,8 @@ const compressionMiddleware_1 = require("./app/middlewares/compressionMiddleware
 const securityHeadersMiddleware_1 = require("./app/middlewares/securityHeadersMiddleware");
 const notFound_1 = require("./app/middlewares/notFound");
 const app = (0, express_1.default)();
+// Check if we're running on Vercel
+const isVercel = process.env.VERCEL_REGION || process.env.VERCEL_URL;
 // Security Middlewares
 app.use((0, helmet_1.default)());
 // 🌐 Allowed Domains
@@ -45,6 +47,7 @@ const allowedDomains = [
 // ✅ Proper CORS Configuration with Type Safety
 const corsOptions = {
     origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, etc)
         if (!origin || allowedDomains.includes(origin)) {
             callback(null, true);
         }
@@ -65,17 +68,20 @@ app.options("*", (0, cors_1.default)(corsOptions), (req, res) => {
     res.sendStatus(200); // ✅ Must return HTTP 200 OK for CORS preflight
 });
 app.use(securityHeadersMiddleware_1.securityHeadersMiddleware); // Custom security headers
-// Only use CSRF if it's properly configured
-/*
-try {
-  const csrfProtection = csrf({ cookie: true });
-  app.use(csrfProtection);
-} catch (error) {
-  logger.warn("CSRF protection not enabled:", {
-    error: error instanceof Error ? error.message : String(error),
-  });
+// Only use CSRF if not on Vercel (it requires cookies which can be tricky in serverless)
+if (!isVercel) {
+    try {
+        const csrf = require("csurf");
+        const csrfProtection = csrf({ cookie: true });
+        app.use(csrfProtection);
+        logger_1.logger.info("CSRF protection enabled");
+    }
+    catch (error) {
+        logger_1.logger.warn("CSRF protection not enabled:", {
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
 }
-*/
 // ✅ Middleware
 app.use(express_1.default.json({ limit: "10kb" }));
 app.use(express_1.default.urlencoded({ extended: true, limit: "10kb" }));
@@ -126,6 +132,16 @@ app.use((err, req, res, next) => {
     }
     next(err);
 });
-// 🕒 Start donation reminder job
-(0, donationReminder_1.scheduleDonationReminders)();
+// 🕒 Start donation reminder job only if not on Vercel
+if (!isVercel) {
+    try {
+        (0, donationReminder_1.scheduleDonationReminders)();
+        logger_1.logger.info("Donation reminder job scheduled");
+    }
+    catch (error) {
+        logger_1.logger.error("Failed to schedule donation reminders:", {
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
+}
 exports.default = app;
