@@ -1,14 +1,26 @@
-export type IBlog = {
-  id: string;
-  userId: string;
-  title: string;
-  content: string;
-  image: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export interface IBlog {
+  id?: string
+  title: string
+  content: string
+ userId: string
+  image: string
+  tags: string[]
+  createdAt?: Date
+  updatedAt?: Date
+}
 
-export type IBlogFilters = {
-  searchTerm?: string;
-  rating?: number;
-};
+export interface IBlogFilters {
+  searchTerm?: string
+  userId?: string
+  tags?: string[]
+}
+
+export interface IBlogWithAuthor extends IBlog {
+  author: {
+    id: string
+    name: string
+    email: string
+    image?: string
+  }
+}
+

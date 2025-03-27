@@ -1,31 +1,36 @@
-import express from "express";
-import { BlogController } from "./blog.controller";
-import validationRequest from "../../middlewares/validationRequest";
-import { createBlogZodSchema, updateBlogZodSchema } from "./blog.validation";
-import auth from "../../middlewares/auth";
+import express from "express"
+import { BlogController } from "./blog.controller"
+import { createBlogZodSchema, updateBlogZodSchema, blogIdSchema } from "./blog.validation"
+import auth from "../../middlewares/auth"
+import validationRequest from "../../middlewares/validationRequest"
+const router = express.Router()
 
-const router = express.Router();
+// Public routes
+router.get("/", BlogController.getAllBlogs)
+router.get("/:id", BlogController.getBlogById)
 
-router.get("/", BlogController.getAllReviews);
-router.get("/:id", BlogController.getReviewById);
+// Protected routes
 router.post(
   "/",
-  auth("admin", "superadmin", "volunteer"),
-
+  auth("user", "admin", "superadmin", "volunteer"),
   validationRequest(createBlogZodSchema),
-  BlogController.createReview
-);
+  BlogController.createBlog,
+)
+
 router.patch(
   "/:id",
   auth("user", "admin", "superadmin", "volunteer"),
-
+  validationRequest(blogIdSchema),
   validationRequest(updateBlogZodSchema),
-  BlogController.updateReview
-);
+  BlogController.updateBlog,
+)
+
 router.delete(
   "/:id",
   auth("user", "admin", "superadmin", "volunteer"),
-  BlogController.deleteReview
-);
+  validationRequest(blogIdSchema),
+  BlogController.deleteBlog,
+)
 
-export const BlogRoutes = router;
+export const BlogRoutes = router
+

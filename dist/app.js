@@ -69,22 +69,23 @@ app.options("*", (0, cors_1.default)(corsOptions), (req, res) => {
 });
 app.use(securityHeadersMiddleware_1.securityHeadersMiddleware); // Custom security headers
 // Only use CSRF if not on Vercel (it requires cookies which can be tricky in serverless)
+/*
 if (!isVercel) {
-    try {
-        const csrf = require("csurf");
-        const csrfProtection = csrf({ cookie: true });
-        app.use(csrfProtection);
-        logger_1.logger.info("CSRF protection enabled");
-    }
-    catch (error) {
-        logger_1.logger.warn("CSRF protection not enabled:", {
-            error: error instanceof Error ? error.message : String(error),
-        });
-    }
+  try {
+    const csrf = require("csurf");
+    const csrfProtection = csrf({ cookie: true });
+    app.use(csrfProtection);
+    logger.info("CSRF protection enabled");
+  } catch (error) {
+    logger.warn("CSRF protection not enabled:", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
+  */
 // ✅ Middleware
-app.use(express_1.default.json({ limit: "10kb" }));
-app.use(express_1.default.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, express_mongo_sanitize_1.default)());
 app.use((0, hpp_1.default)()); // Prevent HTTP Parameter Pollution

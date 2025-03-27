@@ -3,106 +3,171 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlogsService = void 0;
+exports.BlogService = void 0;
 const paginationHelper_1 = require("../../helpers/paginationHelper");
-const prisma_1 = __importDefault(require("../../shared/prisma"));
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const bson_1 = require("bson");
+const prisma_1 = __importDefault(require("../../shared/prisma"));
+const client_1 = require("@prisma/client");
 const getAllBlogs = async (filters, paginationOptions) => {
-    const { searchTerm, rating } = filters;
+    const { searchTerm, userId, tags } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
     const andConditions = [];
+    // Search term condition
     if (searchTerm) {
         andConditions.push({
-            OR: ["comment"].map((field) => ({
-                [field]: {
-                    contains: searchTerm,
-                    mode: "insensitive",
-                },
-            })),
+            OR: [
+                { title: { contains: searchTerm, mode: client_1.Prisma.QueryMode.insensitive } },
+                { content: { contains: searchTerm, mode: client_1.Prisma.QueryMode.insensitive } },
+                { tags: { has: searchTerm } },
+            ],
         });
     }
-    if (rating) {
-        andConditions.push({
-            rating: {
-                equals: rating,
-            },
-        });
+    // Filter by author
+    if (userId) {
+        andConditions.push({ userId });
+    }
+    // Filter by tags
+    if (tags && tags.length > 0) {
+        andConditions.push({ tags: { hasSome: tags } });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
-    const result = await prisma_1.default.review.findMany({
+    const result = await prisma_1.default.blog.findMany({
         where: whereConditions,
         skip,
         take: limit,
-        orderBy: {
-            [sortBy]: sortOrder,
+        orderBy: { [sortBy]: sortOrder },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                },
+            },
         },
     });
-    const total = await prisma_1.default.review.count({ where: whereConditions });
+    const total = await prisma_1.default.blog.count({ where: whereConditions });
     return {
-        meta: {
-            page,
-            limit,
-            total,
-        },
+        meta: { page, limit, total },
         data: result,
     };
 };
-const getReviewById = async (id) => {
+const getBlogById = async (id) => {
     if (!bson_1.ObjectId.isValid(id)) {
-        throw new AppError_1.default(400, "Invalid review ID format");
+        throw new AppError_1.default(400, "Invalid blog ID format");
     }
-    const isExist = await prisma_1.default.review.findUnique({ where: { id } });
-    if (!isExist) {
-        throw new AppError_1.default(404, "Review not found");
+    const blog = await prisma_1.default.blog.findUnique({
+        where: { id },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                },
+            },
+        },
+    });
+    if (!blog) {
+        throw new AppError_1.default(404, "Blog not found");
     }
-    const result = await prisma_1.default.review.findUnique({
+    return blog;
+};
+const createBlog = async (userId, payload) => {
+    // Check if user exists
+    const user = await prisma_1.default.user.findUnique({
+        where: { id: userId },
+    });
+    if (!user) {
+        throw new AppError_1.default(404, "User not found");
+    }
+    // Set the author ID
+    payload.userId = userId;
+    const result = await prisma_1.default.blog.create({
+        data: payload,
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                },
+            },
+        },
+    });
+    return result;
+};
+const updateBlog = async (id, userId, payload) => {
+    if (!bson_1.ObjectId.isValid(id)) {
+        throw new AppError_1.default(400, "Invalid blog ID format");
+    }
+    // Check if blog exists
+    const blog = await prisma_1.default.blog.findUnique({
         where: { id },
     });
-    return result;
-};
-const createBlog = async (blogData, id) => {
-    const modified = {
-        ...blogData,
-        userId: id,
-    };
-    const result = await prisma_1.default.blog.create({
-        data: modified,
+    if (!blog) {
+        throw new AppError_1.default(404, "Blog not found");
+    }
+    // Check if user is the author or an admin
+    const user = await prisma_1.default.user.findUnique({
+        where: { id: userId },
     });
-    return result;
-};
-const updateReview = async (id, payload) => {
-    // ✅ Validate if `id` is a valid MongoDB ObjectId
-    if (!bson_1.ObjectId.isValid(id)) {
-        throw new AppError_1.default(400, "Invalid review ID format");
+    if (!user) {
+        throw new AppError_1.default(404, "User not found");
     }
-    const isExist = await prisma_1.default.review.findUnique({ where: { id } });
-    if (!isExist) {
-        throw new AppError_1.default(404, "Review not found");
+    if (blog.userId !== userId && user.role !== "admin" && user.role !== "superadmin") {
+        throw new AppError_1.default(403, "You are not authorized to update this blog");
     }
-    const result = await prisma_1.default.review.update({
+    const result = await prisma_1.default.blog.update({
         where: { id },
         data: payload,
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                },
+            },
+        },
     });
     return result;
 };
-const deleteReview = async (id) => {
+const deleteBlog = async (id, userId) => {
     if (!bson_1.ObjectId.isValid(id)) {
-        throw new AppError_1.default(400, "Invalid review ID format");
+        throw new AppError_1.default(400, "Invalid blog ID format");
     }
-    const isExist = await prisma_1.default.review.findUnique({ where: { id } });
-    if (!isExist) {
-        throw new AppError_1.default(404, "Review not found");
+    // Check if blog exists
+    const blog = await prisma_1.default.blog.findUnique({
+        where: { id },
+    });
+    if (!blog) {
+        throw new AppError_1.default(404, "Blog not found");
     }
-    const result = await prisma_1.default.review.delete({
+    // Check if user is the author or an admin
+    const user = await prisma_1.default.user.findUnique({
+        where: { id: userId },
+    });
+    if (!user) {
+        throw new AppError_1.default(404, "User not found");
+    }
+    if (blog.userId !== userId && user.role !== "admin" && user.role !== "superadmin") {
+        throw new AppError_1.default(403, "You are not authorized to delete this blog");
+    }
+    const result = await prisma_1.default.blog.delete({
         where: { id },
     });
     return result;
 };
-exports.BlogsService = {
+exports.BlogService = {
     getAllBlogs,
-    getReviewById,
+    getBlogById,
     createBlog,
-    updateReview,
-    deleteReview,
+    updateBlog,
+    deleteBlog,
 };

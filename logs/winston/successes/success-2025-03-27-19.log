@@ -1,0 +1,5 @@
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-27 19:33:50:3350"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-27 19:33:50:3350"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-27 19:33:50:3350"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-27 19:33:57:3357"}
+{"level":"warn","message":"Slow query detected (534ms): Review.findMany","metadata":{},"timestamp":"2025-03-27 19:35:39:3539"}
