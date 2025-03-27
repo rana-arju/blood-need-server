@@ -1,0 +1,1 @@
+{"level":"error","message":"Global error handler caught an error: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"object\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"params\"\n    ],\n    \"message\": \"Required\"\n  }\n]","metadata":{},"timestamp":"2025-03-28 01:00:34:034"}

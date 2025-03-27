@@ -28,11 +28,4 @@ export const updateBlogZodSchema = z.object({
   }),
 })
 
-export const blogIdSchema = z.object({
-  params: z.object({
-    id: z.string().refine((val) => ObjectId.isValid(val), {
-      message: "Invalid blog ID format",
-    }),
-  }),
-})
 

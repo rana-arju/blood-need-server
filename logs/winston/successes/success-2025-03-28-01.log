@@ -1,0 +1,7 @@
+{"level":"error","message":"Global error handler caught an error: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"object\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"params\"\n    ],\n    \"message\": \"Required\"\n  }\n]","metadata":{},"timestamp":"2025-03-28 01:00:34:034"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-28 01:01:32:132"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-28 01:01:32:132"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-28 01:01:32:132"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-28 01:01:33:133"}
+{"level":"warn","message":"Slow query detected (551ms): Blog.findMany","metadata":{},"timestamp":"2025-03-28 01:01:50:150"}
+{"level":"warn","message":"Slow query detected (505ms): Blog.findMany","metadata":{},"timestamp":"2025-03-28 01:02:53:253"}

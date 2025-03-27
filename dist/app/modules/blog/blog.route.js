@@ -15,6 +15,6 @@ router.get("/", blog_controller_1.BlogController.getAllBlogs);
 router.get("/:id", blog_controller_1.BlogController.getBlogById);
 // Protected routes
 router.post("/", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), (0, validationRequest_1.default)(blog_validation_1.createBlogZodSchema), blog_controller_1.BlogController.createBlog);
-router.patch("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), (0, validationRequest_1.default)(blog_validation_1.blogIdSchema), (0, validationRequest_1.default)(blog_validation_1.updateBlogZodSchema), blog_controller_1.BlogController.updateBlog);
-router.delete("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), (0, validationRequest_1.default)(blog_validation_1.blogIdSchema), blog_controller_1.BlogController.deleteBlog);
+router.patch("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), (0, validationRequest_1.default)(blog_validation_1.updateBlogZodSchema), blog_controller_1.BlogController.updateBlog);
+router.delete("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), blog_controller_1.BlogController.deleteBlog);
 exports.BlogRoutes = router;
