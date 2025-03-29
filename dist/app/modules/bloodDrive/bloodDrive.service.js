@@ -66,7 +66,6 @@ const createBloodDrive = async (bloodDriveData) => {
             },
         },
     });
-    console.log("result", result);
     return result;
 };
 const updateBloodDrive = async (id, payload) => {

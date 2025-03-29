@@ -1,160 +1,343 @@
-import prisma from "../../shared/prisma";
-import { webpush } from "./webpush.service";
-function isValidSubscription(sub: any): boolean {
-  console.log("Validating subscription:", sub);
-  const isValid =
-    sub &&
-    typeof sub.endpoint === "string" &&
-    sub.endpoint.startsWith("https://") &&
-    sub.auth &&
-    typeof sub.auth === "string" &&
-    sub.p256dh &&
-    typeof sub.p256dh === "string";
+import prisma from "../../shared/prisma"
+import AppError from "../../error/AppError"
+import { ObjectId } from "bson"
+import admin from "../../config/firebase.config"
+import { FCMTokenService } from "./fcmToken.service"
+import { logger } from "../../shared/logger"
 
-  if (!isValid) {
-    console.log("Invalid subscription details:", {
-      hasEndpoint: !!sub.endpoint,
-      endpointIsString: typeof sub.endpoint === "string",
-      endpointStartsWithHttps: sub.endpoint?.startsWith("https://"),
-      hasAuth: !!sub.auth,
-      authIsString: typeof sub.auth === "string",
-      hasP256dh: !!sub.p256dh,
-      p256dhIsString: typeof sub.p256dh === "string",
-    });
-  }
-
-  return isValid;
+interface NotificationData {
+  title: string
+  body: string
+  url?: string
+  imageUrl?: string
+  data?: Record<string, string>
 }
 
-export async function subscribe(
-  userId: string,
-  subscription: webpush.PushSubscription
-) {
-  const isExist = await prisma.subscription.findFirst({
-    where: {
-      userId,
-      endpoint: subscription.endpoint,
-    },
-  });
-
-  if (isExist) {
-    return { message: "Already subscribed." };
+// Create a notification for a single user
+const createNotification = async (userId: string, notification: NotificationData): Promise<any> => {
+  if (!ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid user ID format")
   }
-  await prisma.subscription.create({
+
+  // Check if user exists
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  })
+
+  if (!user) {
+    throw new AppError(404, "User not found")
+  }
+
+  // Create notification in database
+  const dbNotification = await prisma.notification.create({
     data: {
       userId,
-      endpoint: subscription.endpoint,
-      auth: subscription.keys.auth,
-      p256dh: subscription.keys.p256dh,
+      title: notification.title,
+      body: notification.body,
+      url: notification.url,
     },
-  });
-  return { message: "Subscription successful." };
-}
+  })
 
-export async function sendNotification(
-  userIds: string[],
-  title: string,
-  body: string,
-  url?: string
-) {
-  const notifications = await prisma.notification.createMany({
-    data: userIds.map((userId) => ({
-      title,
-      body,
-      url,
-      userId,
-    })),
-  });
-  const subscriptions = await prisma.subscription.findMany({
-    where: {
-      userId: {
-        in: userIds,
-      },
-    },
-  });
+  // Get user's FCM tokens
+  const tokens = await FCMTokenService.getUserTokens(userId)
 
-  const payload = JSON.stringify({
-    title,
-    body,
-    url,
-  });
-
-  const sendPromises = subscriptions.map(async (sub) => {
-    console.log("Sending notification to subscription:", sub.endpoint);
-    if (!isValidSubscription(sub)) {
-      console.log("Invalid subscription, skipping:", sub.id);
-      return;
-    }
-    console.log("Sending notification to subscription:", sub.endpoint);
+  if (tokens.length > 0) {
     try {
-      const webpushRes = await webpush.sendNotification(
+      // Send FCM notification
+      await sendFCMNotification(
+        tokens.map((t) => t.token),
+        notification.title,
+        notification.body,
         {
-          endpoint: sub.endpoint,
-          keys: {
-            auth: sub.auth,
-            p256dh: sub.p256dh,
-          },
+          url: notification.url,
+          ...notification.data,
         },
-        payload
-      );
-      console.log("Notification sent successfully:", webpushRes);
-    } catch (error: any) {
-      console.error("Error sending notification:", {
-        statusCode: error.statusCode,
-        headers: error.headers,
-        body: error.body,
-        endpoint: sub.endpoint,
-      });
-      if (error.statusCode === 410) {
-        console.log("Deleting expired subscription:", sub.id);
-        await prisma.subscription.delete({ where: { id: sub.id } });
-      }
+        notification.imageUrl,
+      )
+    } catch (error) {
+      logger.error("Error sending FCM notification:", error)
+      // Continue even if FCM fails - the notification is still stored in the database
     }
-  });
+  }
 
-  await Promise.all(sendPromises);
-    return notifications;
-
+  return dbNotification
 }
 
-export async function getUnreadNotifications(userId: string) {
-  return prisma.notification.findMany({
+// Send notification to all users in a district for a blood request
+const notifyDistrictForBloodRequest = async (
+  requestId: string,
+  district: string,
+  notification: NotificationData,
+): Promise<any> => {
+  if (!ObjectId.isValid(requestId)) {
+    throw new AppError(400, "Invalid request ID format")
+  }
+
+  // Check if blood request exists
+  const bloodRequest = await prisma.bloodRequest.findUnique({
+    where: { id: requestId },
+  })
+
+  if (!bloodRequest) {
+    throw new AppError(404, "Blood request not found")
+  }
+
+  // Find all users in the district
+  const users = await prisma.user.findMany({
+    where: { district },
+    select: { id: true },
+  })
+
+  const userIds = users.map((user) => user.id)
+
+  // Create or update district notification
+  const districtNotification = await prisma.districtNotification.upsert({
+    where: { district },
+    update: {
+      userIds,
+      requestId,
+      title: notification.title,
+      body: notification.body,
+      data: notification.data ? notification.data : {},
+      sentAt: new Date(),
+    },
+    create: {
+      district,
+      userIds,
+      requestId,
+      title: notification.title,
+      body: notification.body,
+      data: notification.data ? notification.data : {},
+    },
+  })
+
+  // Get all FCM tokens for users in the district
+  const tokens = await FCMTokenService.getDistrictTokens(district)
+
+  if (tokens.length > 0) {
+    try {
+      // Send FCM notification
+      await sendFCMNotification(
+        tokens.map((t) => t.token),
+        notification.title,
+        notification.body,
+        {
+          requestId,
+          url: notification.url,
+          ...notification.data,
+        },
+        notification.imageUrl,
+      )
+    } catch (error) {
+      logger.error("Error sending district FCM notification:", error)
+      // Continue even if FCM fails - the notification is still stored in the database
+    }
+  }
+
+  // Also create individual notifications for each user
+  for (const userId of userIds) {
+    try {
+      await prisma.notification.create({
+        data: {
+          userId,
+          title: notification.title,
+          body: notification.body,
+          url: notification.url,
+        },
+      })
+    } catch (error) {
+      logger.error(`Error creating notification for user ${userId}:`, error)
+    }
+  }
+
+  return districtNotification
+}
+
+// Get notifications for a user
+const getUserNotifications = async (userId: string, page = 1, limit = 10): Promise<any> => {
+  if (!ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid user ID format")
+  }
+
+  const skip = (page - 1) * limit
+
+  const [notifications, total] = await Promise.all([
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    prisma.notification.count({
+      where: { userId },
+    }),
+  ])
+
+  return {
+    data: notifications,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  }
+}
+
+// Mark notification as read
+const markNotificationAsRead = async (id: string, userId: string): Promise<any> => {
+  if (!ObjectId.isValid(id) || !ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid ID format")
+  }
+
+  const notification = await prisma.notification.findUnique({
+    where: { id },
+  })
+
+  if (!notification) {
+    throw new AppError(404, "Notification not found")
+  }
+
+  if (notification.userId !== userId) {
+    throw new AppError(403, "You are not authorized to update this notification")
+  }
+
+  return await prisma.notification.update({
+    where: { id },
+    data: { isRead: true },
+  })
+}
+
+// Mark all notifications as read for a user
+const markAllNotificationsAsRead = async (userId: string): Promise<any> => {
+  if (!ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid user ID format")
+  }
+
+  return await prisma.notification.updateMany({
     where: {
       userId,
       isRead: false,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
-
-export async function markNotificationAsRead(notificationId: string) {
-  await prisma.notification.update({
-    where: { id: notificationId },
     data: { isRead: true },
-  });
+  })
 }
 
-export async function sendNotificationToMatchingDonors(bloodRequest: any) {
-  const matchingDonors = await prisma.user.findMany({
-    where: {
-      blood: bloodRequest.blood,
-      district: bloodRequest.district,
-      //donorInfo: {isNot: null},
+// Delete a notification
+const deleteNotification = async (id: string, userId: string): Promise<any> => {
+  if (!ObjectId.isValid(id) || !ObjectId.isValid(userId)) {
+    throw new AppError(400, "Invalid ID format")
+  }
+
+  const notification = await prisma.notification.findUnique({
+    where: { id },
+  })
+
+  if (!notification) {
+    throw new AppError(404, "Notification not found")
+  }
+
+  if (notification.userId !== userId) {
+    throw new AppError(403, "You are not authorized to delete this notification")
+  }
+
+  return await prisma.notification.delete({
+    where: { id },
+  })
+}
+
+// Helper function to send FCM notification
+const sendFCMNotification = async (
+  tokens: string[],
+  title: string,
+  body: string,
+  data?: Record<string, any>,
+  imageUrl?: string,
+): Promise<any> => {
+  if (!admin.messaging) {
+    throw new Error("Firebase Admin SDK not initialized")
+  }
+
+  if (tokens.length === 0) {
+    return { success: 0, failure: 0 }
+  }
+
+  const message: admin.messaging.MulticastMessage = {
+    tokens,
+    notification: {
+      title,
+      body,
+      imageUrl,
     },
-    select: {
-      id: true,
+    data: data ? Object.fromEntries(Object.entries(data).map(([key, value]) => [key, String(value)])) : undefined,
+    android: {
+      priority: "high",
+      notification: {
+        sound: "default",
+        clickAction: "FLUTTER_NOTIFICATION_CLICK",
+      },
     },
-  });
+    apns: {
+      payload: {
+        aps: {
+          sound: "default",
+          badge: 1,
+        },
+      },
+    },
+    webpush: {
+      notification: {
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/icon-192x192.png",
+      },
+      fcmOptions: {
+        link: data?.url,
+      },
+    },
+  }
 
-  const donorIds = matchingDonors.map((donor) => donor.id);
+  try {
+    const response = await admin.messaging().sendEachForMulticast(message)
 
-  if (donorIds.length > 0) {
-    const title = "Urgent Blood Request";
-    const body = `A ${bloodRequest.blood} blood donation is needed in ${bloodRequest.district}.`;
-    const url = `/request/${bloodRequest.id}`;
+    // Handle failed tokens
+    if (response.failureCount > 0) {
+      const failedTokens: string[] = []
+      response.responses.forEach((resp:any, idx:number) => {
+        if (!resp.success) {
+          failedTokens.push(tokens[idx])
+          logger.error(`Failed to send notification to token: ${tokens[idx]}`, resp.error)
 
-    await sendNotification(donorIds, title, body, url);
+          // If token is invalid, remove it from the database
+          if (
+            resp.error?.code === "messaging/invalid-registration-token" ||
+            resp.error?.code === "messaging/registration-token-not-registered"
+          ) {
+            try {
+              FCMTokenService.removeToken(tokens[idx])
+            } catch (error) {
+              logger.error(`Error removing invalid token ${tokens[idx]}:`, error)
+            }
+          }
+        }
+      })
+    }
+
+    return {
+      success: response.successCount,
+      failure: response.failureCount,
+    }
+  } catch (error) {
+    logger.error("Error sending FCM notification:", error)
+    throw error
   }
 }
+
+export const NotificationService = {
+  createNotification,
+  notifyDistrictForBloodRequest,
+  getUserNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+}
+

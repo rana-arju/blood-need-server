@@ -36,4 +36,9 @@ exports.default = {
             methods: process.env.CORS_METHODS || "GET,HEAD,PUT,PATCH,POST,DELETE",
         },
     },
+    firebase: {
+        databaseURL: process.env.FIREBASE_DATABASE_URL,
+        webApiKey: process.env.FIREBASE_WEB_API_KEY,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+    },
 };

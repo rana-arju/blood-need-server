@@ -1,0 +1,12 @@
+{"level":"warn","message":"Slow query detected (1524ms): User.findMany","metadata":{},"timestamp":"2025-03-29 00:16:52:1652"}
+{"level":"warn","message":"Slow query detected (1562ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:16:52:1652"}
+{"level":"warn","message":"Slow query detected (515ms): User.findMany","metadata":{},"timestamp":"2025-03-29 00:20:48:2048"}
+{"level":"warn","message":"Slow query detected (854ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:20:49:2049"}
+{"level":"warn","message":"Slow query detected (521ms): User.findMany","metadata":{},"timestamp":"2025-03-29 00:33:12:3312"}
+{"level":"warn","message":"Slow query detected (605ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:33:12:3312"}
+{"level":"warn","message":"Slow query detected (544ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:47:41:4741"}
+{"level":"warn","message":"Slow query detected (529ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:49:57:4957"}
+{"level":"warn","message":"Slow query detected (652ms): User.findMany","metadata":{},"timestamp":"2025-03-29 00:53:46:5346"}
+{"level":"warn","message":"Slow query detected (653ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:53:46:5346"}
+{"level":"warn","message":"Slow query detected (531ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:58:18:5818"}
+{"level":"warn","message":"Slow query detected (545ms): Blog.findMany","metadata":{},"timestamp":"2025-03-29 00:59:54:5954"}

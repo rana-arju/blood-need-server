@@ -7,7 +7,6 @@ import { BloodDriveRoutes } from "./app/modules/bloodDrive/bloodDrive.route";
 import { BloodDonorRoutes } from "./app/modules/bloodDonor/bloodDonor.route";
 import { VolunteerRoutes } from "./app/modules/volunteer/volunteer.route";
 import { ReviewRoutes } from "./app/modules/review/review.route";
-import notificationRoutes from "./app/modules/notification/notification.route";
 import { scheduleDonationReminders } from "./app/jobs/donationReminder";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { StatisticsRoutes } from "./app/modules/statistics/statistics.route";
@@ -31,6 +30,7 @@ import { dataLoaderMiddleware } from "./app/middlewares/dataLoaderMiddleware";
 import { compressionMiddleware } from "./app/middlewares/compressionMiddleware";
 import { securityHeadersMiddleware } from "./app/middlewares/securityHeadersMiddleware";
 import { notFound } from "./app/middlewares/notFound";
+import { NotificationRoutes } from "./app/modules/notification/notification.route";
 
 const app: Application = express();
 
@@ -125,7 +125,7 @@ app.use("/api/v1/blood-drives", BloodDriveRoutes);
 app.use("/api/v1/blood-donor", BloodDonorRoutes);
 app.use("/api/v1/volunteers", VolunteerRoutes);
 app.use("/api/v1/reviews", ReviewRoutes);
-app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/notifications", NotificationRoutes);
 app.use("/api/v1/statistics", StatisticsRoutes);
 app.use("/api/v1/blog", BlogRoutes);
 app.use("/api/v1/achievements", AchievementRoutes);

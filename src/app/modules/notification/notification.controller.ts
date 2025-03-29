@@ -1,125 +1,74 @@
-import type { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import * as notificationService from "./notification.service";
+import type { Request, Response } from "express"
+import { NotificationService } from "./notification.service"
+import catchAsync from "../../shared/catchAsync"
+import sendResponse from "../../shared/sendResponse"
+import pick from "../../shared/pick"
+import { paginationFields } from "../../constants/pagination"
 
-const prisma = new PrismaClient();
+const getUserNotifications = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id!
+  
+  const paginationOptions = pick(req.query, paginationFields)
 
-export const getNotifications = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id; // Assuming you set user info in auth middleware
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const notifications = await prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(notifications);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching notifications" });
-  }
-};
+  const page = Number(paginationOptions.page || 1)
+  const limit = Number(paginationOptions.limit || 10)
 
-export const markAsRead = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userId = req?.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+  const result = await NotificationService.getUserNotifications(userId, page, limit)
 
-    const updatedNotification = await prisma.notification.updateMany({
-      where: { id, userId },
-      data: { isRead: true },
-    });
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notifications retrieved successfully",
+    meta: result.meta,
+    data: result.data,
+  })
+})
 
-    if (updatedNotification.count === 0) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
+const markNotificationAsRead = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id!
+  const { id } = req.params
 
-    res.json({ message: "Notification marked as read" });
-  } catch (error) {
-    res.status(500).json({ error: "Error marking notification as read" });
-  }
-};
+  const result = await NotificationService.markNotificationAsRead(id, userId)
 
-export const getUnreadNotifications = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const notifications = await notificationService.getUnreadNotifications(
-      userId
-    );
-    res.json(notifications);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch unread notifications" });
-  }
-};
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notification marked as read",
+    data: result,
+  })
+})
 
-export const syncNotification = async (req: Request, res: Response) => {
-  try {
-    const { userId, title, body, url } = req.body;
+const markAllNotificationsAsRead = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id!
 
-    if (!userId || !title || !body) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+  const result = await NotificationService.markAllNotificationsAsRead(userId)
 
-    await prisma.notification.create({
-      data: {
-        userId,
-        title,
-        body,
-        url,
-      },
-    });
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "All notifications marked as read",
+    data: result,
+  })
+})
 
-    return res
-      .status(201)
-      .json({ message: "Notification synced successfully" });
-  } catch (error) {
-    console.error("Error syncing notification:", error);
-    return res.status(500).json({ message: "Error syncing notification" });
-  }
-};
+const deleteNotification = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id!
+  const { id } = req.params
 
-export const subscribe = async (req: Request, res: Response) => {
-  try {
-    const userId = req?.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const { subscription } = req.body;
+  const result = await NotificationService.deleteNotification(id, userId)
 
-    await prisma.subscription.create({
-      data: {
-        userId,
-        endpoint: subscription.endpoint,
-        auth: subscription.keys.auth,
-        p256dh: subscription.keys.p256dh,
-      },
-    });
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Notification deleted successfully",
+    data: result,
+  })
+})
 
-    res.status(201).json({ message: "Subscription successful" });
-  } catch (error) {
-    res.status(500).json({ error: "Error subscribing to notifications" });
-  }
-};
+export const NotificationController = {
+  getUserNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+}
 
-export const unsubscribe = async (req: Request, res: Response) => {
-  try {
-    const userId = req?.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    await prisma.subscription.deleteMany({
-      where: { userId },
-    });
-
-    res.json({ message: "Unsubscribed from notifications" });
-  } catch (error) {
-    res.status(500).json({ error: "Error unsubscribing from notifications" });
-  }
-};

@@ -84,7 +84,6 @@ const createBloodDrive = async (
       },
     },
   });
-  console.log("result", result);
 
   return result;
 };

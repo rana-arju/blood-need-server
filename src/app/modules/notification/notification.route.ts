@@ -1,49 +1,39 @@
-import express from "express";
-import * as notificationController from "./notification.controller";
-import auth from "../../middlewares/auth";
+import express from "express"
+import { NotificationController } from "./notification.controller"
+import { FCMTokenController } from "./fcmToken.controller"
+import { WebPushController } from "./webPush.controller"
+import auth from "../../middlewares/auth"
 
-const router = express.Router();
+const router = express.Router()
 
-// Subscribe to notifications
-router.post(
-  "/subscribe",
-  auth("user", "admin", "volunteer", "superadmin"),
-  notificationController.subscribe
-);
+// FCM Token routes
+router.post("/token/register", auth("user", "admin", "superadmin", "volunteer"), FCMTokenController.registerToken)
 
-// Get unread notifications
-router.get(
-  "/unread",
-  auth("user", "admin", "volunteer"),
-  notificationController.getUnreadNotifications
-);
+router.post("/token/remove", auth("user", "admin", "superadmin", "volunteer"), FCMTokenController.removeToken)
 
-// Mark notification as read
+// Web Push routes
+router.get("/web-push/vapid-public-key", WebPushController.getVapidPublicKey)
+
+router.post("/web-push/subscribe", auth("user", "admin", "superadmin", "volunteer"), WebPushController.subscribe)
+
+router.post("/web-push/unsubscribe", WebPushController.unsubscribe)
+
+// Notification routes
+router.get("/",   auth("admin", "superadmin", "user", "volunteer"), NotificationController.getUserNotifications)
+
 router.patch(
-  "/:id",
-  auth("user", "admin", "volunteer"),
-  notificationController.markAsRead
-);
+  "/read/:id",
+  auth("user", "admin", "superadmin", "volunteer"),
+  NotificationController.markNotificationAsRead,
+)
 
-// Sync notifications
-router.post(
-  "/sync",
-  auth("user", "admin", "volunteer"),
-  notificationController.syncNotification
-);
+router.patch(
+  "/read-all",
+  auth("user", "admin", "superadmin", "volunteer"),
+  NotificationController.markAllNotificationsAsRead,
+)
 
-// Get all notifications
-router.get(
-  "/",
-  auth("user", "admin", "volunteer"),
-  notificationController.getNotifications
-);
+router.delete("/:id", auth("user", "admin", "superadmin", "volunteer"), NotificationController.deleteNotification)
 
-// Unsubscribe from notifications
-router.post(
-  "/unsubscribe",
-  auth("user", "admin", "volunteer"),
-  notificationController.unsubscribe
-);
+export const NotificationRoutes = router
 
-export default router;

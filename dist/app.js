@@ -12,7 +12,6 @@ const bloodDrive_route_1 = require("./app/modules/bloodDrive/bloodDrive.route");
 const bloodDonor_route_1 = require("./app/modules/bloodDonor/bloodDonor.route");
 const volunteer_route_1 = require("./app/modules/volunteer/volunteer.route");
 const review_route_1 = require("./app/modules/review/review.route");
-const notification_route_1 = __importDefault(require("./app/modules/notification/notification.route"));
 const donationReminder_1 = require("./app/jobs/donationReminder");
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const statistics_route_1 = require("./app/modules/statistics/statistics.route");
@@ -32,6 +31,7 @@ const dataLoaderMiddleware_1 = require("./app/middlewares/dataLoaderMiddleware")
 const compressionMiddleware_1 = require("./app/middlewares/compressionMiddleware");
 const securityHeadersMiddleware_1 = require("./app/middlewares/securityHeadersMiddleware");
 const notFound_1 = require("./app/middlewares/notFound");
+const notification_route_1 = require("./app/modules/notification/notification.route");
 const app = (0, express_1.default)();
 // Check if we're running on Vercel
 const isVercel = process.env.VERCEL_REGION || process.env.VERCEL_URL;
@@ -108,7 +108,7 @@ app.use("/api/v1/blood-drives", bloodDrive_route_1.BloodDriveRoutes);
 app.use("/api/v1/blood-donor", bloodDonor_route_1.BloodDonorRoutes);
 app.use("/api/v1/volunteers", volunteer_route_1.VolunteerRoutes);
 app.use("/api/v1/reviews", review_route_1.ReviewRoutes);
-app.use("/api/v1/notifications", notification_route_1.default);
+app.use("/api/v1/notifications", notification_route_1.NotificationRoutes);
 app.use("/api/v1/statistics", statistics_route_1.StatisticsRoutes);
 app.use("/api/v1/blog", blog_route_1.BlogRoutes);
 app.use("/api/v1/achievements", achievement_route_1.AchievementRoutes);

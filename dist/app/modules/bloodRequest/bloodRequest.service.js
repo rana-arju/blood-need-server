@@ -217,8 +217,25 @@ const createBloodRequest = async (bloodRequestData) => {
     const result = await prisma_1.default.bloodRequest.create({
         data: bloodRequestData,
     });
-    // Send notifications to matching donors
-    await notificationService.sendNotificationToMatchingDonors(result);
+    // After successfully creating the blood request
+    try {
+        // Send notification to users in the same district
+        await notificationService.NotificationService.notifyDistrictForBloodRequest(result.id, result.district, {
+            title: `Urgent: ${result.blood} Blood Needed`,
+            body: `A patient needs ${result.bloodAmount} unit(s) of ${result.blood} blood in ${result.district}. Can you help?`,
+            url: `/blood-requests/${result.id}`,
+            data: {
+                requestId: result.id,
+                bloodType: result.blood,
+                district: result.district,
+                notificationType: "blood_request",
+            },
+        });
+    }
+    catch (error) {
+        // Log error but don't fail the request creation
+        console.error("Error sending blood request notifications:", error);
+    }
     return result;
 };
 exports.BloodRequestService = {

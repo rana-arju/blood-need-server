@@ -1,55 +1,25 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationRoutes = void 0;
 const express_1 = __importDefault(require("express"));
-const notificationController = __importStar(require("./notification.controller"));
+const notification_controller_1 = require("./notification.controller");
+const fcmToken_controller_1 = require("./fcmToken.controller");
+const webPush_controller_1 = require("./webPush.controller");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = express_1.default.Router();
-// Subscribe to notifications
-router.post("/subscribe", (0, auth_1.default)("user", "admin", "volunteer", "superadmin"), notificationController.subscribe);
-// Get unread notifications
-router.get("/unread", (0, auth_1.default)("user", "admin", "volunteer"), notificationController.getUnreadNotifications);
-// Mark notification as read
-router.patch("/:id", (0, auth_1.default)("user", "admin", "volunteer"), notificationController.markAsRead);
-// Sync notifications
-router.post("/sync", (0, auth_1.default)("user", "admin", "volunteer"), notificationController.syncNotification);
-// Get all notifications
-router.get("/", (0, auth_1.default)("user", "admin", "volunteer"), notificationController.getNotifications);
-// Unsubscribe from notifications
-router.post("/unsubscribe", (0, auth_1.default)("user", "admin", "volunteer"), notificationController.unsubscribe);
-exports.default = router;
+// FCM Token routes
+router.post("/token/register", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), fcmToken_controller_1.FCMTokenController.registerToken);
+router.post("/token/remove", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), fcmToken_controller_1.FCMTokenController.removeToken);
+// Web Push routes
+router.get("/web-push/vapid-public-key", webPush_controller_1.WebPushController.getVapidPublicKey);
+router.post("/web-push/subscribe", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), webPush_controller_1.WebPushController.subscribe);
+router.post("/web-push/unsubscribe", webPush_controller_1.WebPushController.unsubscribe);
+// Notification routes
+router.get("/", (0, auth_1.default)("admin", "superadmin", "user", "volunteer"), notification_controller_1.NotificationController.getUserNotifications);
+router.patch("/read/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), notification_controller_1.NotificationController.markNotificationAsRead);
+router.patch("/read-all", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), notification_controller_1.NotificationController.markAllNotificationsAsRead);
+router.delete("/:id", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), notification_controller_1.NotificationController.deleteNotification);
+exports.NotificationRoutes = router;

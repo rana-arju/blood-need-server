@@ -1,0 +1,23 @@
+{"level":"warn","message":"Slow query detected (1322ms): User.findMany","metadata":{},"timestamp":"2025-03-30 00:07:06:76"}
+{"level":"warn","message":"Slow query detected (1609ms): Blog.findMany","metadata":{},"timestamp":"2025-03-30 00:07:06:76"}
+{"level":"warn","message":"Slow query detected (1444ms): User.findUnique","metadata":{},"timestamp":"2025-03-30 00:15:59:1559"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:08:168"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:08:168"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:13:1613"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:13:1613"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:33:1633"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:16:33:1633"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:23:56:2356"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:23:56:2356"}
+{"level":"warn","message":"Slow query detected (546ms): Notification.count","metadata":{},"timestamp":"2025-03-30 00:24:14:2414"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:24:18:2418"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:24:18:2418"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:24:22:2422"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:24:23:2423"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:17:2617"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:17:2617"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:24:2624"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:24:2624"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:29:2629"}
+{"level":"error","message":"Global error handler caught an error: Blood request not found","metadata":{},"timestamp":"2025-03-30 00:26:29:2629"}
+{"level":"warn","message":"Slow query detected (1326ms): BloodRequest.findMany","metadata":{},"timestamp":"2025-03-30 00:40:47:4047"}

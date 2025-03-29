@@ -18,7 +18,6 @@ const auth = (...requiredRoles: IUserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     
     const userId = req.headers.authorization?.split(" ")[1]; // Get userId from "Bearer <userId>"
-    
 
     if (!userId) {
       return next(new AppError(401, "You are unauthorized to access"));
