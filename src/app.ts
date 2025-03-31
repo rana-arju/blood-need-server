@@ -134,7 +134,7 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Server is running" });
+  res.status(200).json({ message: "Server is running", website: "Blood Need", Creator: "Mohammad Rana Arju", copyRights: true });
 });
 
 app.get("/health", (req, res) => {

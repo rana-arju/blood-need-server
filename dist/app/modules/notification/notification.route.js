@@ -11,6 +11,7 @@ const webPush_controller_1 = require("./webPush.controller");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = express_1.default.Router();
 // FCM Token routes
+router.post("/send", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), notification_controller_1.sendTestNotification);
 router.post("/token/register", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), fcmToken_controller_1.FCMTokenController.registerToken);
 router.post("/token/remove", (0, auth_1.default)("user", "admin", "superadmin", "volunteer"), fcmToken_controller_1.FCMTokenController.removeToken);
 // Web Push routes

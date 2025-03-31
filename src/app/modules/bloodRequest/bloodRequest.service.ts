@@ -268,7 +268,7 @@ const updateBloodRequest = async (
   await notificationService.NotificationService.notifyDistrictForBloodRequest(result.id, result.district, {
     title: `Urgent: ${result.blood} Blood Needed`,
     body: `A patient needs ${result.bloodAmount} unit(s) of ${result.blood} blood in ${result.district}. Can you help?`,
-    url: `/blood-requests/${result.id}`,
+    url: `/requests/${result.id}`,
     data: {
       requestId: result.id,
       bloodType: result.blood,

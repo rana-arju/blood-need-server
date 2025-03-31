@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationController = void 0;
+exports.NotificationController = exports.sendTestNotification = void 0;
 const notification_service_1 = require("./notification.service");
 const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
@@ -55,6 +55,34 @@ const deleteNotification = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
+const sendTestNotification = async (req, res) => {
+    try {
+        const id = req.user?.id;
+        const { token, title, body, data } = req.body;
+        console.log("asdfRana", req.body);
+        if (!id || !title || !body) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        // Save the notification to the database
+        const notification = await notification_service_1.NotificationService.createNotification(id, {
+            title,
+            body,
+            data
+        });
+        return res.status(200).json({
+            message: "Notification sent successfully",
+            notification,
+        });
+    }
+    catch (error) {
+        console.error("Error sending notification:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
+    }
+};
+exports.sendTestNotification = sendTestNotification;
 exports.NotificationController = {
     getUserNotifications,
     markNotificationAsRead,

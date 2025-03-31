@@ -1,0 +1,115 @@
+{"level":"warn","message":"Slow query detected (2614ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 04:06:53:653"}
+{"level":"warn","message":"Slow query detected (843ms): Notification.count","metadata":{},"timestamp":"2025-03-31 04:06:54:654"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:07:52:752"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:07:52:752"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:07:52:752"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:07:57:757"}
+{"level":"warn","message":"Slow query detected (896ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 04:10:07:107"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:14:47:1447"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:14:47:1447"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:14:47:1447"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:14:47:1447"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:15:14:1514"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:15:14:1514"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:15:14:1514"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:15:14:1514"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:15:24:1524"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:15:24:1524"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:15:24:1524"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:15:25:1525"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:15:38:1538"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:15:38:1538"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:15:38:1538"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:15:38:1538"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:16:12:1612"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:16:12:1612"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:16:12:1612"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:16:12:1612"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:16:23:1623"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:16:23:1623"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:16:23:1623"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:16:23:1623"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:16:28:1628"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:16:28:1628"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:16:28:1628"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:16:28:1628"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:16:46:1646"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:16:46:1646"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:16:46:1646"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:16:46:1646"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:16:51:1651"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:16:51:1651"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:16:51:1651"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:16:52:1652"}
+{"level":"warn","message":"Slow query detected (586ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 04:16:52:1652"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:17:39:1739"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:17:39:1739"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:17:39:1739"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:17:39:1739"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:18:03:183"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:18:03:183"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:18:03:183"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:18:03:183"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:19:14:1914"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:19:14:1914"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:19:14:1914"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:19:14:1914"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:19:21:1921"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:19:21:1921"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:19:21:1921"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:19:21:1921"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:21:01:211"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:21:01:211"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:21:01:211"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:21:01:211"}
+{"level":"warn","message":"Slow query detected (578ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 04:21:13:2113"}
+{"level":"warn","message":"Slow query detected (588ms): Notification.count","metadata":{},"timestamp":"2025-03-31 04:21:13:2113"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:22:08:228"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:22:08:228"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:22:08:228"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:22:08:228"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:22:27:2227"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:22:27:2227"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:22:27:2227"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:22:27:2227"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:23:00:230"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:23:00:230"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:23:00:230"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:23:01:231"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:23:27:2327"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:23:27:2327"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:23:27:2327"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:23:28:2328"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:24:07:247"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:24:07:247"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:24:07:247"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:24:07:247"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:24:16:2416"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:24:16:2416"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:24:16:2416"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:24:16:2416"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:24:25:2425"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:24:25:2425"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:24:25:2425"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:24:26:2426"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:24:37:2437"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:24:37:2437"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:24:37:2437"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:24:37:2437"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:24:46:2446"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:24:46:2446"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:24:46:2446"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:24:46:2446"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:25:01:251"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:25:01:251"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:25:01:251"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:25:01:251"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 04:25:10:2510"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 04:25:10:2510"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 04:25:11:2511"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 04:25:11:2511"}
+{"level":"warn","message":"Slow query detected (505ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 04:25:44:2544"}
+{"level":"error","message":"Failed to send notification to token: c0TDVa_0mdVNtlgEz0COCZ:APA91bHX9CFSI8I8voD_IH2VKnPWM_fUZufnAcu6DECUHsCXAPIJpZc6V6mT-qa2do6ZPT8PD9q7QdHa48murDKfJjI6Vp6rHiJ6CRYKXrHYW4cOqRDE4W4 Requested entity was not found.","metadata":{"codePrefix":"messaging","errorInfo":{"code":"messaging/registration-token-not-registered","message":"Requested entity was not found."},"stack":"Error: Requested entity was not found.\n    at Function.fromServerError (D:\\Future project\\blood-need\\blood-need-server\\node_modules\\firebase-admin\\lib\\utils\\error.js:269:16)\n    at createFirebaseError (D:\\Future project\\blood-need\\blood-need-server\\node_modules\\firebase-admin\\lib\\messaging\\messaging-errors-internal.js:36:47)\n    at FirebaseMessagingRequestHandler.buildSendResponseFromError (D:\\Future project\\blood-need\\blood-need-server\\node_modules\\firebase-admin\\lib\\messaging\\messaging-api-request-internal.js:150:72)\n    at D:\\Future project\\blood-need\\blood-need-server\\node_modules\\firebase-admin\\lib\\messaging\\messaging-api-request-internal.js:129:29\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Promise.allSettled (index 0)\n    at sendFCMNotification (D:\\Future project\\blood-need\\blood-need-server\\src\\app\\modules\\notification\\notification.service.ts:300:22)\n    at Object.createNotification (D:\\Future project\\blood-need\\blood-need-server\\src\\app\\modules\\notification\\notification.service.ts:47:7)\n    at sendTestNotification (D:\\Future project\\blood-need\\blood-need-server\\src\\app\\modules\\notification\\notification.controller.ts:87:26)"},"timestamp":"2025-03-31 04:26:16:2616"}
+{"level":"warn","message":"Slow query detected (561ms): Notification.count","metadata":{},"timestamp":"2025-03-31 04:32:28:3228"}
+{"level":"warn","message":"Slow query detected (1573ms): Notification.count","metadata":{},"timestamp":"2025-03-31 04:53:10:5310"}
+{"level":"warn","message":"Slow query detected (1653ms): Subscription.create","metadata":{},"timestamp":"2025-03-31 04:53:10:5310"}
