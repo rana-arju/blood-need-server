@@ -46,7 +46,6 @@ const createBlog = catchAsync(async (req: Request, res: Response) => {
 })
 
 const updateBlog = catchAsync(async (req: Request, res: Response) => {
-  console.log("body", req.params);
   
   const { id } = req.params
   const userId = req.user?.id!

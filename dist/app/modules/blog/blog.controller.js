@@ -43,7 +43,6 @@ const createBlog = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 const updateBlog = (0, catchAsync_1.default)(async (req, res) => {
-    console.log("body", req.params);
     const { id } = req.params;
     const userId = req.user?.id;
     const result = await blog_service_1.BlogService.updateBlog(id, userId, req.body);
