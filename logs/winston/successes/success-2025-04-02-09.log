@@ -1,0 +1,9 @@
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-04-02 09:46:54:4654"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-04-02 09:46:54:4654"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-04-02 09:46:54:4654"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-04-02 09:46:57:4657"}
+{"level":"warn","message":"Slow query detected (586ms): User.findMany","metadata":{},"timestamp":"2025-04-02 09:50:56:5056"}
+{"level":"warn","message":"Slow query detected (789ms): Blog.findMany","metadata":{},"timestamp":"2025-04-02 09:50:56:5056"}
+{"level":"warn","message":"Slow query detected (521ms): User.findUnique","metadata":{},"timestamp":"2025-04-02 09:52:16:5216"}
+{"level":"warn","message":"Slow query detected (644ms): FCMToken.update","metadata":{},"timestamp":"2025-04-02 09:53:38:5338"}
+{"level":"warn","message":"Slow query detected (565ms): FCMToken.update","metadata":{},"timestamp":"2025-04-02 09:53:43:5343"}

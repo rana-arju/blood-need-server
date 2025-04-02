@@ -39,6 +39,7 @@ model User {
   rewardBadge   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  pushSubscription Json?
   donations     Donation[]
   donorInfo     BloodDonor?
   bloodDrives   BloodDrive[]
@@ -249,4 +250,20 @@ model DistrictNotification {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+}
+model BloodRequestNotification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  requestId   String   @db.ObjectId
+  district    String
+  title       String
+  body        String
+  url         String?
+  data        Json?
+  recipients  Json     // Will store an array of recipient objects with userId and readStatus
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([district])
+  @@index([requestId])
+  @@unique([requestId, district], name: "requestId_district")
 }

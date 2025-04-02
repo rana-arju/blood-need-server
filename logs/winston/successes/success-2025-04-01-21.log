@@ -1,0 +1,10 @@
+{"level":"warn","message":"Slow query detected (810ms): Notification.findMany","metadata":{},"timestamp":"2025-04-01 21:01:28:128"}
+{"level":"warn","message":"Slow query detected (1306ms): User.findUnique","metadata":{},"timestamp":"2025-04-01 21:13:11:1311"}
+{"level":"warn","message":"Slow query detected (760ms): Blog.findMany","metadata":{},"timestamp":"2025-04-01 21:13:13:1313"}
+{"level":"warn","message":"Slow query detected (652ms): Notification.findMany","metadata":{},"timestamp":"2025-04-01 21:13:16:1316"}
+{"level":"warn","message":"Slow query detected (649ms): BloodRequest.findMany","metadata":{},"timestamp":"2025-04-01 21:13:21:1321"}
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-04-01 21:37:09:379"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-04-01 21:37:09:379"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-04-01 21:37:09:379"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-04-01 21:37:09:379"}
+{"level":"info","message":"Prisma is disconnecting...","metadata":{},"timestamp":"2025-04-01 21:54:29:5429"}

@@ -93,6 +93,21 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+// Add this function after singleUser function
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id!
+
+
+
+  const result = await UserService.getMeUser(userId)
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User profile retrieved successfully",
+    data: result,
+  })
+})
 
 export const UserController = {
   getAllUsers,
@@ -103,4 +118,5 @@ export const UserController = {
   singleUser,
   getUserById,
   updatePassword,
+  getMe,
 };

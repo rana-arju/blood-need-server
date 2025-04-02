@@ -32,6 +32,7 @@ const compressionMiddleware_1 = require("./app/middlewares/compressionMiddleware
 const securityHeadersMiddleware_1 = require("./app/middlewares/securityHeadersMiddleware");
 const notFound_1 = require("./app/middlewares/notFound");
 const notification_route_1 = require("./app/modules/notification/notification.route");
+const checkMissedNotifications_1 = require("./app/middlewares/checkMissedNotifications");
 const app = (0, express_1.default)();
 // Check if we're running on Vercel
 const isVercel = process.env.VERCEL_REGION || process.env.VERCEL_URL;
@@ -97,10 +98,14 @@ app.use(securityMiddleware_1.limiter);
 app.use(securityLoggingMiddleware_1.securityLoggingMiddleware);
 // DataLoader middleware
 app.use(dataLoaderMiddleware_1.dataLoaderMiddleware);
-// 🔔 Application Routes
+// Check for missed notifications on protected routes
+app.use("/api/v1/auth/me", checkMissedNotifications_1.checkMissedNotifications);
+app.use("/api/v1/notifications", checkMissedNotifications_1.checkMissedNotifications);
+app.use("/api/v1/blood-requests", checkMissedNotifications_1.checkMissedNotifications);
 // Apply specific rate limiting to auth routes
-app.use("/api/v1/users/login", securityMiddleware_1.authLimiter);
-app.use("/api/v1/users/register", securityMiddleware_1.authLimiter);
+app.use("/api/v1/auth/login", securityMiddleware_1.authLimiter);
+app.use("/api/v1/auth/register", securityMiddleware_1.authLimiter);
+// 🔔 Application Routes
 app.use("/api/v1/auth", user_route_1.UserRoutes);
 app.use("/api/v1/donations", donation_route_1.DonationRoutes);
 app.use("/api/v1/blood-requests", bloodRequest_route_1.BloodRequestRoutes);

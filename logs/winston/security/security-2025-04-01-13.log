@@ -1,0 +1,2 @@
+{"level":"warn","message":"Slow query detected (1317ms): User.findUnique","metadata":{},"timestamp":"2025-04-01 13:13:47:1347"}
+{"level":"error","message":"Global error handler caught an error: Cannot read properties of undefined (reading 'findMany')","metadata":{},"timestamp":"2025-04-01 13:24:11:2411"}

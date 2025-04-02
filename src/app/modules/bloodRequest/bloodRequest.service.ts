@@ -270,7 +270,7 @@ const createBloodRequest = async (bloodRequestData: any): Promise<any> => {
         url: `/requests/${result.id}`,
         data: {
           requestId: result.id,
-          bloodType: result.blood,
+          blood: result.blood,
           district: result.district,
           notificationType: "blood_request",
         },

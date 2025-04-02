@@ -31,6 +31,7 @@ import { compressionMiddleware } from "./app/middlewares/compressionMiddleware";
 import { securityHeadersMiddleware } from "./app/middlewares/securityHeadersMiddleware";
 import { notFound } from "./app/middlewares/notFound";
 import { NotificationRoutes } from "./app/modules/notification/notification.route";
+import { checkMissedNotifications } from "./app/middlewares/checkMissedNotifications";
 
 const app: Application = express();
 
@@ -114,10 +115,16 @@ app.use(securityLoggingMiddleware);
 // DataLoader middleware
 app.use(dataLoaderMiddleware);
 
-// 🔔 Application Routes
+// Check for missed notifications on protected routes
+app.use("/api/v1/auth/me", checkMissedNotifications)
+app.use("/api/v1/notifications", checkMissedNotifications)
+app.use("/api/v1/blood-requests", checkMissedNotifications)
+
 // Apply specific rate limiting to auth routes
-app.use("/api/v1/users/login", authLimiter);
-app.use("/api/v1/users/register", authLimiter);
+app.use("/api/v1/auth/login", authLimiter);
+app.use("/api/v1/auth/register", authLimiter);
+// 🔔 Application Routes
+
 app.use("/api/v1/auth", UserRoutes);
 app.use("/api/v1/donations", DonationRoutes);
 app.use("/api/v1/blood-requests", BloodRequestRoutes);
