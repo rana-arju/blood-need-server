@@ -1,4 +1,0 @@
-{"level":"warn","message":"Slow query detected (2140ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:31:231"}
-{"level":"warn","message":"Slow query detected (2725ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:31:231"}
-{"level":"warn","message":"Slow query detected (2847ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:32:232"}
-{"level":"warn","message":"Slow query detected (6598ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:08:36:836"}

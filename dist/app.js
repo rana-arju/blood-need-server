@@ -17,7 +17,6 @@ const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
 const statistics_route_1 = require("./app/modules/statistics/statistics.route");
 const blog_route_1 = require("./app/modules/blog/blog.route");
 const achievement_route_1 = require("./app/modules/achievement/achievement.route");
-const donation_route_1 = require("./app/modules/donation/donation.route");
 const healthRecord_route_1 = require("./app/modules/healthRecord/healthRecord.route");
 const dashboard_routes_1 = require("./app/modules/dashboard/dashboard.routes");
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
@@ -107,7 +106,6 @@ app.use("/api/v1/auth/login", securityMiddleware_1.authLimiter);
 app.use("/api/v1/auth/register", securityMiddleware_1.authLimiter);
 // 🔔 Application Routes
 app.use("/api/v1/auth", user_route_1.UserRoutes);
-app.use("/api/v1/donations", donation_route_1.DonationRoutes);
 app.use("/api/v1/blood-requests", bloodRequest_route_1.BloodRequestRoutes);
 app.use("/api/v1/blood-drives", bloodDrive_route_1.BloodDriveRoutes);
 app.use("/api/v1/blood-donor", bloodDonor_route_1.BloodDonorRoutes);
@@ -121,7 +119,14 @@ app.use("/api/v1/health-records", healthRecord_route_1.HealthRecordRoutes);
 app.use("/api/v1/dashboard", dashboard_routes_1.dashboardRoutes);
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
-    res.status(200).json({ message: "Server is running", website: "Blood Need", Creator: "Mohammad Rana Arju", copyRights: true });
+    res
+        .status(200)
+        .json({
+        message: "Server is running",
+        website: "Blood Need",
+        Creator: "Mohammad Rana Arju",
+        copyRights: true,
+    });
 });
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "OK" });

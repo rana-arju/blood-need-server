@@ -1,9 +1,0 @@
-{"level":"warn","message":"Slow query detected (2140ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:31:231"}
-{"level":"warn","message":"Slow query detected (2725ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:31:231"}
-{"level":"warn","message":"Slow query detected (2847ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:02:32:232"}
-{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-03-31 22:06:26:626"}
-{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-03-31 22:06:26:626"}
-{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-03-31 22:06:26:626"}
-{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-03-31 22:06:27:627"}
-{"level":"warn","message":"Slow query detected (6598ms): User.findUnique","metadata":{},"timestamp":"2025-03-31 22:08:36:836"}
-{"level":"info","message":"Prisma is disconnecting...","metadata":{},"timestamp":"2025-03-31 22:11:21:1121"}

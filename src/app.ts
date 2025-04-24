@@ -12,7 +12,6 @@ import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { StatisticsRoutes } from "./app/modules/statistics/statistics.route";
 import { BlogRoutes } from "./app/modules/blog/blog.route";
 import { AchievementRoutes } from "./app/modules/achievement/achievement.route";
-import { DonationRoutes } from "./app/modules/donation/donation.route";
 import { HealthRecordRoutes } from "./app/modules/healthRecord/healthRecord.route";
 import { dashboardRoutes } from "./app/modules/dashboard/dashboard.routes";
 import mongoSanitize from "express-mongo-sanitize";
@@ -116,9 +115,9 @@ app.use(securityLoggingMiddleware);
 app.use(dataLoaderMiddleware);
 
 // Check for missed notifications on protected routes
-app.use("/api/v1/auth/me", checkMissedNotifications)
-app.use("/api/v1/notifications", checkMissedNotifications)
-app.use("/api/v1/blood-requests", checkMissedNotifications)
+app.use("/api/v1/auth/me", checkMissedNotifications);
+app.use("/api/v1/notifications", checkMissedNotifications);
+app.use("/api/v1/blood-requests", checkMissedNotifications);
 
 // Apply specific rate limiting to auth routes
 app.use("/api/v1/auth/login", authLimiter);
@@ -126,7 +125,6 @@ app.use("/api/v1/auth/register", authLimiter);
 // 🔔 Application Routes
 
 app.use("/api/v1/auth", UserRoutes);
-app.use("/api/v1/donations", DonationRoutes);
 app.use("/api/v1/blood-requests", BloodRequestRoutes);
 app.use("/api/v1/blood-drives", BloodDriveRoutes);
 app.use("/api/v1/blood-donor", BloodDonorRoutes);
@@ -141,7 +139,14 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 
 // 🩸 Health Check & Root Routes
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Server is running", website: "Blood Need", Creator: "Mohammad Rana Arju", copyRights: true });
+  res
+    .status(200)
+    .json({
+      message: "Server is running",
+      website: "Blood Need",
+      Creator: "Mohammad Rana Arju",
+      copyRights: true,
+    });
 });
 
 app.get("/health", (req, res) => {
