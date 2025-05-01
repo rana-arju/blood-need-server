@@ -1,8 +1,5 @@
 import express from "express";
-import {
-  NotificationController,
-  sendTestNotification,
-} from "./notification.controller";
+import { NotificationController } from "./notification.controller";
 import { FCMTokenController } from "./fcmToken.controller";
 import { WebPushController } from "./webPush.controller";
 import auth from "../../middlewares/auth";
@@ -13,8 +10,9 @@ const router = express.Router();
 router.post(
   "/send",
   auth("user", "admin", "superadmin", "volunteer"),
-  sendTestNotification
+  NotificationController.sendTestNotification
 );
+
 router.post(
   "/token/register",
   auth("user", "admin", "superadmin", "volunteer"),
@@ -43,6 +41,12 @@ router.get(
   "/",
   auth("admin", "superadmin", "user", "volunteer"),
   NotificationController.getUserNotifications
+);
+
+router.get(
+  "/check-missed",
+  auth("user", "admin", "superadmin", "volunteer"),
+  NotificationController.checkMissedNotifications
 );
 
 router.patch(

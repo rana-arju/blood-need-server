@@ -3,6 +3,7 @@ import { UserController } from "./user.controller";
 import { createUserZodSchema } from "./user.validation";
 import validationRequest from "../../middlewares/validationRequest";
 import auth from "../../middlewares/auth";
+import { checkMissedNotifications } from "../../middlewares/checkMissedNotifications";
 
 const router = express.Router();
 
@@ -16,7 +17,13 @@ router.post("/login", UserController.login);
 
 // 🔹 Admin Routes (Require Admin Role)
 router.get("/users", auth("admin"), UserController.getAllUsers);
-
+// Protected routes
+router.get(
+  "/me",
+  auth("user", "admin", "superadmin", "volunteer"),
+  checkMissedNotifications, // Add middleware to check missed notifications on login
+  UserController.getMe,
+)
 // 🔹 User Routes (Require Authentication)
 router.get(
   "/user/:id",

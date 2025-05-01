@@ -72,12 +72,26 @@ const deleteNotification = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const checkMissedNotifications = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id!;
+
+    const result = await NotificationService.checkMissedNotifications(userId);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Missed notifications checked successfully",
+      data: result,
+    });
+  }
+);
+
 export const sendTestNotification = async (req: Request, res: Response) => {
   try {
-    const id = req.user?.id
-    const { token, title, body,data } = req.body;
-    console.log("asdfRana", req.body);
-    
+    const id = req.user?.id;
+    const { token, title, body, data } = req.body;
 
     if (!id || !title || !body) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -87,7 +101,7 @@ export const sendTestNotification = async (req: Request, res: Response) => {
     const notification = await NotificationService.createNotification(id!, {
       title,
       body,
-      data
+      data,
     });
 
     return res.status(200).json({
@@ -102,9 +116,12 @@ export const sendTestNotification = async (req: Request, res: Response) => {
     });
   }
 };
+
 export const NotificationController = {
   getUserNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
+  checkMissedNotifications,
+  sendTestNotification,
 };

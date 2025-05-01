@@ -32,43 +32,7 @@ const getBlogById = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
-const createBlog = (0, catchAsync_1.default)(async (req, res) => {
-    const userId = req.user?.id;
-    const result = await blog_service_1.BlogService.createBlog(userId, req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 201,
-        success: true,
-        message: "Blog created successfully",
-        data: result,
-    });
-});
-const updateBlog = (0, catchAsync_1.default)(async (req, res) => {
-    console.log("body", req.params);
-    const { id } = req.params;
-    const userId = req.user?.id;
-    const result = await blog_service_1.BlogService.updateBlog(id, userId, req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: "Blog updated successfully",
-        data: result,
-    });
-});
-const deleteBlog = (0, catchAsync_1.default)(async (req, res) => {
-    const { id } = req.params;
-    const userId = req.user?.id;
-    const result = await blog_service_1.BlogService.deleteBlog(id, userId);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: "Blog deleted successfully",
-        data: result,
-    });
-});
 exports.BlogController = {
     getAllBlogs,
     getBlogById,
-    createBlog,
-    updateBlog,
-    deleteBlog,
 };

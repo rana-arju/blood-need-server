@@ -34,7 +34,7 @@ exports.createBloodRequestZodSchema = zod_1.z.object({
 });
 exports.updateBloodRequestZodSchema = zod_1.z.object({
     body: zod_1.z.object({
-        bloodType: zod_1.z.string().optional(),
+        blood: zod_1.z.string().optional(),
         units: zod_1.z.number().positive().optional(),
         location: zod_1.z.string().optional(),
         urgency: zod_1.z.enum(["low", "medium", "high"]).optional(),

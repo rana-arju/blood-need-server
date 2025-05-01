@@ -1,2 +1,0 @@
-{"level":"warn","message":"Slow query detected (1684ms): User.findMany","metadata":{},"timestamp":"2025-03-27 21:07:40:740"}
-{"level":"warn","message":"Slow query detected (1283ms): Review.findMany","metadata":{},"timestamp":"2025-03-27 21:17:52:1752"}

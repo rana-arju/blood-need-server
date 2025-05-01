@@ -33,7 +33,7 @@ export const createBloodRequestZodSchema = z.object({
 
 export const updateBloodRequestZodSchema = z.object({
   body: z.object({
-    bloodType: z.string().optional(),
+    blood: z.string().optional(),
     units: z.number().positive().optional(),
     location: z.string().optional(),
     urgency: z.enum(["low", "medium", "high"]).optional(),

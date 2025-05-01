@@ -1,0 +1,4 @@
+{"level":"info","message":"Donation reminder job scheduled","metadata":{},"timestamp":"2025-05-02 00:45:24:4524"}
+{"level":"info","message":"Database connection initialized","metadata":{},"timestamp":"2025-05-02 00:45:24:4524"}
+{"level":"info","message":"Server is running on port 5000","metadata":{},"timestamp":"2025-05-02 00:45:24:4524"}
+{"level":"info","message":"Successfully connected to database","metadata":{},"timestamp":"2025-05-02 00:45:28:4528"}

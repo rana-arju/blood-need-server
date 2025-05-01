@@ -23,7 +23,7 @@ interface GetAllBloodRequestsParams {
   hemoglobinMin?: number;
   hemoglobinMax?: number;
 }
- async function getAllBloodRequests(
+async function getAllBloodRequests(
   params: GetAllBloodRequestsParams
 ): Promise<{ bloodRequests: BloodRequest[]; total: number }> {
   const {
@@ -109,7 +109,7 @@ interface GetAllBloodRequestsParams {
 
   return { bloodRequests, total };
 }
- async function getAllMyBloodRequests(
+async function getAllMyBloodRequests(
   userId: string,
   params: GetAllBloodRequestsParams
 ): Promise<{ bloodRequests: BloodRequest[]; total: number }> {
@@ -140,7 +140,6 @@ interface GetAllBloodRequestsParams {
   const where: Prisma.BloodRequestWhereInput = {
     userId,
     AND: [
-
       // Search
       search
         ? {
@@ -233,7 +232,6 @@ const deleteBloodRequest = async (id: string): Promise<BloodRequest> => {
 const updateBloodRequest = async (
   id: string,
   payload: Partial<IBloodRequest>
-
 ): Promise<BloodRequest> => {
   if (!ObjectId.isValid(id)) {
     throw new AppError(400, "Invalid blood request ID format");
@@ -256,31 +254,32 @@ const updateBloodRequest = async (
   return result;
 };
 
- const createBloodRequest = async (
-  bloodRequestData: any
-): Promise<any> => {
+const createBloodRequest = async (bloodRequestData: any): Promise<any> => {
   const result = await prisma.bloodRequest.create({
     data: bloodRequestData,
   });
- // After successfully creating the blood request
- try {
-  // Send notification to users in the same district
-  await notificationService.NotificationService.notifyDistrictForBloodRequest(result.id, result.district, {
-    title: `Urgent: ${result.blood} Blood Needed`,
-    body: `A patient needs ${result.bloodAmount} unit(s) of ${result.blood} blood in ${result.district}. Can you help?`,
-    url: `/requests/${result.id}`,
-    data: {
-      requestId: result.id,
-      bloodType: result.blood,
-      district: result.district,
-      notificationType: "blood_request",
-    },
-  })
-} catch (error) {
-  // Log error but don't fail the request creation
-  console.error("Error sending blood request notifications:", error)
-}
-
+  // After successfully creating the blood request
+  try {
+    // Send notification to users in the same district
+    await notificationService.NotificationService.notifyDistrictForBloodRequest(
+      result.id,
+      result.district,
+      {
+        title: `জরুরি: ${result.blood} রক্ত প্রয়োজন`,
+        body: `${result.district} জেলার, ${result.hospitalName} এ একজন রোগীর ${result.bloodAmount} ব্যাগ ${result.blood} রক্ত প্রয়োজন। আপনি কি সাহায্য করবেন?`,
+        url: `/requests/${result.id}`,
+        data: {
+          requestId: result.id,
+          blood: result.blood,
+          district: result.district,
+          notificationType: "blood_request",
+        },
+      }
+    );
+  } catch (error) {
+    // Log error but don't fail the request creation
+    console.error("Error sending blood request notifications:", error);
+  }
 
   return result;
 };
